@@ -185,6 +185,16 @@
 		    JOIN cost_code cc ON cd.cc_fk = cc.cc_pk
 	</select>
 	
+	<select id="selectCostdetailWightCostcodeByCcPk" resultMap="CostDetailVOALlResultmap" parameterType="CostCodeVO">
+		SELECT
+			*
+		FROM
+			cost_code cc
+		    INNER JOIN cost_detail cd ON cc.cc_pk = cd.cc_fk
+		WHERE
+			cc_pk = #{ccPk}
+	</select>
+	
 	
 	<!-- selectCostDetailByCcfk 원가 사항에서 pk를 이용하여 원가사항 및 원가변동사항 전부 가져오기 -->
 	<select id="selectCostDetailByCcfk" parameterType="CostDetailVO" resultMap="CostDetailWithCostIoResultmap">

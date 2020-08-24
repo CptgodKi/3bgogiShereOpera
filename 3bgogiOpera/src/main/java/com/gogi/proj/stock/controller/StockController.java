@@ -25,15 +25,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.gogi.proj.classification.code.model.AllClassificationCodeService;
+import com.gogi.proj.classification.code.vo.CostCodeVO;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.paging.PaginationInfo;
+import com.gogi.proj.product.cost.model.CostDetailService;
+import com.gogi.proj.product.cost.vo.CostDetailVO;
 import com.gogi.proj.product.options.vo.OptionsVO;
 import com.gogi.proj.product.products.vo.ProductOptionVO;
 import com.gogi.proj.security.AdminVO;
 import com.gogi.proj.stock.model.StockService;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 import com.gogi.proj.stock.vo.ProductInputListVO;
 import com.gogi.proj.util.FileuploadUtil;
 import com.gogi.proj.util.PageUtility;
@@ -51,6 +56,11 @@ public class StockController {
 	@Autowired
 	private ConfigurationService configService;
 	
+	@Autowired
+	private CostDetailService cdService;
+	
+	@Autowired
+	private AllClassificationCodeService accService;
 	
 	@Autowired
 	private FileuploadUtil fileUploadUtil;
@@ -348,5 +358,39 @@ public class StockController {
 		ModelAndView mav = new ModelAndView("downloadView", fileMap);
 		
 		return mav;
+	}
+	
+	
+	@RequestMapping(value="/carcass/list.do", method=RequestMethod.GET)
+	public String carcassListGet(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		model.addAttribute("osVO", osVO);
+		
+		return "orders/stock/carcass/list";
+	}
+	
+	@RequestMapping(value="/carcass/insert.do", method=RequestMethod.GET)
+	public String insertCarcassGet(Model model) {
+		
+		List<CostCodeVO> ccList = accService.selectCostCodeList();
+		
+		model.addAttribute("ccList", ccList);
+		
+		return "orders/stock/carcass/insert";
+	}
+	
+	@RequestMapping(value="/carcass/select_cost_detail.do", method=RequestMethod.GET)
+	@ResponseBody
+	public List<CostDetailVO> selectCostDetail(@ModelAttribute CostCodeVO ccVO){
+	
+		return cdService.selectCostdetailWightCostcodeByCcPk(ccVO);
+	}
+	
+	@RequestMapping(value="/carcass/insert.do", method=RequestMethod.POST)
+	public String insertCarcassPost(@ModelAttribute CarcassInputListVO cilVO, Model model) {
+		
+		logger.info("cilVO toString() => {}", cilVO.toString()); 
+		
+		return null;
 	}
 }

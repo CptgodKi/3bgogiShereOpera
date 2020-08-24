@@ -57,6 +57,7 @@ public class EpostController {
 	private Properties fileProperties;
 	
 	//상수
+	
 	//송장부여
 	static final String EPOST_DELIV_SENDING = "http://ship.epost.go.kr/api.InsertOrder.jparcel";
 	

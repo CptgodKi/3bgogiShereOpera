@@ -86,7 +86,7 @@
                                             <div id="meat_manage" class="collapse submenu" style="">
                                                 <ul class="nav flex-column">
                                                    <li class="nav-item">
-						                            	<a class="nav-link" href="#"> 부분육 원육 입고  </a>
+						                            	<a class="nav-link" href="#"> 부분 원육 입고  </a>
 						                            </li>
 						                            <li class="nav-item">
 						                            	<a class="nav-link" href="#"> 도체 원육 입고  </a>
@@ -94,6 +94,9 @@
 						                            
 						                            <li class="nav-item">
 						                            	<a class="nav-link" href="#"> 원육 입고 내역  </a>
+						                            </li>
+						                            <li class="nav-item">
+						                            	<a class="nav-link" href="<c:url value='/stock/carcass/list.do'/>"> 등록된 도체 목록  </a>
 						                            </li>
                                                 </ul>
                                             </div>
@@ -105,6 +108,7 @@
                             <li class="nav-divider">
                                	 관리자
                             </li>
+                            
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#sending" aria-controls="sending"><i class="fas fa-fw fa-shipping-fast"></i> 발송 및 출고  </a>
                                 <div id="sending" class="collapse submenu" style="">

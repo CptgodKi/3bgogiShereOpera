@@ -1,8 +1,10 @@
-package com.gogi.proj.product.cost.vo;
+package com.gogi.proj.stock.vo;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.gogi.proj.product.cost.vo.CostDetailVO;
 
 public class CarcassInputListVO {
 
@@ -30,7 +32,8 @@ public class CarcassInputListVO {
 	
 	//특별 추가
 	private List<String> costDetailPk;			//원가 세부사항 목록 배열값 
-
+	private List<CostDetailVO> costDetailList;	//원가 상세사항 입력하는 목록값
+	
 	public CarcassInputListVO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -40,7 +43,8 @@ public class CarcassInputListVO {
 			String costDetailPkList, int cilWeight, String cilNum, String cilProduct, int cilQty, String cilAdmin,
 			int cilAdminPk, String cilFilePath, String cilFileExe, String cilFileOriName, String cilFileUniqName,
 			String cilTransDetailFilePath, String cilTransDetailFileExe, String cilTransDetailFileOriName,
-			String cilTransDetailFileUniqName, String cilInputDate, Timestamp cilRegdate, List<String> costDetailPk) {
+			String cilTransDetailFileUniqName, String cilInputDate, Timestamp cilRegdate, List<String> costDetailPk,
+			List<CostDetailVO> costDetailList) {
 		super();
 		this.cilPk = cilPk;
 		this.cilAnimalProdTraceNum = cilAnimalProdTraceNum;
@@ -64,6 +68,7 @@ public class CarcassInputListVO {
 		this.cilInputDate = cilInputDate;
 		this.cilRegdate = cilRegdate;
 		this.costDetailPk = costDetailPk;
+		this.costDetailList = costDetailList;
 	}
 
 	public int getCilPk() {
@@ -235,14 +240,19 @@ public class CarcassInputListVO {
 	}
 
 	public List<String> getCostDetailPk() {
-		List<String> costDetailList = new ArrayList<String>();
-		String [] costDetailSplit = this.costDetailPkList.split(",");
-		
-		for(int i = 0; i < costDetailSplit.length; i++) {
-			costDetailList.add(costDetailSplit[i]);
-		}
-		
+		return costDetailPk;
+	}
+
+	public void setCostDetailPk(List<String> costDetailPk) {
+		this.costDetailPk = costDetailPk;
+	}
+
+	public List<CostDetailVO> getCostDetailList() {
 		return costDetailList;
+	}
+
+	public void setCostDetailList(List<CostDetailVO> costDetailList) {
+		this.costDetailList = costDetailList;
 	}
 
 	@Override
@@ -256,7 +266,7 @@ public class CarcassInputListVO {
 				+ cilTransDetailFilePath + ", cilTransDetailFileExe=" + cilTransDetailFileExe
 				+ ", cilTransDetailFileOriName=" + cilTransDetailFileOriName + ", cilTransDetailFileUniqName="
 				+ cilTransDetailFileUniqName + ", cilInputDate=" + cilInputDate + ", cilRegdate=" + cilRegdate
-				+ ", costDetailPk=" + costDetailPk + "]";
+				+ ", costDetailPk=" + costDetailPk + ", costDetailList=" + costDetailList + "]";
 	}
-	
+
 }

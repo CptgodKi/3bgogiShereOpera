@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gogi.proj.classification.code.vo.CostCodeVO;
 import com.gogi.proj.paging.PaginationInfo;
 import com.gogi.proj.product.cost.vo.CostDetailVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
@@ -130,6 +131,12 @@ public class CostDetailServiceImpl implements CostDetailService{
 	public CostDetailVO selectCostDetailByCcfk(CostDetailVO cdVO) {
 		// TODO Auto-generated method stub
 		return costDetailDAO.selectCostDetailByCcfk(cdVO);
+	}
+
+	@Override
+	public List<CostDetailVO> selectCostdetailWightCostcodeByCcPk(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCostdetailWightCostcodeByCcPk(ccVO);
 	}
 
 }

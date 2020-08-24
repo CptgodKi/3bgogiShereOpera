@@ -22,6 +22,7 @@ import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
 import com.gogi.proj.product.cost_io.model.CostIoService;
 import com.gogi.proj.product.costs.model.CostsService;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 import com.gogi.proj.util.PageUtility;
 
 @Controller
@@ -335,4 +336,7 @@ public class CostController {
 		}
 		
 	}
+	
+	
+	
 }

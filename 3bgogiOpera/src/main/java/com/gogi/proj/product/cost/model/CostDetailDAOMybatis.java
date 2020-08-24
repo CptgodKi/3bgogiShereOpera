@@ -5,6 +5,7 @@ import java.util.List;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.gogi.proj.classification.code.vo.CostCodeVO;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.paging.PaginationInfo;
 import com.gogi.proj.product.cost.vo.CostDetailVO;
@@ -74,6 +75,12 @@ public class CostDetailDAOMybatis extends SqlSessionDaoSupport implements CostDe
 	public CostDetailVO selectCostDetailByCcfk(CostDetailVO cdVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(costDetail+".selectCostDetailByCcfk", cdVO);
+	}
+
+	@Override
+	public List<CostDetailVO> selectCostdetailWightCostcodeByCcPk(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(costDetail+".selectCostdetailWightCostcodeByCcPk", ccVO);
 	}
 
 }
