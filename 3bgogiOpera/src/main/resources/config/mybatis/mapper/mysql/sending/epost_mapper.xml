@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="epost">
+	<resultMap id="OrdersInfoResultMap" type="OrdersVO">
+		<id property="orSerialSpecialNumber" column="or_serial_special_number" javaType="String"/>
+		<result property="pmFk" column="pm_fk" javaType="int"/>
+		<result property="ssFk" column="ss_fk" javaType="int"/>
+		<result property="ssName" column="ss_name" javaType="String"/>
+		<result property="orBuyerId" column="or_buyer_id" javaType="String"/>
+		<result property="orBuyerName" column="or_buyer_name" javaType="String"/>
+		<result property="orBuyerAnotherName" column="or_buyer_another_name" javaType="String"/>
+		<result property="orBuyerContractNumber1" column="or_buyer_contract_number1" javaType="String"/>
+		<result property="orBuyerContractNumber2" column="or_buyer_contract_number2" javaType="String"/>
+		<result property="orReceiverName" column="or_receiver_name" javaType="String"/>
+		<result property="orProduct" column="or_product" javaType="String"/>
+		<result property="orProductType" column="or_product_type" javaType="String"/>
+		<result property="orProductOption" column="or_product_option" javaType="String"/>
+		<result property="orAmount" column="or_amount" javaType="int"/>
+		<result property="orDeliveryMessage" column="or_delivery_message" javaType="String"/>
+		<result property="orDeliveryType" column="or_delivery_type" javaType="String"/>
+		<result property="orDeliveryCompany" column="or_delivery_company" javaType="String"/>
+		<result property="orOrderNumber" column="or_order_number" javaType="String"/>
+		<result property="orProductOrderNumber" column="or_product_order_number" javaType="String"/>
+		<result property="orProductNumber" column="or_product_number" javaType="String"/>
+		<result property="orPaymentPositionType" column="or_payment_position_type" javaType="String"/>
+		<result property="orSettlementDay" column="or_settlement_day" javaType="java.sql.Timestamp"/>
+		<result property="orProductPrice" column="or_product_price" javaType="int"/>
+		<result property="orProductOptionPrice" column="or_product_option_price" javaType="int"/>
+		<result property="orDiscountPrice" column="or_discount_price" javaType="int"/>
+		<result property="orTotalPrice" column="or_total_price" javaType="int"/>
+		<result property="orTotalCost" column="or_total_cost" javaType="int"/>
+		<result property="orCheckDay" column="or_check_day" javaType="java.sql.Date"/>
+		<result property="orSendingDeadline" column="or_sending_deadline" javaType="java.sql.Date"/>
+		<result property="orSendingDay" column="or_sending_day" javaType="java.sql.Date"/>
+		<result property="orDeliveryChargeType" column="or_delivery_charge_type" javaType="String"/>
+		<result property="orDeliveryNumber" column="or_delivery_number" javaType="String"/>
+		<result property="orDeliveryPrice" column="or_delivery_price" javaType="int"/>
+		<result property="orDeliveryDiscountPrice" column="or_delivery_discount_price" javaType="int"/>
+		<result property="orReceiverContractNumber1" column="or_receiver_contract_number1" javaType="String"/>
+		<result property="orReceiverContractNumber2" column="or_receiver_contract_number2" javaType="String"/>
+		<result property="orShippingAddressNumber" column="or_shipping_address_number" javaType="String"/>
+		<result property="orShippingProvince" column="or_shipping_province" javaType="String"/>
+		<result property="orShippingAddress" column="or_shipping_address" javaType="String"/>
+		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
+		<result property="orSpecialRegionDetail" column="or_special_region_detail" javaType="boolean"/>
+		<result property="orSendingAddress" column="or_sending_address" javaType="String"/>
+		<result property="orPaymentType" column="or_payment_type" javaType="String"/>
+		<result property="orPaymentCommision" column="or_payment_commision" javaType="int"/>
+		<result property="orAnotherPaymentCommision" column="or_another_payment_commision" javaType="int"/>
+		<result property="orInflowRoute" column="or_inflow_route" javaType="String"/>
+		<result property="orRequest" column="or_request" javaType="String"/>
+		<result property="orTaxFlag" column="or_tax_flag" javaType="boolean"/>
+		<result property="orDevideFlag" column="or_devide_flag" javaType="boolean"/>
+		<result property="orRegdate" column="or_regdate" javaType="java.sql.Timestamp"/>
+		<result property="productMatchingChecking" column="product_matching_checking" javaType="boolean"/>
+		<result property="optionMatchingChecking" column="option_matching_checking" javaType="boolean"/>
+		<result property="productChecking" column="product_checking" javaType="boolean"/>
+		<result property="orCancledFlag" column="or_cancled_flag" javaType="boolean"/>
+		
+		<!-- 상품명 매칭 -->
+		<collection property="productMatchingVOList" ofType="ProductMatchingVO">
+			<id property="pmPk" column="pm_pk" javaType="int"/>
+			<result property="productFk" column="product_fk" javaType="int"/>
+			<result property="pmStoreProductName" column="pm_store_product_name" javaType="String"/>
+			<result property="pmEachFlag" column="pm_each_flag" javaType="boolean"/>
+			<result property="pmEachs" column="pm_eachs" javaType="int"/>
+			<result property="pmRegdate" column="pm_regdate" javaType="java.sql.Timestamp"/>
+			
+			<!-- 잠시 사용 중지
+			<collection property="productsVOList" ofType="ProductsVO">
+				<id property="productPk" column="product_pk" javaType="int"/>
+				<result property="cfFk" column="cf_fk" javaType="int"/>
+				<result property="productName" column="product_name" javaType="String"/>
+				<result property="productFlag" column="product_flag" javaType="boolean"/>
+			</collection> -->
+			
+			<!-- 옵션명 매칭 -->
+			<collection property="optionMatchingVOList" ofType="OptionMatchingVO">
+				<id property="omPk" column="om_pk" javaType="int"/>
+				<result property="pmFk" column="pm_fk" javaType="int"/>
+				<result property="optionFk" column="option_fk" javaType="int"/>
+				<result property="omStoreOptionName" column="om_store_option_name" javaType="String"/>
+				<result property="omOptionAmount" column="om_option_amount" javaType="int"/>
+				<result property="omOptionMultipleFlag" column="om_option_multiple_flag" javaType="boolean"/>
+				<result property="omOptionMultipleEach" column="om_option_multiple_each" javaType="int"/>
+				<result property="omOptionMultipleAmount" column="om_option_multiple_amount" javaType="int"/>
+				<result property="omCombineFlag" column="om_combine_flag" javaType="boolean"/>
+				<result property="omRegdate" column="om_regdate" javaType="java.sql.Timestamp"/>
+				
+				<!-- <collection property="optionsVOList" ofType="OptionsVO">
+					<id property="optionPk" column="option_pk" javaType="int"/>
+					<result property="optionName" column="option_name" javaType="String"/>
+			
+				</collection> -->
+				
+				<collection property="productOptionList" ofType="ProductOptionVO">
+					<id property="optionPk" column="option_pk" javaType="int"/>
+					<result property="optionName" column="option_name" javaType="String"/>
+					<result property="cfFk" column="cf_fk" javaType="int"/>
+					<result property="productPk" column="product_pk" javaType="int"/>
+					<result property="productName" column="product_name" javaType="String"/>
+					<result property="productFlag" column="product_flag" javaType="boolean"/>
+				</collection>
+				
+			</collection>
+			
+		</collection>
+		
+	</resultMap>
+
+
+	<resultMap id="deliveryInfoResultMap" type="OrdersVOList">
+		<id property="orSerialSpecialNumber" column="or_serial_special_number" javaType="String"/>
+		<result property="orBuyerId" column="or_buyer_id" javaType="String"/>
+		<result property="orBuyerName" column="or_buyer_name" javaType="String"/>
+		<result property="orBuyerAnotherName" column="or_buyer_another_name" javaType="String"/>
+		<result property="orBuyerContractNumber1" column="or_buyer_contract_number1" javaType="String"/>
+		<result property="orBuyerContractNumber2" column="or_buyer_contract_number2" javaType="String"/>
+		<result property="orReceiverName" column="or_receiver_name" javaType="String"/>
+		<result property="orReceiverContractNumber1" column="or_receiver_contract_number1" javaType="String"/>
+		<result property="orReceiverContractNumber2" column="or_receiver_contract_number2" javaType="String"/>
+		<result property="orDeliveryInvoiceNumber" column="or_delivery_invoice_number" javaType="String"/>
+		<result property="orShippingAddress" column="or_shipping_address" javaType="String"/>
+		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
+			
+		<collection property="orVoList" ofType="OrdersVO">
+			<id property="orPk" column="or_pk" javaType="int"/>
+			<result property="pmFk" column="pm_fk" javaType="int"/>
+			<result property="ssFk" column="ss_fk" javaType="int"/>
+			<result property="orProduct" column="or_product" javaType="String"/>
+			<result property="orProductType" column="or_product_type" javaType="String"/>
+			<result property="orProductOption" column="or_product_option" javaType="String"/>
+			<result property="orAmount" column="or_amount" javaType="int"/>
+			<result property="orDeliveryMessage" column="or_delivery_message" javaType="String"/>
+			<result property="orDeliveryType" column="or_delivery_type" javaType="String"/>
+			<result property="orDeliveryCompany" column="or_delivery_company" javaType="String"/>
+			<result property="orOrderNumber" column="or_order_number" javaType="String"/>
+			<result property="orProductOrderNumber" column="or_product_order_number" javaType="String"/>
+			<result property="orProductNumber" column="or_product_number" javaType="String"/>
+			<result property="orPaymentPositionType" column="or_payment_position_type" javaType="String"/>
+			<result property="orSettlementDay" column="or_settlement_day" javaType="java.sql.Timestamp"/>
+			<result property="orProductPrice" column="or_product_price" javaType="int"/>
+			<result property="orProductOptionPrice" column="or_product_option_price" javaType="int"/>
+			<result property="orDiscountPrice" column="or_discount_price" javaType="int"/>
+			<result property="orTotalPrice" column="or_total_price" javaType="int"/>
+			<result property="orTotalCost" column="or_total_cost" javaType="int"/>
+			<result property="orCheckDay" column="or_check_day" javaType="java.sql.Date"/>
+			<result property="orSendingDeadline" column="or_sending_deadline" javaType="java.sql.Date"/>
+			<result property="orSendingDay" column="or_sending_day" javaType="java.sql.Date"/>
+			<result property="orDeliveryChargeType" column="or_delivery_charge_type" javaType="String"/>
+			<result property="orDeliveryNumber" column="or_delivery_number" javaType="String"/>
+			<result property="orDeliveryPrice" column="or_delivery_price" javaType="int"/>
+			
+			<result property="orShippingAddressNumber" column="or_shipping_address_number" javaType="String"/>
+			<result property="orShippingProvince" column="or_shipping_province" javaType="String"/>
+			<result property="orSpecialRegionDetail" column="or_special_region_detail" javaType="boolean"/>
+			<result property="orSendingAddress" column="or_sending_address" javaType="String"/>
+			<result property="orPaymentType" column="or_payment_type" javaType="String"/>
+			<result property="orPaymentCommision" column="or_payment_commision" javaType="int"/>
+			<result property="orAnotherPaymentCommision" column="or_another_payment_commision" javaType="int"/>
+			<result property="orInflowRoute" column="or_inflow_route" javaType="String"/>
+			<result property="orRequest" column="or_request" javaType="String"/>
+			<result property="orTaxFlag" column="or_tax_flag" javaType="boolean"/>
+			<result property="orDevideFlag" column="or_devide_flag" javaType="boolean"/>
+			<result property="orRegdate" column="or_regdate" javaType="java.sql.Timestamp"/>
+			<result property="productMatchingChecking" column="product_matching_checking" javaType="boolean"/>
+			<result property="optionMatchingChecking" column="option_matching_checking" javaType="boolean"/>
+			<result property="productChecking" column="product_checking" javaType="boolean"/>
+			<result property="orCancledFlag" column="or_cancled_flag" javaType="boolean"/>
+			<result property="orInvFlag" column="or_Inv_flag" javaType="boolean"/>
+			
+			<!-- or_pk 를 리스트 형태로 가져옴 -->
+			<result property="orUserColumn1" column="or_user_column1" javaType="String"/>
+			
+			<!-- 상품명 매칭 -->
+			<collection property="productMatchingVOList" ofType="ProductMatchingVO">
+				<id property="pmPk" column="pm_pk" javaType="int"/>
+				<!-- <result property="productPk" column="product_pk" javaType="int"/> -->
+				<result property="pmStoreProductName" column="pm_store_product_name" javaType="String"/>
+				<result property="pmEachFlag" column="pm_each_flag" javaType="boolean"/>
+				<result property="pmEachs" column="pm_eachs" javaType="int"/>
+				<result property="pmRegdate" column="pm_regdate" javaType="java.sql.Timestamp"/>
+				
+				<!-- <collection property="productsVOList" ofType="ProductsVO">
+					<id property="productPk" column="product_pk" javaType="int"/>
+					<result property="cfFk" column="cf_fk" javaType="int"/>
+					<result property="productName" column="product_name" javaType="String"/>
+					<result property="productFlag" column="product_flag" javaType="boolean"/>
+				</collection> -->
+				
+				<!-- 옵션명 매칭 -->
+				<collection property="optionMatchingVOList" ofType="OptionMatchingVO">
+					<id property="omPk" column="om_pk" javaType="int"/>
+					<result property="pmFk" column="pm_fk" javaType="int"/>
+					<result property="optionFk" column="option_fk" javaType="int"/>
+					<result property="omStoreOptionName" column="om_store_option_name" javaType="String"/>
+					<result property="omOptionAmount" column="om_option_amount" javaType="int"/>
+					<result property="omOptionMultipleFlag" column="om_option_multiple_flag" javaType="boolean"/>
+					<result property="omOptionMultipleEach" column="om_option_multiple_each" javaType="int"/>
+					<result property="omOptionMultipleAmount" column="om_option_multiple_amount" javaType="int"/>
+					<result property="omCombineFlag" column="om_combine_flag" javaType="boolean"/>
+					<result property="omRegdate" column="om_regdate" javaType="java.sql.Timestamp"/>
+					
+					<!-- <collection property="optionsVOList" ofType="OptionsVO">
+						<id property="optionPk" column="option_pk" javaType="int"/>
+						<result property="optionName" column="option_name" javaType="String"/>
+				
+					</collection> -->
+					
+					<collection property="productOptionList" ofType="ProductOptionVO">
+						<id property="optionPk" column="option_pk" javaType="int"/>
+						<result property="optionName" column="option_name" javaType="String"/>
+						
+						<!-- cfFk로 수량 가져옴  -->
+						<result property="cfFk" column="cf_fk" javaType="int"/>
+						<result property="productPk" column="product_pk" javaType="int"/>
+						<result property="productName" column="product_name" javaType="String"/>
+						<result property="productFlag" column="product_flag" javaType="boolean"/>
+					</collection>
+					
+				</collection>
+				
+			</collection>
+			
+		</collection>
+	</resultMap>
+	
+	<!-- 우체국api 데이터 양식 -->
+	<select id="selectEpostSendingData" parameterType="OrderSearchVO" resultType="com.gogi.proj.epost.vo.RegDataVO">
+		SELECT
+			GROUP_CONCAT(inne.or_pk separator ',') AS or_pk,
+			inne.or_order_number AS order_no,
+		    inne.or_serial_special_number,
+		    inne.ss_name  AS ord_comp_nm,
+		    IF(
+			    inne.or_buyer_another_name IS NOT NULL AND inne.or_buyer_another_name != '',
+			    inne.or_buyer_another_name,
+			    inne.or_buyer_name
+		    ) AS ord_nm,
+		    inne.or_receiver_name AS rec_nm,
+		    REPLACE(inne.or_buyer_contract_number1,'-','') AS ord_tel,
+		    REPLACE(inne.or_buyer_contract_number1,'-','') AS ord_mob,
+			REPLACE(inne.or_receiver_contract_number1,'-','') AS rec_mob,
+		    REPLACE(inne.or_receiver_contract_number2,'-','') AS rec_tel,
+		    inne.or_shipping_address AS rec_addr1,
+		    inne.or_shipping_address_detail AS rec_addr2,
+		    inne.or_shipping_address_number AS rec_zip,
+		    SUBSTRING_INDEX(GROUP_CONCAT(inne.or_delivery_message), '(*1*)', 1) AS deliv_msg,
+		    GROUP_CONCAT(CONCAT_WS( '&#9;&#9;',inne.totalQuantity, inne.op_name) ORDER BY inne.op_name separator ';;') AS goods_nm
+		   -- GROUP_CONCAT(inne.totalQuantity  separator ',') AS qty
+		    
+		FROM
+			(
+		        SELECT
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+					od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+		            GROUP_CONCAT(od.or_delivery_message,'(*1*)') AS or_delivery_message,
+		            pm.pm_pk,
+					pro.product_pk,
+					pro.cf_fk,
+					CONCAT_WS( ' : ', pro.product_name, op.option_name) AS op_name,
+					pro.product_flag,
+					om.om_pk,
+					om.om_store_option_name,
+					CONCAT_WS('','&#160;&#9;',(od.or_amount * om.om_option_amount)) as totalQuantity,
+					op.option_pk,
+					SUM(od.or_total_price) AS or_total_prices,
+					od.or_total_cost
+				FROM
+					orders od
+					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
+					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options op ON om.option_fk = op.option_pk
+					INNER JOIN products pro ON pro.product_pk = op.product_fk
+				WHERE 
+					od.regi_no IS NULL
+					AND od.or_serial_special_number = #{searchKeyword}
+					AND od.or_cancled_flag = 0
+				GROUP BY
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+		            pm.pm_pk,
+		            om.om_pk,
+					pro.product_pk,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            od.or_total_cost,
+		            op_name
+		        ORDER BY 
+		    		od.or_pk DESC
+				) inne
+			GROUP BY
+			    inne.or_serial_special_number,
+			    inne.or_order_number,
+			    inne.or_buyer_another_name,
+			    inne.ss_name,
+			    inne.or_buyer_name,
+			    inne.or_receiver_name,
+			    inne.or_buyer_contract_number1,
+			    inne.or_receiver_contract_number1,
+			    inne.or_receiver_contract_number2,
+			    inne.or_shipping_address,
+			    inne.or_shipping_address_detail,
+			    inne.or_shipping_address_number
+	</select>
+	
+	<select id="selectDontGrantDelivOrderListInMonthCounting" parameterType="OrderSearchVO" resultType="int">
+
+	SELECT
+		COUNT(out_or.or_serial_special_number)
+	FROM(
+		SELECT
+			output.or_serial_special_number,
+			SUM(output.serial_count) AS total_count,
+			output.total_flag
+		FROM
+		(
+			SELECT
+				od.or_serial_special_number,
+				COUNT(od.or_serial_special_number) AS serial_count,
+				SUM(od.or_inv_flag) AS total_flag
+			FROM
+				orders od
+				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
+				LEFT JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+				LEFT JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+				LEFT JOIN options op ON om.option_fk = op.option_pk
+				LEFT JOIN options_costs_matching ocm ON ocm.option_fk = op.option_pk
+				LEFT JOIN products pro ON pro.product_pk = op.product_fk
+				<trim prefix="WHERE" prefixOverrides="AND |OR ">
+					od.or_delivery_invoice_number IS NULL
+					<![CDATA[
+						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
+					]]>
+					<if test="ssPk != 0">
+						AND od.ss_fk = #{ssPk}
+					</if>
+					<if test="insertingCount != null and !insertingCount.equals('')">
+						AND od.or_regdate = #{insertingCount}
+					</if>
+					<!-- 검색 부분 -->
+					<if test="searchKeyword != null and !searchKeyword.equals('')">					
+						<if test="searchType == 'orderNames'">
+							AND ( or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%') OR or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%') )
+						</if>
+						<if test="searchType == 'buyerName'">
+							AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverName'">
+							AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'buyerNum'">
+							AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverNum'">
+							AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'orderNum'">
+							AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'invoiceNum'">
+							AND or_delivery_invoice_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverAddress'">
+							AND or_shipping_address LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'deliveryMessage'">
+							AND or_delivery_message LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'orderProductNum'">
+							AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'storeProduct'">
+							AND ( or_product LIKE CONCAT('%',#{searchKeyword},'%') OR or_product_option LIKE CONCAT('%',#{searchKeyword},'%') )
+						</if>
+															
+						<if test="searchType == 'matchingProduct'">
+							AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'matchingOption'">
+							AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+					</if>
+			
+					<if test="searchType == 'matchingProduct'">
+						AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+					</if>
+					<if test="searchType == 'matchingOption'">
+						AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
+					</if>
+				    <![CDATA[
+						 AND od.or_cancled_flag = 0
+						 AND od.or_output_date IS NULL
+						 AND od.or_sending_deadline <= #{dateEnd}
+					]]>
+				</trim>
+			GROUP BY
+				od.or_serial_special_number
+			) output
+		GROUP BY
+			output.or_serial_special_number
+		HAVING
+			total_count = output.total_flag
+	) out_or
+
+</select>
+	
+	<select id="selectDontGrantDelivOrderListInMonth" parameterType="OrderSearchVO" resultMap="deliveryInfoResultMap">
+		SELECT
+			datas.*
+		FROM
+            (
+            SELECT
+				od.or_serial_special_number,
+				od.or_pk,
+				od.ss_fk,
+				ss.ss_name,
+				od.or_product_option,
+				od.or_product,
+				od.or_buyer_name,
+				od.or_buyer_contract_number1,
+				od.or_receiver_name,
+				od.or_receiver_contract_number1,
+				od.or_delivery_invoice_number,
+				od.or_shipping_address,
+				od.or_shipping_address_detail,
+				od.or_order_number,
+				od.or_product_order_number,
+				od.or_product_number,
+				od.or_sending_deadline,
+                SUM(od.or_inv_flag) AS or_inv_flag,
+				SUM(od.or_total_price) AS or_total_price,
+				SUM(od.or_total_cost) AS or_total_cost,
+	            pm.pm_pk,
+				pro.product_pk,
+                pro.product_name,
+				om.om_pk,
+				op.option_pk,
+                op.option_name,
+                op.option_cost_flag,
+                SUM(od.or_amount * om.om_option_amount) AS cf_fk
+			FROM
+				orders od
+				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
+				INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+				INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+				INNER JOIN options op ON om.option_fk = op.option_pk
+				INNER JOIN products pro ON pro.product_pk = op.product_fk
+				INNER JOIN excel_order_seq eo ON op.eo_fk = eo.eos_pk
+			WHERE
+				<![CDATA[
+					od.or_sending_deadline >= #{dateStart}
+				]]>
+			GROUP BY
+				od.or_serial_special_number,
+				od.or_pk,
+				od.ss_fk,
+				od.or_product_option,
+				od.or_product,
+				od.or_product_option,
+				od.or_buyer_name,
+				od.or_buyer_contract_number1,
+				od.or_receiver_name,
+				od.or_receiver_contract_number1,
+				od.or_delivery_invoice_number,
+				od.or_order_number,
+				od.or_product_order_number,
+				od.or_product_number,
+				od.or_sending_deadline,
+	            pm.pm_pk,
+	            om.om_pk,
+				pro.product_pk,
+                pro.product_name,
+				op.option_pk,
+                op.option_cost_flag,
+                op.option_name
+			) datas,
+            (
+			SELECT
+				output.or_serial_special_number
+			FROM
+				(
+				SELECT
+					od.or_serial_special_number,
+					COUNT(od.or_serial_special_number) AS serial_count,
+					SUM(od.or_inv_flag) AS total_flag 
+				FROM
+					orders od
+				<trim prefix="WHERE" prefixOverrides="AND |OR ">
+					od.or_delivery_invoice_number IS NULL
+					<![CDATA[
+						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
+					]]>	
+					<if test="ssPk != 0">
+						AND od.ss_fk = #{ssPk}
+					</if>
+					<if test="insertingCount != null and !insertingCount.equals('')">
+						AND od.or_regdate = #{insertingCount}
+					</if>
+					<!-- 검색 부분 -->
+					<if test="searchKeyword != null and !searchKeyword.equals('')">					
+						<if test="searchType == 'orderNames'">
+							AND ( or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%') OR or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%') )
+						</if>
+						<if test="searchType == 'buyerName'">
+							AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverName'">
+							AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'buyerNum'">
+							AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverNum'">
+							AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'orderNum'">
+							AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'invoiceNum'">
+							AND or_delivery_invoice_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'receiverAddress'">
+							AND or_shipping_address LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'deliveryMessage'">
+							AND or_delivery_message LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'orderProductNum'">
+							AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'storeProduct'">
+							AND ( or_product LIKE CONCAT('%',#{searchKeyword},'%') OR or_product_option LIKE CONCAT('%',#{searchKeyword},'%') )
+						</if>
+															
+						<if test="searchType == 'matchingProduct'">
+							AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+						<if test="searchType == 'matchingOption'">
+							AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
+						</if>
+					</if>
+		            <![CDATA[
+						AND od.or_cancled_flag = 0
+						AND od.or_output_date IS NULL
+						AND od.or_sending_deadline <= #{dateEnd}
+					 ]]>
+				</trim>
+				GROUP BY
+					od.or_serial_special_number
+				ORDER BY 
+					od.or_serial_special_number ASC
+				) output
+			WHERE
+				output.serial_count = output.total_flag
+			LIMIT #{firstRecordIndex}, #{recordCountPerPage} 
+            ) SELECTER
+		WHERE
+			datas.or_serial_special_number = SELECTER.or_serial_special_number
+		ORDER BY
+			datas.product_name DESC,
+			datas.option_name DESC
+	</select>
+
+	<!-- 송장번호 부여 -->
+	<update id="grantRegiNoByOrPk" parameterType="com.gogi.proj.epost.vo.RegDataVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = #{regiNo},
+			req_no = #{reqNo},
+			res_no = #{resNo},
+			regi_no = #{regiNo},
+			regi_po_nm = #{regiPoNm},
+			res_date = #{resDate},
+			price = #{price},
+			v_tel_no = #{vTelNo},
+			arr_cnpo_nm = #{arrCnpoNm},
+			deliv_po_nm = #{delivPoNm},
+			deliv_area_cd = #{delivAreaCd}
+		WHERE
+			or_pk = #{orPk}
+	</update>
+	
+	<update id="deleteDelivInfo" parameterType="String">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = null,
+			req_no = null,
+			res_no = null,
+			regi_no = null,
+			regi_po_nm = null,
+			res_date = null,
+			price = null,
+			v_tel_no = null,
+			arr_cnpo_nm = null,
+			deliv_po_nm = null,
+			deliv_area_cd = null
+		WHERE
+			or_pk IN (
+				SELECT
+					inne.or_pk
+				FROM
+                (
+					SELECT 
+						or_pk 
+					FROM
+						orders
+					WHERE
+						or_serial_special_number = #{orSerialSpecialNumber}
+                ) inne
+            )
+	</update>
+	
+	<!-- 부여받은 송장의 자세한 정보  -->
+	<select id="selectEpostInfoByOrserialspecialnumber" parameterType="String" resultType="com.gogi.proj.epost.vo.RegDataVO">
+		SELECT
+			req_no,
+		    res_no,
+		    regi_no,
+		    regi_po_nm,
+		    res_date,
+		    v_tel_no,
+		    arr_cnpo_nm,
+		    deliv_po_nm,
+		    deliv_area_cd
+		FROM 
+			orders
+		WHERE
+			or_serial_special_number = #{orSerialSpecialNumber}
+		GROUP BY
+			req_no,
+		    res_no,
+		    regi_no,
+		    regi_po_nm,
+		    res_date,
+		    v_tel_no,
+		    arr_cnpo_nm,
+		    deliv_po_nm,
+		    deliv_area_cd
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+

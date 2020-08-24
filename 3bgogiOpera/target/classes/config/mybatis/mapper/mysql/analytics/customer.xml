@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="analytics.customer">
+
+	<!-- 7일간 매출  -->
+	<select id="sevendaysTotalSalesWithoutCommision" resultType="OrdersVO" parameterType="OrderSearchVO">
+		SELECT 
+			DATE_FORMAT(or_sending_deadline, '%Y-%m-%d') AS or_sending_deadline,
+			SUM(or_total_price) AS or_total_price
+		FROM 
+			orders 
+		WHERE
+			<![CDATA[			
+				or_sending_deadline >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL -7 DAY)
+				AND or_sending_deadline <= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL +0 DAY)
+			]]> 
+		GROUP BY
+			or_sending_deadline
+		ORDER BY 
+			or_sending_deadline ASC
+	</select>
+	
+	<!-- 7일간 매출 수수료 제외 -->
+	<select id="sevendaysTotalSales" resultType="OrdersVO" parameterType="OrderSearchVO">
+		SELECT
+			DATE_FORMAT(or_sending_deadline, '%Y-%m-%d') AS or_sending_deadline,
+			SUM(or_total_price+or_payment_commision+or_another_payment_commision) AS or_total_price
+		FROM 
+			orders 
+		WHERE 
+			<![CDATA[			
+				or_sending_deadline >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL -7 DAY)
+				AND or_sending_deadline <= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL +0 DAY)
+			]]> 
+		GROUP BY 
+			or_sending_deadline
+		ORDER BY 
+			or_sending_deadline ASC
+	</select>
+	
+	<!-- 7일간 발송 건  -->
+	<select id="sevendaysSendingOut" resultType="OrdersVO" parameterType="OrderSearchVO">
+		SELECT 
+			inne.or_sending_deadline,
+			COUNT(inne.or_serial_special_number) AS total_order_count
+		FROM(    
+			SELECT 
+				or_serial_special_number,
+				DATE_FORMAT(or_sending_deadline, '%Y-%m-%d') AS or_sending_deadline
+			FROM 
+				orders 
+			WHERE 
+				<![CDATA[			
+					or_sending_deadline >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL -7 DAY)
+					AND or_sending_deadline <= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL +0 DAY)
+				]]> 
+			GROUP BY
+				or_serial_special_number,
+				or_sending_deadline
+			) inne
+		GROUP BY 
+			inne.or_sending_deadline
+		ORDER BY 
+			or_sending_deadline ASC
+	</select>
+	
+	<select id="sixMonthTotalSales" resultType="OrdersVO" parameterType="OrderSearchVO">
+		SELECT
+			inne.or_sending_deadline AS or_request,
+		    SUM(inne.or_total_price) AS or_total_price
+		FROM
+			(
+			SELECT 
+				DATE_FORMAT(or_sending_deadline, '%Y-%m') AS or_sending_deadline,
+				SUM(or_total_price+or_payment_commision+or_another_payment_commision) AS or_total_price
+			FROM 
+				orders 
+			WHERE 
+				<![CDATA[
+					or_sending_deadline >= DATE_ADD(NOW(), INTERVAL -6 MONTH)
+				]]>
+			GROUP BY
+				or_sending_deadline
+			ORDER BY 
+				or_sending_deadline ASC
+			) inne
+		GROUP BY
+			inne.or_sending_deadline
+	</select>
+	
+	<select id="selectSevenDaysOutPutProductQty" resultType="OrdersVO">
+			SELECT
+				analy.or_sending_deadline,
+				SUM(analy.or_amount * analy.om_option_amount) AS or_amount
+			FROM(
+		        SELECT
+					od.or_pk,
+					od.ss_fk,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+		            od.or_product_fk,
+		            od.or_option_fk,
+		            DATE_FORMAT(od.or_sending_deadline, '%Y-%m-%d') as or_sending_deadline,
+		            pm.pm_pk,
+					om.om_pk,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            op.option_name
+				FROM
+					orders od
+					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options op ON om.option_fk = op.option_pk
+				WHERE
+					<![CDATA[
+						od.or_sending_deadline >= DATE_ADD(NOW(), INTERVAL -12 DAY)
+                        AND od.or_sending_deadline < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+						AND od.or_cancled_flag = 0
+					]]>
+				GROUP BY
+					od.or_pk,
+					od.ss_fk,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+		            od.or_product_fk,
+		            od.or_option_fk,
+		            or_sending_deadline,
+		            pm.pm_pk,
+		            om.om_pk,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            op.option_name
+				) analy
+			GROUP BY 
+				analy.or_sending_deadline
+			ORDER BY
+				analy.or_sending_deadline DESC
+			LIMIT 0, 7
+	</select>
+	
+	<select id="selectAnalyDataList" resultType="java.util.LinkedHashMap" parameterType="OrderSearchVO">
+		
+					SELECT
+                        ${groupList}
+						<if test="totalList != null">
+							,${totalList}
+						</if>
+					FROM
+						(
+							SELECT
+								od.or_serial_special_number,
+								 IF( od.or_buyer_id IS NULL,
+								'-',
+								od.or_buyer_id) AS or_buyer_id,
+                                od.or_product,
+                                od.or_product_option,
+                                 IF( od.or_inflow_route IS NULL,
+								'-',
+								od.or_inflow_route) AS or_inflow_route,
+								 IF( od.or_payment_type IS NULL,
+								'-',
+								od.or_payment_type) AS or_payment_type,
+								 IF( od.or_payment_position_type IS NULL,
+								'-',
+								od.or_payment_position_type) AS or_payment_position_type,
+							    ss.ss_name,
+							    od.or_buyer_name,
+							    od.or_buyer_contract_number1,
+							    od.or_receiver_name,
+							    od.or_pk,
+							    od.or_total_price,
+							    od.or_total_cost,
+							    od.or_sending_deadline,
+							    od.or_sending_day,
+							    od.or_cancled_flag,
+							    od.or_refunds,
+							    op.option_name,
+							    pro.product_name,
+							    om.om_option_amount,
+								CASE
+									WHEN od.or_cancled_flag = 0
+									THEN
+										SUM(od.or_amount)
+								END AS or_amount,
+								CASE
+									WHEN od.or_cancled_flag = 1
+									THEN
+										SUM(od.or_amount)
+								END AS or_cancled_qty
+							FROM
+								orders od 
+							    INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
+							    INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+								INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+								INNER JOIN options op ON om.option_fk = op.option_pk
+								INNER JOIN products pro ON pro.product_pk = op.product_fk
+							<trim prefix="WHERE" prefixOverrides="AND |OR ">
+								od.or_cancled_flag = 0
+									AND ss_fk IN
+									<foreach collection="ssPkList" item="storeList" open="(" close=")" separator=",">
+										#{storeList}
+									</foreach>
+									<if test="datePeriod == 0">
+										<![CDATA[
+											AND ${dateType} >= DATE_FORMAT(NOW(), '%Y-%m-%d')
+											AND  ${dateType} < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+										]]>
+									</if>
+									<if test="datePeriod == 1">
+										<![CDATA[
+											AND ${dateType} >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'),INTERVAL -7 DAY)
+										]]>
+									</if>
+									<if test="datePeriod == 2">
+										<![CDATA[
+											AND ${dateType} >= #{dateStart} 
+											AND ${dateType} < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
+										]]>
+									</if>
+
+									<if test="deliveryInvoiceFlag == 1">
+										AND (or_delivery_invoice_number IS NOT NULL AND or_delivery_invoice_number != '')
+									</if>
+									<if test="deliveryInvoiceFlag == 2">
+										AND (or_delivery_invoice_number IS NULL OR or_delivery_invoice_number = '')
+									</if>
+									<if test="reservationType == 1">
+										<![CDATA[
+										AND DATE_FORMAT(od.or_sending_deadline, '%Y-%m-%d') > DATE_FORMAT(NOW(), '%Y-%m-%d')
+										]]>
+									</if>
+									<if test="reservationType == 2">
+										<![CDATA[
+										AND DATE_FORMAT(od.or_sending_deadline, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+										]]>
+									</if>
+									
+									<if test="searchKeyword != ''">									
+										<if test="searchType == 'buyerName'">
+											AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'receiverName'">
+											AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'buyerNum'">
+											AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'receiverNum'">
+											AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'orderNum'">
+											AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'invoiceNum'">
+											AND or_delivery_invoice_number LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'receiverAddress'">
+											AND (or_shipping_address_detail LIKE CONCAT('%',#{searchKeyword},'%') OR or_shipping_address LIKE CONCAT('%',#{searchKeyword},'%') )
+										</if>
+										<if test="searchType == 'deliveryMessage'">
+											AND or_delivery_message LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'orderProductNum'">
+											AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'storeProduct'">
+											AND ( or_product LIKE CONCAT('%',#{searchKeyword},'%') OR or_product_option LIKE CONCAT('%',#{searchKeyword},'%') )
+										</if>
+										
+										<if test="searchType == 'matchingProduct'">
+											AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+										<if test="searchType == 'matchingOption'">
+											AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
+										</if>
+									</if>
+								</trim>
+							GROUP BY
+								od.or_serial_special_number,
+								od.or_buyer_id,
+                                od.or_product,
+                                od.or_product_option,
+                                od.or_inflow_route,
+                                od.or_payment_type,
+                                od.or_payment_position_type,
+							    ss.ss_name,
+							    od.or_buyer_name,
+							    od.or_receiver_name,
+		                        od.or_pk,
+		                        or_amount,
+							    od.or_total_price,
+							    od.or_total_cost,
+							    od.or_sending_deadline,
+							    od.or_sending_day,
+							    od.or_cancled_flag,
+							    od.or_refunds,
+							    om.om_option_amount,
+							    op.option_name,
+							    pro.product_name
+							ORDER BY
+								od.or_settlement_day DESC
+							) inne
+						GROUP BY
+							${groupList}
+
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
