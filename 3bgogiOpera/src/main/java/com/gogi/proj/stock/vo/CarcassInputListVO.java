@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gogi.proj.product.cost.vo.CostDetailVO;
+import com.gogi.proj.product.cost.vo.CostIoVO;
 
 public class CarcassInputListVO {
 
@@ -30,9 +31,10 @@ public class CarcassInputListVO {
 	private String cilInputDate;				//입고일
 	private Timestamp cilRegdate;				//등록일
 	
+	private int ciTotalCounting;				//부분육 개수
 	//특별 추가
 	private List<String> costDetailPk;			//원가 세부사항 목록 배열값 
-	private List<CostDetailVO> costDetailList;	//원가 상세사항 입력하는 목록값
+	private List<CostIoVO> costIoList;	//원가 상세사항 입력하는 목록값
 	
 	public CarcassInputListVO() {
 		super();
@@ -44,7 +46,7 @@ public class CarcassInputListVO {
 			int cilAdminPk, String cilFilePath, String cilFileExe, String cilFileOriName, String cilFileUniqName,
 			String cilTransDetailFilePath, String cilTransDetailFileExe, String cilTransDetailFileOriName,
 			String cilTransDetailFileUniqName, String cilInputDate, Timestamp cilRegdate, List<String> costDetailPk,
-			List<CostDetailVO> costDetailList) {
+			List<CostIoVO> costIoList) {
 		super();
 		this.cilPk = cilPk;
 		this.cilAnimalProdTraceNum = cilAnimalProdTraceNum;
@@ -68,7 +70,15 @@ public class CarcassInputListVO {
 		this.cilInputDate = cilInputDate;
 		this.cilRegdate = cilRegdate;
 		this.costDetailPk = costDetailPk;
-		this.costDetailList = costDetailList;
+		this.costIoList = costIoList;
+	}
+
+	public int getCiTotalCounting() {
+		return ciTotalCounting;
+	}
+
+	public void setCiTotalCounting(int ciTotalCounting) {
+		this.ciTotalCounting = ciTotalCounting;
 	}
 
 	public int getCilPk() {
@@ -247,12 +257,12 @@ public class CarcassInputListVO {
 		this.costDetailPk = costDetailPk;
 	}
 
-	public List<CostDetailVO> getCostDetailList() {
-		return costDetailList;
+	public List<CostIoVO> getCostIoList() {
+		return costIoList;
 	}
 
-	public void setCostDetailList(List<CostDetailVO> costDetailList) {
-		this.costDetailList = costDetailList;
+	public void setCostIoList(List<CostIoVO> costIoList) {
+		this.costIoList = costIoList;
 	}
 
 	@Override
@@ -266,7 +276,7 @@ public class CarcassInputListVO {
 				+ cilTransDetailFilePath + ", cilTransDetailFileExe=" + cilTransDetailFileExe
 				+ ", cilTransDetailFileOriName=" + cilTransDetailFileOriName + ", cilTransDetailFileUniqName="
 				+ cilTransDetailFileUniqName + ", cilInputDate=" + cilInputDate + ", cilRegdate=" + cilRegdate
-				+ ", costDetailPk=" + costDetailPk + ", costDetailList=" + costDetailList + "]";
+				+ ", costDetailPk=" + costDetailPk + ", costIoList=" + costIoList + "]";
 	}
 
 }

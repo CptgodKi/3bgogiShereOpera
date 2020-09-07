@@ -119,6 +119,9 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="<c:url value='/delivery/store_order_sending.do'/>"> 판매처 송장부여 </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="<c:url value='/security/create_deliv_invoice.do'/>"> 송장 생성 테스트 </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </li>

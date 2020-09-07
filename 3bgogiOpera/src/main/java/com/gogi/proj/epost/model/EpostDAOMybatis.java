@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.paging.OrderSearchVO;
 
 @Repository
@@ -48,5 +49,11 @@ public class EpostDAOMybatis extends SqlSessionDaoSupport implements EpostDAO{
 	public int selectDontGrantDelivOrderListInMonthCounting(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(epostNameSpace+".selectDontGrantDelivOrderListInMonthCounting", osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectSelfprintTest() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(epostNameSpace+".selectSelfprintTest");
 	}
 }

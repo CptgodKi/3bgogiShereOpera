@@ -782,18 +782,19 @@ public class OrdersController {
 		for(int i = 0; i < orVOParam.getOrAmountList().size(); i++) {
 			
 			try {
-				
-				orVO = orVOParam.copy();
-				orVO.setOrProductOrderNumber("개인-"+orderNum+countNum);
-				orVO.setOrAmount(orVOParam.getOrAmountList().get(i));
-				orVO.setOrProduct(orVOParam.getOrProductList().get(i));
-				orVO.setOrProductOption(orVOParam.getOrProductOptionList().get(i));
-				orVO.setOrTotalPrice(orVOParam.getOrTotalPriceList().get(i));
-				orList.add(orVO);
-				
-				successResult++;
-				countNum++;
-				
+				if(orVOParam.getOrAmountList().get(i) != null) {					
+					orVO = orVOParam.copy();
+					orVO.setOrProductOrderNumber("개인-"+orderNum+countNum);
+					orVO.setOrAmount(orVOParam.getOrAmountList().get(i));
+					orVO.setOrProduct(orVOParam.getOrProductList().get(i));
+					orVO.setOrProductOption(orVOParam.getOrProductOptionList().get(i));
+					orVO.setOrTotalPrice(orVOParam.getOrTotalPriceList().get(i));
+					orList.add(orVO);
+					
+					successResult++;
+					countNum++;
+					
+				}
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				throw new RuntimeException("원본 파일 복사 오류", e);

@@ -79,6 +79,7 @@ public class JsonToMapUtil {
     		}else {
     			
     			try {
+    				System.out.println("key values="+resultMap.getKey());
 					Field field = object.getClass().getDeclaredField(resultMap.getKey());
 					field.setAccessible(true);
 					
@@ -90,16 +91,16 @@ public class JsonToMapUtil {
 					}
 				} catch (NoSuchFieldException e) {
 					// TODO Auto-generated catch block
-					throw new RuntimeException("Regdate의 필드값을 찾을 수 없습니다", e);
+					throw new RuntimeException("필드값을 찾을 수 없습니다", e);
 				} catch (SecurityException e) {
 					// TODO Auto-generated catch block
 					throw new RuntimeException("보안 에러", e);
 				} catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
-					throw new RuntimeException("Regdate의 필드값의 값이 적절하지 않습니다", e);
+					throw new RuntimeException(" 필드값의 값이 적절하지 않습니다", e);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					throw new RuntimeException("Regdate의 필드값을 참조할 수 없습니다", e);
+					throw new RuntimeException(" 필드값을 참조할 수 없습니다", e);
 				}
     		}
 		}

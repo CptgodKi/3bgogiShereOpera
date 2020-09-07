@@ -18,6 +18,37 @@
     			format:'Y-m-d'
     		});
     		
+    		$("button[name=fileDownload]").click(function(){
+    			var cilFileName = $(this).data("file-name");
+				var cilFilePath = $(this).data("file-path");
+				
+    				if(confirm("파일을 다운로드 하시겠습니까?")){
+    	    			
+    	    		var cilFileNameInput = document.createElement("input");
+    	    		cilFileNameInput.name="cilFileUniqName";
+    	    		cilFileNameInput.type="hidden";
+    	    		cilFileNameInput.value=cilFileName;
+    	    		
+    	    		var cilFilePathInput = document.createElement("input");
+    	    		cilFilePathInput.name="cilFilePath";
+    	    		cilFilePathInput.type="hidden";
+    	    		cilFilePathInput.value=cilFilePath;
+    	    		
+    	    			
+    	    		var fileDownloadForm =  document.createElement("form")
+    	    		fileDownloadForm.action="/stock/cil_file_download.do";
+    	    		fileDownloadForm.method="GET";
+    	    			
+    	    		fileDownloadForm.append(cilFileNameInput);
+    	    		fileDownloadForm.append(cilFilePathInput);
+    	    			
+    	    		$("#fileDownloadIframe").append(fileDownloadForm);
+    	    		fileDownloadForm.submit();
+    	    		$("#fileDownloadIframe").html("");
+
+    			}
+    		});
+    		
     				
     	});
     	function pageFunc(index){
@@ -88,40 +119,32 @@
 	                                            </tr>
 	                                        </thead>
 	                                        <tbody>
-	                                        	<c:forEach var="costDetaillist" items="${costDetailList }">                                        	
-		                                            <tr class="table-3bgogi-hover">
-		                                                <td>${costDetaillist.costCodeVOList[0].ccCodeType }</td>
-		                                                <td>${costDetaillist.cdName }</td>
-		                                                
-		                                                <td><fmt:formatNumber value="${costDetaillist.cdCost }" pattern="#,###"/>원</td>
-		                                                
-		                                                <c:if test="${costDetaillist.cdLossFlag == true }">
-		                                                	<td>${costDetaillist.cdLossRate }%</td>
-		                                                </c:if>
-		                                                <c:if test="${costDetaillist.cdLossFlag == false }">
-		                                                	<td style="color:red;">없음</td>
-		                                                </c:if>
-		                                                <td>
-		                                                	<c:if test="${costDetaillist.cdLossFlag == true }">
-		                                                		<c:set var="lossCal" value=""/>
-		                                                		<fmt:formatNumber value="${costDetaillist.cdCost + (costDetaillist.cdCost*costDetaillist.cdLossRate/100) }" pattern="#,###"/>원
-		                                                	</c:if>
-		                                                	<c:if test="${costDetaillist.cdLossFlag == false }">
-		                                                		<fmt:formatNumber value="${costDetaillist.cdCost }" pattern="#,###"/>원
-		                                                	</c:if>
-		                                                </td>
-		                                                <td>${costDetaillist.cdMeasure }</td>
-		                                                <td>
-		                                                	<c:if test="${costDetaillist.cdCompanyDiagnosis == true }">
-		                                                		제조사 : ${costDetaillist.cdManufacturer }
-		                                                	</c:if>
-		                                                	<c:if test="${costDetaillist.cdCompanyDiagnosis == false }">
-		                                                		판매처 : ${costDetaillist.cdStoreCompany }
-		                                                	</c:if>
-		                                                </td>
-		                                                <td></td>
-		                                            </tr>
-	                                        	</c:forEach>
+	                                        	<c:if test="${empty cilList }">
+	                                        		<tr>
+	                                        			<td colspan="9"> 등록된 도체값이 없습니다 </td>
+	                                        		</tr>
+	                                        	</c:if>
+	                                        	<c:if test="${!empty cilList }">
+		                                        	<c:forEach var="cillist" items="${cilList }">                                        	
+			                                            <tr class="table-3bgogi-hover">
+			                                                <td>${cillist.cilProduct }</td>
+			                                                <td>${cillist.cilQty }</td>
+			                                                <td>${cillist.cilAnimalProdTraceNum }</td>
+			                                                <td>
+			                                                	<fmt:formatNumber value="${cillist.cilWeight }" pattern="#,###"/> g
+			                                                </td>
+			                                                <td>${cillist.cilPurchaseStore }</td>
+			                                                <td>
+			                                                	<fmt:formatNumber value="${cillist.cilPurchasePrice }" pattern="#,###"/> 원
+			                                                </td>
+			                                                <td>${cillist.cilAdmin }</td>
+			                                                <td>
+			                                                	<button class="btn btn-success btn-xs" name="fileDownload" data-file-path="${cillist.cilTransDetailFilePath }" data-file-name="${cillist.cilFileUniqName}">${cillist.cilFileOriName }</button>
+			                                                </td>
+			                                                <td>${cillist.cilInputDate }</td>
+			                                            </tr>
+		                                        	</c:forEach>	                                        		
+	                                        	</c:if>
 	                                        </tbody>
 	                                    </table>
                                 	</div>
@@ -236,4 +259,6 @@
                  </div>
             </div>
         <!-- /page content -->
+        <iframe id="fileDownloadIframe" width="0" height="0">
+		</iframe> 
         <%@ include file="../../../inc/bottom.jsp" %>

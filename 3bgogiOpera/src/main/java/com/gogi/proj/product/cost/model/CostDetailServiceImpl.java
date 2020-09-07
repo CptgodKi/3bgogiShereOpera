@@ -9,14 +9,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gogi.proj.classification.code.vo.CostCodeVO;
+import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.paging.PaginationInfo;
 import com.gogi.proj.product.cost.vo.CostDetailVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
+import com.gogi.proj.product.cost_io.model.CostIoDAO;
 import com.gogi.proj.product.costs.model.CostsDAO;
 import com.gogi.proj.product.options.model.OptionsDAO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingListVO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingVO;
 import com.gogi.proj.product.options.vo.OptionsVO;
+import com.gogi.proj.security.AdminVO;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 
 @Service
 public class CostDetailServiceImpl implements CostDetailService{
@@ -29,6 +33,9 @@ public class CostDetailServiceImpl implements CostDetailService{
 	
 	@Autowired
 	private CostsDAO costsDao;
+	
+	@Autowired
+	private CostIoDAO costIoDao;
 	
 	@Transactional
 	@Override
@@ -137,6 +144,33 @@ public class CostDetailServiceImpl implements CostDetailService{
 	public List<CostDetailVO> selectCostdetailWightCostcodeByCcPk(CostCodeVO ccVO) {
 		// TODO Auto-generated method stub
 		return costDetailDAO.selectCostdetailWightCostcodeByCcPk(ccVO);
+	}
+
+	@Transactional
+	@Override
+	public int insertCarcassAndCostIo(AdminVO adminVO, CarcassInputListVO cilVO) {
+		// TODO Auto-generated method stub
+		if(cilVO.getCostIoList().size() == 0) return 0;
+		cilVO.setCilAdmin(adminVO.getAdminId()+"("+adminVO.getAdminName()+")");
+		cilVO.setCilAdminPk(adminVO.getAdminPk());
+		
+		int result = costDetailDAO.insertCarcass(cilVO);
+		
+		for(int i = 0; i < cilVO.getCostIoList().size(); i++) {
+			if(cilVO.getCostIoList().get(i).getCdFk() != 0) {		
+				cilVO.getCostIoList().get(i).setCilFk(cilVO.getCilPk());
+				result+=costIoDao.insertCostInputData(cilVO.getCostIoList().get(i));
+			}
+			
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<CarcassInputListVO> selectCarcassInputList(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCarcassInputList(osVO);
 	}
 
 }

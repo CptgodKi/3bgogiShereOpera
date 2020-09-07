@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.gogi.proj.matching.vo.ProductMatchingVO;
 import com.gogi.proj.product.options.vo.OptionsVO;
+import com.gogi.proj.product.products.vo.ProductOptionVO;
 import com.gogi.proj.product.products.vo.ProductsVO;
 
 public class OrdersVO implements Cloneable{
@@ -117,12 +118,16 @@ public class OrdersVO implements Cloneable{
 	private String regiPoNm;					//접수우체국
 	private String resDate;						//예약일시
 	private int price;							//예상접수요금
-	private String vTellNo;						//가상전화번호
+	private String vTelNo;						//가상전화번호
 	private String arrCnpoNm;					//도착집중국명
 	private String delivPoNm;					//배달우체국명
 	private String delivAreaCd;					//배달구구분코드
 	private int ediPk;	
-		
+	
+	
+	// 우체국 발송용
+	private List<ProductOptionVO> productOptionList;
+	
 	public OrdersVO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -155,7 +160,7 @@ public class OrdersVO implements Cloneable{
 			boolean productMatchingChecking, boolean optionMatchingChecking,
 			List<ProductMatchingVO> productMatchingVOList, List<Integer> orAmountList, List<String> orProductList,
 			List<String> orProductOptionList, List<Integer> orTotalPriceList, String reqNo, String resNo, String regiNo,
-			String regiPoNm, String resDate, int price, String vTellNo, String arrCnpoNm, String delivPoNm,
+			String regiPoNm, String resDate, int price, String vTelNo, String arrCnpoNm, String delivPoNm,
 			String delivAreaCd, int ediPk) {
 		super();
 		this.orPk = orPk;
@@ -243,13 +248,21 @@ public class OrdersVO implements Cloneable{
 		this.regiPoNm = regiPoNm;
 		this.resDate = resDate;
 		this.price = price;
-		this.vTellNo = vTellNo;
+		this.vTelNo = vTelNo;
 		this.arrCnpoNm = arrCnpoNm;
 		this.delivPoNm = delivPoNm;
 		this.delivAreaCd = delivAreaCd;
 		this.ediPk = ediPk;
 	}
 	
+	public List<ProductOptionVO> getProductOptionList() {
+		return productOptionList;
+	}
+
+	public void setProductOptionList(List<ProductOptionVO> productOptionList) {
+		this.productOptionList = productOptionList;
+	}
+
 	public boolean getOrRequestCombFlag() {
 		return orRequestCombFlag;
 	}
@@ -946,12 +959,12 @@ public class OrdersVO implements Cloneable{
 		this.price = price;
 	}
 
-	public String getvTellNo() {
-		return vTellNo;
+	public String getvTelNo() {
+		return vTelNo;
 	}
 
-	public void setvTellNo(String vTellNo) {
-		this.vTellNo = vTellNo;
+	public void setvTelNo(String vTelNo) {
+		this.vTelNo = vTelNo;
 	}
 
 	public String getArrCnpoNm() {
@@ -984,6 +997,23 @@ public class OrdersVO implements Cloneable{
 
 	public void setEdiPk(int ediPk) {
 		this.ediPk = ediPk;
+	}
+	
+	public String epostDelivSelfPrintToString() {
+		return "custNo=0004610509&reqType=1&officeSer=01&weight=2"
+				+ "&volume=30&ordCompNm=" + ssName + "&ordNm=삼형제고기&ordZip=21126" 
+				+ "&ordAddr1=인천광역시 계양구 효서로 388&ordAddr2=(작전동) 3층 삼형제고기&ordTel=050713121620&ordMob=050713121620"
+				+ "&recNm=" + orReceiverName + "&recZip=" + orShippingAddressNumber 
+				+ "&recAddr1=" + orShippingAddress 
+				+ "&recAddr2=" + (orShippingAddressDetail == null ? "" : orShippingAddressDetail)
+				+ "&recTel=" + (orReceiverContractNumber2 == null ? "" : orReceiverContractNumber2.replaceAll("-", "")) 
+				+ "&recMob=" + (orReceiverContractNumber1 == null ? "" : orReceiverContractNumber1.replaceAll("-", "")) 
+				+ "&apprNo=4003181560&payType=1"
+				+ "&microYn=N&contCd=022&goodsNm=" + (productOptionList.size() > 1 ? productOptionList.get(0).getProductName()+productOptionList.get(0).getOptionName()+" 외 "+productOptionList.size() : productOptionList.get(0).getProductName()+productOptionList.get(0).getOptionName()) 
+				+ "&goodsCd=" 
+				+ "&goosMdl=&goodsSize=&goodsColor=&qty=" + productOptionList.size()
+				+ "&orderNo=" + orSerialSpecialNumber + "&delivMsg=" + orDeliveryMessage + "&retReason=&retVisitYmd="
+				+ "&testYn=Y&printYn=Y";
 	}
 
 	@Override
@@ -1023,7 +1053,7 @@ public class OrdersVO implements Cloneable{
 				+ ", productMatchingChecking=" + productMatchingChecking + ", optionMatchingChecking="
 				+ optionMatchingChecking + ", productMatchingVOList=" + productMatchingVOList + ", reqNo=" + reqNo
 				+ ", resNo=" + resNo + ", regiNo=" + regiNo + ", regiPoNm=" + regiPoNm + ", resDate=" + resDate
-				+ ", price=" + price + ", vTellNo=" + vTellNo + ", arrCnpoNm=" + arrCnpoNm + ", delivPoNm=" + delivPoNm
+				+ ", price=" + price + ", vTelNo=" + vTelNo + ", arrCnpoNm=" + arrCnpoNm + ", delivPoNm=" + delivPoNm
 				+ ", delivAreaCd=" + delivAreaCd + ", ediPk=" + ediPk + "]";
 	}
 

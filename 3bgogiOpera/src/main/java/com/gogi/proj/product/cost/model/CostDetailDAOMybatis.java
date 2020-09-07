@@ -13,6 +13,7 @@ import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingListVO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingVO;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 
 @Repository
 public class CostDetailDAOMybatis extends SqlSessionDaoSupport implements CostDetailDAO{
@@ -22,6 +23,9 @@ public class CostDetailDAOMybatis extends SqlSessionDaoSupport implements CostDe
 	
 	//순수 원가 관련
 	private String costDetail = "cost.cost_detail";
+	
+	//도체 관련
+	private String carcass = "cost.carcass";
 	
 	@Override
 	public List<CostsVO> selectCostsPkByCostName(OptionsCostsMatchingVO ocmVO) {
@@ -81,6 +85,18 @@ public class CostDetailDAOMybatis extends SqlSessionDaoSupport implements CostDe
 	public List<CostDetailVO> selectCostdetailWightCostcodeByCcPk(CostCodeVO ccVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(costDetail+".selectCostdetailWightCostcodeByCcPk", ccVO);
+	}
+
+	@Override
+	public int insertCarcass(CarcassInputListVO cilVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(carcass+".insertCarcass", cilVO);
+	}
+
+	@Override
+	public List<CarcassInputListVO> selectCarcassInputList(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(carcass+".selectCarcassInputList", osVO);
 	}
 
 }

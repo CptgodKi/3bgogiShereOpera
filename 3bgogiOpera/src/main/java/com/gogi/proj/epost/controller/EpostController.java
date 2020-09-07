@@ -307,6 +307,16 @@ public class EpostController {
 		return "delivery/deliv_result";
 	}
 	
+	@RequestMapping(value="/create_deliv_invoice.do", method=RequestMethod.GET)
+	public String createDelivInvoice(Model model) {
+		
+		List<OrdersVO> orList = epostService.selectSelfprintTest();
+		
+		model.addAttribute("orList",orList);
+		
+		return "delivery/create_deliv_invoice";
+	}
+	
 	@RequestMapping(value="/orderIO.do", method=RequestMethod.POST)
 	public ModelAndView selectedOrdersExcelIO(@ModelAttribute OrderSearchVO osVO){
 		
@@ -398,6 +408,17 @@ public class EpostController {
 		while (rs.next()) {
 		    System.out.println(rs.getString(1));
 		}
+		return null;
+	}
+	
+	
+	
+	@RequestMapping(value="/epost/deliv_print.do", method=RequestMethod.POST, produces="application/text; charset=utf8")
+	@ResponseBody
+	public String epostDelivSendingBySelfPrint(@ModelAttribute OrderSearchVO osVO) {
+		
+		
+
 		return null;
 	}
 }

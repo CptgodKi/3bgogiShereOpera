@@ -10,6 +10,7 @@ import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingListVO;
 import com.gogi.proj.product.options.vo.OptionsCostsMatchingVO;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 
 public interface CostDetailDAO {
 
@@ -49,5 +50,29 @@ public interface CostDetailDAO {
 	 * @메소드설명 : cost_code의 pk 값으로 cost_detail 목록 가져오기
 	 */
 	public List<CostDetailVO> selectCostdetailWightCostcodeByCcPk(CostCodeVO ccVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : insertCarcass
+	 * @date : 2020. 8. 26.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @return
+	 * @메소드설명 : 도체 입력하기
+	 */
+	public int insertCarcass(CarcassInputListVO cilVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCarcassInputList
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 도체 입력 내역 가져오기
+	 */
+	public List<CarcassInputListVO> selectCarcassInputList(OrderSearchVO osVO);
 	
 }

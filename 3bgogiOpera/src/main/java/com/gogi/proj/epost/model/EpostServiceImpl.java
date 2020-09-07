@@ -1,5 +1,6 @@
 package com.gogi.proj.epost.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gogi.proj.epost.api.EpostSendingUtil;
+import com.gogi.proj.epost.controller.EpostController;
 import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.util.EmptyCheckUtil;
 
@@ -21,6 +24,12 @@ public class EpostServiceImpl implements EpostService {
 	private EpostDAO epostDao;
 
 	private static final Logger logger = LoggerFactory.getLogger(EpostServiceImpl.class);
+	
+	static final String EPOST_DELIV_SENDING = "http://ship.epost.go.kr/api.InsertOrder.jparcel";
+	
+	static final String EPOST_DELIV_SENDING_VER_2 = "http://ship.epost.go.kr/api.InsertOrder.jparcel";
+	//송장삭제
+	static final String EPOST_DELIV_DELETE = "http://ship.epost.go.kr/api.GetResCancelCmd.jparcel";
 	
 	@Override
 	public List<RegDataVO> selectEpostSendingData(OrderSearchVO osVO) {
@@ -121,5 +130,44 @@ public class EpostServiceImpl implements EpostService {
 	public int selectDontGrantDelivOrderListInMonthCounting(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return epostDao.selectDontGrantDelivOrderListInMonthCounting(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectSelfprintTest() {
+		
+		String encryptStr;
+		EpostSendingUtil esu = new EpostSendingUtil();
+		
+		List<OrdersVO> orderList = epostDao.selectSelfprintTest();
+		List<Integer> removeInt = new ArrayList<Integer>();
+		int counting = 0;
+		
+		for(OrdersVO orList : orderList) {
+			try {
+				
+				//System.out.println(orList.epostDelivSelfPrintToString());
+				//sendingData = esu.epostSending( esu.epostEncrypting(orList.epostDelivSelfPrintToString()) , EpostServiceImpl.EPOST_DELIV_SENDING);
+				
+				OrdersVO resOr = (OrdersVO)esu.selfPrintepostSendingTest(esu.epostEncrypting(orList.epostDelivSelfPrintToString()), "http://ship.epost.go.kr/api.InsertOrder.jparcel", orList);
+				
+				if(resOr.getRegiNo() == null) {
+					removeInt.add(counting);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			counting++;
+		}
+		
+		return orderList;
+	}
+
+	@Override
+	public int grantDeliveryNumber(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		
+		
+		return 0;
 	}
 }

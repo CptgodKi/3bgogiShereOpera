@@ -227,6 +227,36 @@
 		</collection>
 	</resultMap>
 	
+	
+	<resultMap id="renewalDeliveryInfoResultMap" type="OrdersVO">
+		<id property="orSerialSpecialNumber" column="or_serial_special_number" javaType="String"/>
+		<result property="ssName" column="ss_name" javaType="String"/>
+		<result property="orBuyerName" column="or_buyer_name" javaType="String"/>
+		<result property="orBuyerAnotherName" column="or_buyer_another_name" javaType="String"/>
+		<result property="orBuyerContractNumber1" column="or_buyer_contract_number1" javaType="String"/>
+		<result property="orBuyerContractNumber2" column="or_buyer_contract_number2" javaType="String"/>
+		<result property="orReceiverName" column="or_receiver_name" javaType="String"/>
+		<result property="orReceiverContractNumber1" column="or_receiver_contract_number1" javaType="String"/>
+		<result property="orReceiverContractNumber2" column="or_receiver_contract_number2" javaType="String"/>
+		<result property="orShippingAddressNumber" column="or_shipping_address_number" javaType="String"/>
+		<result property="orShippingAddress" column="or_shipping_address" javaType="String"/>
+		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
+		<result property="orSendingAddress" column="or_sending_address" javaType="String"/>
+		<result property="orDeliveryMessage" column="or_delivery_message" javaType="String"/>
+			
+			<collection property="productOptionList" ofType="ProductOptionVO">
+				<id property="productPk" column="or_pk" javaType="int"/>
+				<result property="optionPk" column="option_pk" javaType="int"/>
+				<result property="optionName" column="option_name" javaType="String"/>
+				
+				<!-- another_option_qty 로 수량 가져옴  -->
+				<result property="anotherOptionQty" column="another_option_qty" javaType="int"/>
+				<result property="productName" column="product_name" javaType="String"/>
+				<result property="productFlag" column="product_flag" javaType="boolean"/>
+			</collection>
+	</resultMap>
+	
+	
 	<!-- 우체국api 데이터 양식 -->
 	<select id="selectEpostSendingData" parameterType="OrderSearchVO" resultType="com.gogi.proj.epost.vo.RegDataVO">
 		SELECT
@@ -684,6 +714,123 @@
 		    deliv_area_cd
 	</select>
 	
+	
+	<select id="selectSelfprintTest" resultMap="renewalDeliveryInfoResultMap">
+			SELECT
+				inne.or_pk,
+                INNE.or_serial_special_number,
+                INNE.ss_name,
+                INNE.or_buyer_name,
+                INNE.or_buyer_another_name,
+                INNE.or_receiver_name,
+                INNE.or_shipping_address_number,
+                INNE.or_shipping_address,
+                INNE.or_shipping_address_detail,
+                INNE.or_receiver_contract_number1,
+		        INNE.or_receiver_contract_number2,
+                GROUP_CONCAT(INNE.or_delivery_message separator ','),
+                INNE.product_name,
+                INNE.option_name,
+                INNE.option_pk,
+                SUM(INNE.totalQuantity) AS another_option_qty
+			FROM(
+                
+                SELECT
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+					od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+                    GROUP_CONCAT(od.or_delivery_message separator ',') AS or_delivery_message,
+		            pm.pm_pk,
+					pro.product_pk,
+                    pro.product_name,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_pk,
+					om.om_store_option_name,
+					(od.or_amount * om.om_option_amount) as totalQuantity,
+					op.option_pk,
+                    op.option_name
+				FROM
+					orders od
+					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
+					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options op ON om.option_fk = op.option_pk
+					INNER JOIN products pro ON pro.product_pk = op.product_fk
+				WHERE 
+					od.regi_no IS NULL
+					<![CDATA[					
+						AND od.or_regdate >= '2020-09-07 11:00:00' 
+					]]>
+					AND od.or_cancled_flag = 0
+				GROUP BY
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+                    od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+		            pm.pm_pk,
+		            om.om_pk,
+					pro.product_pk,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            op.option_name
+				ORDER BY
+					od.or_pk
+			) INNE
+		GROUP BY
+			inne.or_pk,
+			INNE.or_serial_special_number,
+			INNE.ss_name,
+			INNE.or_buyer_name,
+			INNE.or_buyer_another_name,
+			INNE.or_receiver_name,
+			INNE.or_shipping_address_number,
+			INNE.or_shipping_address,
+			INNE.or_shipping_address_detail,
+			INNE.or_receiver_contract_number1,
+		    INNE.or_receiver_contract_number2,
+			INNE.product_name,
+            INNE.option_pk,
+			INNE.option_name
+	</select>
 </mapper>
 
 

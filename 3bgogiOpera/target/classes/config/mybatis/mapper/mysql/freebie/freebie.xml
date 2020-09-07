@@ -182,7 +182,6 @@
 				ori_od.or_buyer_contract_number2,
 				ori_od.or_receiver_name,
 				ori_od.or_delivery_type,
-				ori_od.or_order_number,
 				ori_od.or_payment_position_type,
 				ori_od.or_settlement_day,
 				ori_od.or_check_day,
@@ -217,8 +216,8 @@
 						orders
 					WHERE
 						<![CDATA[
-						or_sending_deadline >= #{fbMinDate}
-						AND or_sending_deadline < DATE_FORMAT(DATE_ADD(#{fbMaxDate}, INTERVAL 1 DAY), '%Y-%m-%d')
+						or_regdate >= #{fbMinDate}
+						AND or_regdate < DATE_FORMAT(DATE_ADD(#{fbMaxDate}, INTERVAL 1 DAY), '%Y-%m-%d') 
 						AND or_devide_flag = 0
 						AND or_output_flag = 0
 						AND (or_delivery_invoice_number IS NULL OR or_delivery_invoice_number = '' )
@@ -284,7 +283,6 @@
 				ori_od.or_buyer_contract_number2,
 				ori_od.or_receiver_name,
 				ori_od.or_delivery_type,
-				ori_od.or_order_number,
 				ori_od.or_payment_position_type,
 				ori_od.or_settlement_day,
 				ori_od.or_check_day,

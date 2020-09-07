@@ -19,7 +19,13 @@
     <script type="text/javascript">
     
     	$(function(){
-    		
+    		$("button[name=deleteAddrKeyword]").click(function(){
+    			
+    			if(confirm("해당 키워드를 삭제하시겠습니까?")){
+    				var eakPk = $(this).val();
+    				location.href="<c:url value='/order/config/delete_addr_keyword.do?eakPk="+eakPk+"'/>";
+    			}
+    		});
     		
     		
     	});
@@ -62,7 +68,7 @@
 	                        		<tr>
 		                            	<th scope="row">${keyWord.eakWord }</th>
 		                                <td>
-		                                	<button class="btn btn-block btn-danger btn-xs" value="${keyWord.eakPk }"> 삭제 </button>
+		                                	<button class="btn btn-block btn-danger btn-xs" name="deleteAddrKeyword" value="${keyWord.eakPk }"> 삭제 </button>
 		                                </td>
 		                            </tr>	
 	                        	</c:forEach>                        		

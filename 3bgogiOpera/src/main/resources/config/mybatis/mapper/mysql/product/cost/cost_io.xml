@@ -42,21 +42,25 @@
 	<insert id="insertCostInputData" parameterType="CostIoVO">
 		INSERT INTO cost_io(
 			cd_fk, 
+			cil_fk,
 			ci_price, 
 			ci_weight, 
 			ci_animal_prod_trace_num, 
 			ci_abattoir, 
 			ci_country_of_origin, 
 			ci_level, 
+			ci_marbling_level,
 			ci_items_manuf_num)
 		VALUES(
 			#{cdFk},
+			#{cilFk},
 			#{ciPrice},
 			#{ciWeight},
 			#{ciAnimalProdTraceNum},
 			#{ciAbattoir},
 			#{ciCountryOfOrigin},
 			#{ciLevel},
+			#{ciMarblingLevel},
 			#{ciItemsManufNum}
 			)
 	</insert> 

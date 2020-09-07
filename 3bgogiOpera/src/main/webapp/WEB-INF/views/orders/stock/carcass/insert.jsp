@@ -4,6 +4,9 @@
     <%@ include file="../../../inc/top_nav.jsp" %>
     <script type="text/javascript">
     	$(function(){
+    		
+    		var costIoCounting = 0;
+    		
     		$('#cilInputDate').datetimepicker({
     			timepicker:false,
     			lang:'kr',
@@ -49,6 +52,15 @@
     			var costDetail = $("#cdList").val();
     			var costDetailName = $("#cdList option:selected").text();
     			
+    			var ciLevel = $("#carcassLevel").val();
+    			var ciAnimalProdTraceNum = $("#cilAnimalProdTraceNum").val();
+    			
+    			
+    			if(ciLevel == ''){
+    				alert("등급을 입력해주세요");
+    				return false;
+    			}
+    			
     			var innerHTML = "";
     			
     			innerHTML+='<div class="form-group row">'
@@ -56,21 +68,30 @@
 	            	+'<div class="col-12 col-sm-8 col-lg-6">'  	
 	                	+'<div class="input-group">'
 	                        +'<div class="input-group-prepend">'
-								+'<input class="form-control" type="text"  name="ccValues" readonly="readonly" value="'+ccCodeType+' [ '+costDetailName+' ]">'
-								+'<input class="form-control" type="hidden"  name="cdFk" readonly="readonly" value="'+costDetail+'">'
+								+'<input class="form-control" type="text"  name="ccValues" readonly="readonly" value="'+ccCodeType+' [ '+costDetailName+' ] '+ciLevel+' 등급">'
+								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].cdFk" value="'+costDetail+'">'
+								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciAnimalProdTraceNum" value="'+ciAnimalProdTraceNum+'">'
+								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciCountryOfOrigin" value="국내산">'
+								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciLevel" value="'+ciLevel+'">'
 	                        +'</div>'
-	                        +'<input class="form-control" type="text"  name="cdList" placeHolder="무게를 입력해주세요">'
+	                        +'<input class="form-control" type="text"  name="costIoList['+costIoCounting+'].ciWeight" placeHolder="무게를 입력해주세요">'
+	                        +'<input class="form-control" type="text"  name="costIoList['+costIoCounting+'].ciMarblingLevel" placeHolder="마블링 등급">'
 	                        +'<div class="input-group-append">'
-	                            +'<button type="button" class="btn btn-danger"> 삭제 </button>'
+	                            +'<button type="button" class="btn btn-danger deleteCarcassBtn"> 삭제 </button>'
 	                        +'</div>'
 	                    +'</div>'
 	            	+'</div>'
 	            +'</div>';
 	            
 	            $("#divLine").after(innerHTML);
-
+	            
+	            costIoCounting++;
     		});
     		
+    		$(document).on("click", ".deleteCarcassBtn", function(){
+    			$(this).parent().parent().parent().parent().remove();
+    			
+    		});
 	
     	});
 
@@ -118,7 +139,7 @@
                             <div class="card">
                                 <h5 class="card-header"> 도체 상세 입력</h5>
                                 <div class="card-body">
-                                    <form name="insertCarcassForm" id="insertCarcassForm" action="" method="post">
+                                    <form name="insertCarcassForm" id="insertCarcassForm" action="<c:url value='/stock/carcass/insert.do'/>" method="post" enctype="multipart/form-data">
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 품목명 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
@@ -140,7 +161,7 @@
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 구매가 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
-                                                <input type="number" placeholder="구매처를 입력해주세요" class="form-control" id="cilPurchasePrice" name="cilPurchasePrice" value="">
+                                                <input type="number" placeholder="구매가를 입력해주세요" class="form-control" id="cilPurchasePrice" name="cilPurchasePrice" value="">
                                             </div>
                                         </div>
                                         
@@ -157,7 +178,12 @@
                                                 <input type="text" placeholder="도체 번호를 입력해주세요" class="form-control" id="cilNum" name="cilNum" value="">
                                             </div>
                                         </div>
-                                        
+                                        <div class="form-group row">
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 등급 </label>
+                                            <div class="col-12 col-sm-8 col-lg-6">
+                                                <input type="text" placeholder="등급을 입력해주세요" class="form-control" id="carcassLevel" value="">
+                                            </div>
+                                        </div>
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 두수 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
@@ -199,7 +225,9 @@
 				                                        	<option value="0">원가 목록</option>
 											                <c:if test="${!empty ccList }">
 											                	<c:forEach var="cclist" items="${ccList }">
-											                		<option value="${cclist.ccPk }">${cclist.ccCodeType }</option>
+											                		<c:if test="${cclist.ccPk == 1 or cclist.ccPk == 2 }">											                		
+												                		<option value="${cclist.ccPk }">${cclist.ccCodeType }</option>
+											                		</c:if>
 											                	</c:forEach>
 											                </c:if>
 											                <c:if test="${empty ccList }">
@@ -220,7 +248,7 @@
                                         <hr id="divLine">
                                         <div class="form-group row text-right">
                                             <div class="col col-sm-10 col-lg-9 offset-sm-1 offset-lg-0">
-                                                <button type="button" class="btn btn-space btn-primary">저장하기</button>
+                                                <button type="submit" class="btn btn-space btn-primary">저장하기</button>
                                             </div>
                                         </div>
                                     </form>

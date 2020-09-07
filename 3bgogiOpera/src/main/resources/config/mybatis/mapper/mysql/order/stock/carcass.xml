@@ -4,6 +4,136 @@
 
 <mapper namespace="cost.carcass">
 	
+	<resultMap type="CarcassInputListVO" id="carcassInputListResultMap">
+		<id property="cilPk" column="cil_pk" javaType="int"/>
+		<result property="cilAnimalProdTraceNum" column="cil_animal_prod_trace_num" javaType="String"/>
+		<result property="cilPurchaseStore" column="cil_purchase_store" javaType="String"/>
+		<result property="cilPurchasePrice" column="cil_purchase_price" javaType="int"/>
+		<result property="cilWeight" column="cil_weight" javaType="int"/>
+		<result property="cilNum" column="cil_num" javaType="String"/>
+		<result property="cilProduct" column="cil_product" javaType="String"/>
+		<result property="cilQty" column="cil_qty" javaType="int"/>
+		<result property="cilAdmin" column="cil_admin" javaType="String"/>
+		<result property="cilAdminPk" column="cil_admin_pk" javaType="int"/>
+		<result property="cilFilePath" column="cil_file_path" javaType="String"/>
+		<result property="cilFileExe" column="cil_file_exe" javaType="String"/>
+		<result property="cilFileOriName" column="cil_file_ori_name" javaType="String"/>
+		<result property="cilFileUniqName" column="cil_file_uniq_name" javaType="String"/>
+		<result property="cilTransDetailFilePath" column="cil_trans_detail_file_path" javaType="String"/>
+		<result property="cilTransDetailFileExe" column="cil_trans_detail_file_exe" javaType="String"/>
+		<result property="cilTransDetailFileOriName" column="cil_trans_detail_file_ori_name" javaType="String"/>
+		<result property="cilTransDetailFileUniqName" column="cil_trans_detail_file_uniq_name" javaType="String"/>
+		<result property="cilInputDate" column="cil_input_date" javaType="String"/>
+		<result property="cilRegdate" column="cil_regdate" javaType="java.sql.Timestamp"/>
+		<result property="ciTotalCounting" column="ci_total_counting" javaType="int"/>
+		
+		<collection property="costIoList"  ofType="CostIoVO">
+			<id property="ciPk" column="ci_pk" javaType="int"/>
+			<result property="ciWeight" column="ciWeight" javaType="int"/>
+			<result property="ciLevel" column="ci_level" javaType="String"/>
+			<result property="ciMarbling_level" column="ci_marbling_level" javaType="String"/>
+		</collection>
+	</resultMap>
+	
+	<insert id="insertCarcass" useGeneratedKeys="true" keyProperty="cilPk" parameterType="CarcassInputListVO">
+		INSERT INTO
+			carcass_input_list(
+				cil_animal_prod_trace_num,
+				cil_purchase_store,
+				cil_purchase_price,
+				cil_weight,
+				cil_num,
+				cil_product,
+				cil_qty,
+				cil_admin,
+				cil_admin_pk,
+				cil_file_path,
+				cil_file_exe,
+				cil_file_ori_name,
+				cil_file_uniq_name,
+				cil_trans_detail_file_path,
+				cil_trans_detail_file_exe,
+				cil_trans_detail_file_ori_name,
+				cil_trans_detail_file_uniq_name,
+				cil_input_date
+			)
+		VALUES(
+			#{cilAnimalProdTraceNum},
+			#{cilPurchaseStore},
+			#{cilPurchasePrice},
+			#{cilWeight},
+			#{cilNum},
+			#{cilProduct},
+			#{cilQty},
+			#{cilAdmin},
+			#{cilAdminPk},
+			#{cilFilePath},
+			#{cilFileExe},
+			#{cilFileOriName},
+			#{cilFileUniqName},
+			#{cilTransDetailFilePath},
+			#{cilTransDetailFileExe},
+			#{cilTransDetailFileOriName},
+			#{cilTransDetailFileUniqName},
+			#{cilInputDate}
+		)
+	</insert>
+	
+	<select id="selectCarcassInputList" parameterType="OrderSearchVO" resultType="CarcassInputListVO">
+		SELECT
+		    cil.cil_pk,
+		    cil.cil_animal_prod_trace_num,
+		    cil.cil_purchase_store,
+		    cil.cil_purchase_price,
+		    cil.cil_num,
+		    cil.cil_weight,
+		    cil.cil_product,
+		    cil.cil_qty,
+		    cil.cil_admin,
+		    cil.cil_admin_pk,
+		    cil.cil_file_path,
+		    cil.cil_file_exe,
+		    cil.cil_file_ori_name,
+		    cil.cil_file_uniq_name,
+		    
+		    cil.cil_trans_detail_file_path,
+		    cil.cil_trans_detail_file_exe,
+		    cil.cil_trans_detail_file_ori_name,
+		    cil.cil_trans_detail_file_uniq_name,
+		    
+		    cil.cil_input_date,
+		    cil.cil_regdate,
+		    
+		    COUNT(ci.ci_pk) AS ci_total_counting
+		FROM
+			carcass_input_list cil
+		    INNER JOIN cost_io ci ON cil.cil_pk = ci.cil_fk
+		    INNER JOIN cost_detail cd ON cd.cd_pk = ci.cd_fk
+		    INNER JOIN cost_code cc ON cc.cc_pk = cd.cc_fk
+		GROUP BY
+			cil.cil_pk,
+		    cil.cil_animal_prod_trace_num,
+		    cil.cil_purchase_store,
+		    cil.cil_purchase_price,
+		    cil.cil_num,
+		    cil.cil_weight,
+		    cil.cil_product,
+		    cil.cil_qty,
+		    cil.cil_admin,
+		    cil.cil_admin_pk,
+		    cil.cil_file_path,
+		    cil.cil_file_exe,
+		    cil.cil_file_ori_name,
+		    cil.cil_file_uniq_name,
+		    
+		    cil.cil_trans_detail_file_path,
+		    cil.cil_trans_detail_file_exe,
+		    cil.cil_trans_detail_file_ori_name,
+		    cil.cil_trans_detail_file_uniq_name,
+		    
+		    cil.cil_input_date,
+		    cil.cil_regdate
+	</select>
 
 </mapper>
 

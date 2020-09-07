@@ -1,6 +1,7 @@
 package com.gogi.proj.stock.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -361,14 +362,59 @@ public class StockController {
 	}
 	
 	
+	/**
+	 * 
+	 * @MethodName : carcassListGet
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 입력 목록 페이지 
+	 */
 	@RequestMapping(value="/carcass/list.do", method=RequestMethod.GET)
 	public String carcassListGet(@ModelAttribute OrderSearchVO osVO, Model model) {
 		
+		List<CarcassInputListVO> cilList = cdService.selectCarcassInputList(osVO);
+		
+		model.addAttribute("cilList", cilList);
 		model.addAttribute("osVO", osVO);
 		
 		return "orders/stock/carcass/list";
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : cilFileDownload
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param request
+	 * @param cilVO
+	 * @return
+	 * @메소드설명 : 
+	 */
+	@RequestMapping(value="/cil_file_download.do", method=RequestMethod.GET)
+	public ModelAndView cilFileDownload(HttpServletRequest request, @ModelAttribute CarcassInputListVO cilVO) {
+		
+		File file = new File(cilVO.getCilFilePath(), cilVO.getCilFileUniqName());
+		 
+		Map<String, Object> fileMap = new HashMap<String, Object>();
+		fileMap.put("myfile", file);
+		ModelAndView mav = new ModelAndView("downloadView", fileMap);
+		
+		return mav;
+	}
+	
+	/**
+	 * 
+	 * @MethodName : insertCarcassGet
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 입력 페이지 들어가기
+	 */
 	@RequestMapping(value="/carcass/insert.do", method=RequestMethod.GET)
 	public String insertCarcassGet(Model model) {
 		
@@ -379,6 +425,16 @@ public class StockController {
 		return "orders/stock/carcass/insert";
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : selectCostDetail
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param ccVO
+	 * @return
+	 * @메소드설명 : 도체 입력페이지에서 한우, 한돈의 부분육 종류 목록 가져오기 ajax
+	 */
 	@RequestMapping(value="/carcass/select_cost_detail.do", method=RequestMethod.GET)
 	@ResponseBody
 	public List<CostDetailVO> selectCostDetail(@ModelAttribute CostCodeVO ccVO){
@@ -386,11 +442,63 @@ public class StockController {
 		return cdService.selectCostdetailWightCostcodeByCcPk(ccVO);
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : insertCarcassPost
+	 * @date : 2020. 8. 27.
+	 * @author : Jeon KiChan
+	 * @param request
+	 * @param cilVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 입력하기
+	 */
 	@RequestMapping(value="/carcass/insert.do", method=RequestMethod.POST)
-	public String insertCarcassPost(@ModelAttribute CarcassInputListVO cilVO, Model model) {
+	public String insertCarcassPost(HttpServletRequest request, @ModelAttribute CarcassInputListVO cilVO, Model model) {
 		
-		logger.info("cilVO toString() => {}", cilVO.toString()); 
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
-		return null;
+		AdminVO adminVO = (AdminVO)auth.getPrincipal();
+		
+		logger.info("cilVO toString() => {}", cilVO.toString());
+		
+		int result = 0;
+		
+		String msg = "도체 등록 실패";
+		String url = "/stock/carcass/list.do";
+		
+		try {
+			
+			List<Map<String, Object>> fileList = fileUploadUtil.multiFileupload(request, FileuploadUtil.CARCASS_FILE);
+			
+			for(int i = 0; i < fileList.size(); i++) {
+				
+				if(i == 0) {
+					cilVO.setCilFileOriName(fileList.get(i).get("oriFileName")+"");
+					cilVO.setCilFileUniqName(fileList.get(i).get("uniqFileName")+"");
+					cilVO.setCilFileExe(fileList.get(i).get("fileExtType")+"");
+					cilVO.setCilFilePath(fileList.get(i).get("filePath")+"");
+				}else {
+					cilVO.setCilTransDetailFileOriName(fileList.get(i).get("oriFileName")+"");
+					cilVO.setCilTransDetailFileUniqName(fileList.get(i).get("uniqFileName")+"");
+					cilVO.setCilTransDetailFileExe(fileList.get(i).get("fileExtType")+"");
+					cilVO.setCilTransDetailFilePath(fileList.get(i).get("filePath")+"");
+				}
+			}
+			
+			result = cdService.insertCarcassAndCostIo(adminVO, cilVO);
+			
+			if(result > 0 ) msg = "도체 등록 완료 ";
+			
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException("파일 업로드 실패", e);
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
 	}
 }

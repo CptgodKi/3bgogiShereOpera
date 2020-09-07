@@ -126,9 +126,13 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 	    accessIpList = new ArrayList<String>();
 	    
 	    
+	    
 	    accessIpList.add("182.220.39.22");
+	    accessIpList.add("223.62.172.222");
+	    accessIpList.add("223.39.150.84");
 	    accessIpList.add("220.79.1.99");
 	    accessIpList.add("127.0.0.1");
+	    accessIpList.add("183.78.215.97");
 	    accessIpList.add("175.223.38.74");
 	    accessIpList.add("192.168.0.0~192.168.0.99");
 

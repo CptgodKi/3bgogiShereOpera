@@ -133,7 +133,7 @@ public class AligoSendingForm {
 		return aligoVo;
 	}
 	
-	private static String get(String apiUrl, Map<String, String> requestHeaders, String methodType){
+	public String get(String apiUrl, Map<String, String> requestHeaders, String methodType){
         MultipartEntityBuilder  builder = MultipartEntityBuilder.create();
 		
 		builder.setBoundary(boundary);
