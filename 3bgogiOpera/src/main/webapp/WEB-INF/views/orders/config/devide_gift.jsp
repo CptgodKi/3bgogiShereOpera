@@ -74,18 +74,23 @@ body {
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
                                 <h5 class="card-header"> 선물세트 엑셀로 나누기 </h5>
                                 <div class="card-body">
-                                    <form id="form" method="post" action="<c:url value='/orders/order_page.do'/>" enctype="multipart/form-data">
+                                    <form id="form" method="POST" action="<c:url value='/orders/devide/gift.do'/>" enctype="multipart/form-data">
                                     	<input type="hidden" name="orPk" value="${osVO.orPk }" id="orPk">
+                                    	
                                         <div class="input-group mb-3">
-                                        	<input type="file" class="form-control">
+                                        	<input type="file" name="excelfile" class="form-control">
 	                                        <div class="input-group-append be-addon">
-	                                        	<button type="button" type="button" class="btn btn-success" > 해당 엑셀 파일로 나누기 </button>
+	                                        	<input type="submit" class="btn btn-success" value="해당 엑셀 파일로 나누기">
+	                                        	<!-- <button type="button" type="submit" class="btn btn-success" > 해당 엑셀 파일로 나누기 </button> -->
 	                                        </div>
                                         </div>
+                                        
+                                        
                                     </form>
                                 </div>
                             </div>
@@ -93,7 +98,6 @@ body {
                         
 					</div>
 	</div>
+	
 </body>
-<script
-	src="${pageContext.request.contextPath}/resources/libs/js/renewal_matching_manage.js"></script>
 </html>

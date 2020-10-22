@@ -276,4 +276,51 @@ public interface OrdersDAO {
 	 * @메소드설명 : 복수 상품이 매칭된 주문서 상품 목록 및 수량 가져오기
 	 */
 	public List<ProductOptionVO> selectOrdersMatchingProductByOrPk(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateExcelDivOrders
+	 * @date : 2020. 9. 28.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 대량 엑셀파일로 주문서를 넣은 후 취소 및 확인 작업
+	 */
+	public int updateExcelDivOrders(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfo
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 새로운 cs 검색 방법
+	 */
+	public List<OrdersVO> newSearchCustomerOrderInfo(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfoCounting
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 새로운 cs 검색 방법
+	 */
+	public int newSearchCustomerOrderInfoCounting(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfoToExcelFile
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : cs 검색 결과 엑셀 파일 다운로드
+	 */
+	public List<OrdersVO> newSearchCustomerOrderInfoToExcelFile(OrderSearchVO osVO);
 }

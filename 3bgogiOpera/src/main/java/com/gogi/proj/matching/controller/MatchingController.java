@@ -5,9 +5,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +32,7 @@ import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.product.products.model.ProductsService;
 import com.gogi.proj.product.products.vo.ProductsVO;
+import com.gogi.proj.security.AdminVO;
 import com.gogi.proj.util.PageUtility;
 
 @Controller
@@ -105,10 +110,11 @@ public class MatchingController {
 	
 	
 	@RequestMapping(value="/products_matching.do", method=RequestMethod.GET)
-	public String orderProductMatchingCheck(@ModelAttribute OrderSearchVO orderSearchVO, Model model) {
+	public String orderProductMatchingCheck(HttpServletRequest request , @ModelAttribute OrderSearchVO orderSearchVO, Model model) {
 		
 		if(orderSearchVO.getDateType() == null) {
 			orderSearchVO.setDateType("or_regdate");
+			orderSearchVO.setDatePeriod(1);
 		}
 		
 		if(orderSearchVO.getDateStart() == null) {
@@ -126,7 +132,10 @@ public class MatchingController {
 			
 		}
 		
-		matchingService.matchingsProductAndOrders();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
 		
 		int NotmatchingOrdersResult = ordersService.countingNotMatchingedOrders(orderSearchVO);
 		orderSearchVO.setTotalRecord(NotmatchingOrdersResult);
@@ -155,10 +164,11 @@ public class MatchingController {
 	 * @메소드설명 : 옵션 미매칭 페이지 보여주기
 	 */
 	@RequestMapping(value="/option_matching.do", method=RequestMethod.GET)
-	public String matchingBeforeOptionPageGet(@ModelAttribute OrderSearchVO orderSearchVO, Model model) {
+	public String matchingBeforeOptionPageGet(HttpServletRequest request, @ModelAttribute OrderSearchVO orderSearchVO, Model model) {
 		
 		if(orderSearchVO.getDateType() == null) {
 			orderSearchVO.setDateType("or_regdate");
+			orderSearchVO.setDatePeriod(1);
 		}
 		
 		if(orderSearchVO.getDateStart() == null) {
@@ -194,7 +204,10 @@ public class MatchingController {
 		model.addAttribute("order_process", 3);
 		
 		//매칭 및 원가 적용
-		matchingService.matchingsProductAndOrders();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
 		
 		return "orders/checking_order_option_matching";
 	}
@@ -221,7 +234,7 @@ public class MatchingController {
 	 */
 	@RequestMapping(value="/product_matching.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean matchingPagePost(@ModelAttribute ProductMatchingVO pmVO ) {
+	public boolean matchingPagePost(HttpServletRequest request,@ModelAttribute ProductMatchingVO pmVO ) {
 		
 		logger.info("pmVO result = {}", pmVO.toString());
 		boolean sendMessage = false;
@@ -231,7 +244,10 @@ public class MatchingController {
 			sendMessage = false;
 		}else {
 			sendMessage = true;
-			matchingService.matchingsProductAndOrders();
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			
+			AdminVO adminVo = (AdminVO)auth.getPrincipal();
+			matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
 		}
 		
 		return sendMessage;
@@ -239,9 +255,12 @@ public class MatchingController {
 	
 	@RequestMapping(value="/product_sequence.do", method=RequestMethod.GET)
 	@ResponseBody
-	public boolean allProductMatchingSequence() {
+	public boolean allProductMatchingSequence(HttpServletRequest request) {
 		
-		matchingService.matchingsProductAndOrders();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
 		return true;
 	}
 	
@@ -249,6 +268,11 @@ public class MatchingController {
 	@ResponseBody
 	public boolean matchingOptionPagePost(@ModelAttribute ProductMatchingVO pmVO) {
 		
+Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		System.out.println("관리자 아이디 => "+adminVo.getUsername());
 		logger.info("pmVO result = {}", pmVO.toString());
 		
 		int result = matchingService.insertOptionMatchingListData(pmVO.getOptionMatchingVOList());

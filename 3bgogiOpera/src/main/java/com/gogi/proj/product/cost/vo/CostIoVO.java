@@ -25,6 +25,8 @@ public class CostIoVO {
 	private boolean ciStockFlag;					//재고 감소 여부
 	private String ciMarblingLevel;
 	
+	private String costDetailName; 
+	
 	public CostIoVO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -33,7 +35,7 @@ public class CostIoVO {
 	public CostIoVO(int ciPk, int cdFk, int ciPrice, int ciWeight, int ciOutputWeight, String ciAnimalProdTraceNum,
 			String ciLevel, String ciAbattoir, String ciCountryOfOrigin, String ciItemsManufNum, int ciOutputQty,
 			Timestamp ciOutputLastTime, boolean ciOutputFlag, Timestamp ciRegdate, int cilFk, int ciFreshMeatWeight,
-			boolean ciStockFlag, String ciMarblingLevel) {
+			boolean ciStockFlag, String ciMarblingLevel, String costDetailName) {
 		super();
 		this.ciPk = ciPk;
 		this.cdFk = cdFk;
@@ -53,14 +55,7 @@ public class CostIoVO {
 		this.ciFreshMeatWeight = ciFreshMeatWeight;
 		this.ciStockFlag = ciStockFlag;
 		this.ciMarblingLevel = ciMarblingLevel;
-	}
-
-	public String getCiMarblingLevel() {
-		return ciMarblingLevel;
-	}
-
-	public void setCiMarblingLevel(String ciMarblingLevel) {
-		this.ciMarblingLevel = ciMarblingLevel;
+		this.costDetailName = costDetailName;
 	}
 
 	public int getCiPk() {
@@ -199,6 +194,22 @@ public class CostIoVO {
 		this.ciStockFlag = ciStockFlag;
 	}
 
+	public String getCiMarblingLevel() {
+		return ciMarblingLevel;
+	}
+
+	public void setCiMarblingLevel(String ciMarblingLevel) {
+		this.ciMarblingLevel = ciMarblingLevel;
+	}
+
+	public String getCostDetailName() {
+		return costDetailName;
+	}
+
+	public void setCostDetailName(String costDetailName) {
+		this.costDetailName = costDetailName;
+	}
+
 	@Override
 	public String toString() {
 		return "CostIoVO [ciPk=" + ciPk + ", cdFk=" + cdFk + ", ciPrice=" + ciPrice + ", ciWeight=" + ciWeight
@@ -207,8 +218,7 @@ public class CostIoVO {
 				+ ", ciItemsManufNum=" + ciItemsManufNum + ", ciOutputQty=" + ciOutputQty + ", ciOutputLastTime="
 				+ ciOutputLastTime + ", ciOutputFlag=" + ciOutputFlag + ", ciRegdate=" + ciRegdate + ", cilFk=" + cilFk
 				+ ", ciFreshMeatWeight=" + ciFreshMeatWeight + ", ciStockFlag=" + ciStockFlag + ", ciMarblingLevel="
-				+ ciMarblingLevel + "]";
+				+ ciMarblingLevel + ", costDetailName=" + costDetailName + "]";
 	}
-
 	
 }

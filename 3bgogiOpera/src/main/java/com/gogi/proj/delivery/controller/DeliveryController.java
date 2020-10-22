@@ -41,6 +41,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -55,9 +57,11 @@ import org.springframework.web.servlet.view.AbstractView;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.delivery.model.DeliveryService;
+import com.gogi.proj.delivery.vo.SendingRequestVO;
 import com.gogi.proj.excel.CellsStyle;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.security.AdminVO;
 import com.healthmarketscience.jackcess.impl.ByteUtil.ByteStream;
 
 @Controller
@@ -120,10 +124,14 @@ public class DeliveryController{
 	 */
 	@RequestMapping(value="/sending_result.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean updateOrderSendingDay(@RequestParam List<String> orPk) {
+	public boolean updateOrderSendingDay(HttpServletRequest request, @RequestParam List<String> orPk) {
 		boolean result;
 		
-		int updates = deliService.updateOrderSendingDay(orPk);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		int updates = deliService.updateOrderSendingDay(orPk, request.getRemoteAddr(), adminVo.getUsername());
 		
 		if(updates == orPk.size()) {
 			result = true;
@@ -173,7 +181,7 @@ public class DeliveryController{
 	 * @author : Jeon KiChan
 	 * @param osVO
 	 * @return
-	 * @메소드설명 : 스토어 발송처리 하기 : 엑셀 파일 까지 만들어지도록 업데이트해야 함
+	 * @메소드설명 : 스토어 발송처리 하기 
 	 */
 	@RequestMapping(value="/store_sending.do", method=RequestMethod.GET)
 	public String storeSending(@ModelAttribute OrderSearchVO osVO) {
@@ -210,12 +218,16 @@ public class DeliveryController{
 	 * @메소드설명 : 발송처리 건 재 취소하기
 	 */
 	@RequestMapping(value="/store_sending_cancled.do", method=RequestMethod.GET)
-	public String storeSendingCancled(@ModelAttribute OrderSearchVO osVO, Model model) {
+	public String storeSendingCancled(HttpServletRequest request ,@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
 		
 		String msg = "";
 		String url = "/delivery/store_order_sending.do";
 		
-		int result = deliService.updateDeliveryOutPutCancled(osVO);
+		int result = deliService.updateDeliveryOutPutCancled(osVO, request.getRemoteAddr(), adminVo.getUsername());
 		
 		if(result != 0 ) {
 			msg = "발송 취소 완료";
@@ -334,6 +346,57 @@ public class DeliveryController{
 		ModelAndView mav = new ModelAndView("downloadView", fileMap);
 		
 		return mav;
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectSendingRequestNotChecked
+	 * @date : 2020. 10. 21.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 강제출고 요청 값 가져오기
+	 */
+	@RequestMapping(value="/sending_req.do", method=RequestMethod.GET)
+	@ResponseBody
+	public List<SendingRequestVO> selectSendingRequestNotChecked(){
+		
+		return deliService.selectSendingRequestNotChecked();
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @MethodName : insertSendingReq
+	 * @date : 2020. 10. 21.
+	 * @author : Jeon KiChan
+	 * @param request
+	 * @param srVO
+	 * @return
+	 * @메소드설명 : 강제출고 요청 ( 상품 출고 페이지에서의 요청값 )
+	 */
+	@RequestMapping(value="/sending_req.do", method=RequestMethod.POST)
+	@ResponseBody
+	public boolean insertSendingReq(HttpServletRequest request, @ModelAttribute SendingRequestVO srVO) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		srVO.setSrAdminId(adminVo.getUsername());
+		srVO.setSrAdminName(adminVo.getAdminname());
+		
+		int result = deliService.insertSendingRequest(srVO);
+		
+		if(result > 0) {
+			
+			return true;
+		}else {
+			
+			return false;
+		}
+		
 	}
 
 }

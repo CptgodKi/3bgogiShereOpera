@@ -18,4 +18,16 @@ public interface AllClassificationCodeService {
 	public List<PackingCombineCodeVO> selectPackingCombineCodeList();
 	
 	public List<ClassificationVO> selectCfListOrderbyCfPk();
+	
+	public int updateExcelOrderSeq(ExcelOrderSeqVO eosVO);
+	
+	public int insertExcelOrderSeq(ExcelOrderSeqVO eosVO);
+	
+	public int updateClassificationCode(ClassificationVO cfVO);
+	
+	public int insertClassificationCode(ClassificationVO cfVO);
+	
+	public int updateCostCode(CostCodeVO ccVO);
+	
+	public int insertCostCode(CostCodeVO ccVO);
 }

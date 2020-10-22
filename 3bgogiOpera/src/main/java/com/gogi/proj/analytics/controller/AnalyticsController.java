@@ -24,14 +24,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.gogi.proj.analytics.model.AnalyticsService;
+import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.product.products.vo.ProductOptionVO;
 
 @Controller
 @RequestMapping(value = "/analytics")
@@ -266,4 +269,100 @@ public class AnalyticsController {
 
 	}
 
+	/**
+	 * 
+	 * @MethodName : reservProductGet
+	 * @date : 2020. 9. 9.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 날짜별로 예약된 물품 개수 확인하기, 날짜 고르는 페이지
+	 */
+	@RequestMapping(value="/reserv_product_qty.do", method=RequestMethod.GET)
+	public String reservProductGet() {
+
+		return "admin/analy_search/reserv_product_qty";
+	}
+	
+	
+	@RequestMapping(value="/reserv_product_qty_month.do", method=RequestMethod.GET)
+	@ResponseBody
+	public List<Map<String, Object>> reservProductQty(@ModelAttribute DatesVO datesVO) {
+		
+		if(datesVO.getFormatMonth() == null) {
+			Date date = new Date();
+			SimpleDateFormat sdfY = new SimpleDateFormat("yyyy");
+			SimpleDateFormat sdfM = new SimpleDateFormat("MM");
+			
+			String years = sdfY.format(date);
+			String month = sdfM.format(date);
+			
+			datesVO.setFormatYear(years);
+			datesVO.setFormatMonth(month);
+		}
+		
+		System.out.println(datesVO.toString());
+		
+		List<Map<String, Object>> lists = analyService.selectReservProductQtyInMonth(datesVO);
+		
+		System.out.println(lists.size());
+		
+		return lists;
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : reservProductPost
+	 * @date : 2020. 9. 9.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 날짜별로 예약된 물품 개수 확인하기
+	 */
+	@RequestMapping(value="/reserv_product_qty.do", method=RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String, Object>> reservProductPost(@ModelAttribute OrderSearchVO osVO) {
+		
+		return analyService.selectReservProductQty(osVO);
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectTotalSalesByDates
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 :  기간으로 매출 조회하기
+	 */
+	@RequestMapping(value="/total_sales.do", method=RequestMethod.GET)
+	public String selectTotalSalesByDates(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar calendar = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance();
+			calendar.add(Calendar.MONTH, -1);
+			Date sevenDays = calendar.getTime();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(sevenDays));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+		
+		List<OrdersVO> salesList = analyService.selectTotalSalesByDates(osVO);
+		List<OrdersVO> canlcedList = analyService.selectCancledSalesByDates(osVO);
+		
+		model.addAttribute("osVO", osVO);
+		model.addAttribute("salesList", salesList);
+		model.addAttribute("canlcedList", canlcedList);
+		
+		return "admin/analy_search/total_sales";
+	}
 }

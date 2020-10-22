@@ -62,4 +62,25 @@ public class CostIoServiceImpl implements CostIoService{
 		// TODO Auto-generated method stub
 		return costIoDao.selectCostInputList(osVO);
 	}
+
+	@Override
+	public List<CostDetailVO> selectCostDetailCode() {
+		// TODO Auto-generated method stub
+		return costIoDao.selectCostDetailCode();
+	}
+
+	@Override
+	@Transactional
+	public int chooseCostIo(CostIoVO ciVO) {
+		// TODO Auto-generated method stub
+		
+		int result = costIoDao.updateCostIoOutputFlagAllZero(ciVO);
+		
+		if(result > 0) {
+			return costIoDao.updateCostIoOutputFlagPosib(ciVO);
+			
+		}else {
+			return 0;
+		}
+	}
 }

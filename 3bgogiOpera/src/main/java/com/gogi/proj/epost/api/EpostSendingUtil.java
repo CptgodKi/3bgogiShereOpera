@@ -39,6 +39,11 @@ public class EpostSendingUtil {
 	//우체국계약고객시스템에서 확인 가능
 	private String epost_api_key = "5b16ea0e917f27fc11575519619605";
 	
+	
+	public String getEpost_api_key() {
+		return epost_api_key;
+	}
+
 	public String epostEncrypting(String epostParams) {
 		
 		SEED128 seed = new SEED128();
@@ -238,8 +243,6 @@ public class EpostSendingUtil {
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
-        
-        System.out.println(response);
         in.close();
         
         return epostXMLParsingDelivByObjectClass(response.toString(), objClass);

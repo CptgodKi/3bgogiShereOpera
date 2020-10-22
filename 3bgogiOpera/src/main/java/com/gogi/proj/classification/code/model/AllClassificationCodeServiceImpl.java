@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gogi.proj.classification.code.vo.ClassificationVO;
 import com.gogi.proj.classification.code.vo.CostCodeVO;
@@ -46,6 +47,63 @@ public class AllClassificationCodeServiceImpl implements AllClassificationCodeSe
 	public List<ClassificationVO> selectCfListOrderbyCfPk() {
 		// TODO Auto-generated method stub
 		return accDao.selectCfListOrderbyCfPk();
+	}
+
+	@Override
+	@Transactional
+	public int updateExcelOrderSeq(ExcelOrderSeqVO eosVO) {
+		// TODO Auto-generated method stub
+		int result = 0;
+		
+		for(int i = 0; i < eosVO.getEosList().size(); i++) {
+			result += accDao.updateExcelOrderSeq(eosVO.getEosList().get(i));
+			
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int insertExcelOrderSeq(ExcelOrderSeqVO eosVO) {
+		// TODO Auto-generated method stub
+		return accDao.insertExcelOrderSeq(eosVO);
+	}
+
+	@Override
+	@Transactional
+	public int updateClassificationCode(ClassificationVO cfVO) {
+		// TODO Auto-generated method stub
+		int result = 0;
+		
+		for(ClassificationVO cf : cfVO.getCfList()) {
+			result += accDao.updateClassificationCode(cf);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int insertClassificationCode(ClassificationVO cfVO) {
+		// TODO Auto-generated method stub
+		return accDao.insertClassificationCode(cfVO);
+	}
+
+	@Override
+	public int updateCostCode(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		int result = 0;
+		
+		for(CostCodeVO cc : ccVO.getCcList()) {
+			result += accDao.updateCostCode(ccVO);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int insertCostCode(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		return accDao.insertCostCode(ccVO);
 	}
 	
 	

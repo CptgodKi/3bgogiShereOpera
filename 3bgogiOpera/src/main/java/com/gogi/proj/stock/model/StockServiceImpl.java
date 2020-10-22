@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gogi.proj.log.model.LogService;
+import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.matching.vo.OptionMatchingVO;
 import com.gogi.proj.matching.vo.ProductMatchingVO;
 import com.gogi.proj.orders.vo.OrdersVO;
@@ -37,6 +39,8 @@ public class StockServiceImpl implements StockService {
 	@Autowired
 	private AdminServiceImpl adminService;
 	
+	@Autowired
+	private LogService logService;
 	/**
 	 * 재고 할당 기능 !!!!!!
 	 * 
@@ -45,11 +49,13 @@ public class StockServiceImpl implements StockService {
 	 */
 	@Override
 	@Transactional
-	public void stockChecking(OrderSearchVO osVO) {
+	public void stockChecking(OrderSearchVO osVO, String ip, String adminId) {
 		
 		List<OrdersVO> testOr = stockDao.selectUpdateCostIoTarget(osVO);
 		
 		Timestamp today = new Timestamp(new java.util.Date().getTime());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String thisTime = sdf.format(today);
 		
 		ProductMatchingVO pmVO = null;
 		OptionMatchingVO omVO = null;
@@ -58,6 +64,7 @@ public class StockServiceImpl implements StockService {
 		CostsVO costVO = null;
 		CostDetailVO cdVO = null;
 		CostIoVO ciVO = null;
+		OrderHistoryVO ohVO = null;
 		
 		//옵션 개수 확인용
 		int optionCounting = 0;
@@ -76,8 +83,6 @@ public class StockServiceImpl implements StockService {
 		
 		//주문서
 		for(int i = 0; i < testOr.size(); i++) {
-			System.out.println(testOr.get(i).getOrPk() + " = " + testOr.get(i).getOrTotalCost());
-			System.out.println(" 재고 무게 " + testOr.get(i).getOrAmount());
 			successOptionStock = new ArrayList<OptionsVO>();
 			successCostDetailList = new ArrayList<CostIoVO>();
 			costDetailInitList = new ArrayList<CostIoVO>();
@@ -119,13 +124,11 @@ public class StockServiceImpl implements StockService {
 								 
 								
 								if(optionStocks >= subtStocks) {
-									System.out.println("\t 재고 있음");
 									opVO.setOptionStock(subtStocks);
 									successOptionStock.add(opVO);
 									optionCountingSuc++;
 									
 								}else {
-									System.out.println("\t 재고 없음 부족한 재고 => "+(subtStocks));
 									checkFail++;
 									continue;
 									
@@ -149,8 +152,23 @@ public class StockServiceImpl implements StockService {
 											List<CostIoVO> stockList = stockDao.selectCostIoStockChecking(cdVO);
 
 											if(stockList.size() != 0) {
+												ciVO = stockList.get(0);
+												costDetailCounting++;
 												
-												int costIoTotalWeight = 0;
+												CostIoOrderVO cioVO = new CostIoOrderVO();
+
+												
+												ciVO.setCiOutputWeight(cdVO.getCdCost());
+												ciVO.setCiOutputQty(omVO.getOmOptionAmount() * testOr.get(i).getOrAmount());
+												successCostDetailList.add(ciVO);
+												
+												cioVO.setCiFk(ciVO.getCiPk());
+												cioVO.setOrFk(testOr.get(i).getOrPk());
+												cioVO.setCioQty(omVO.getOmOptionAmount() * testOr.get(i).getOrAmount());
+												costIoOrderList.add(cioVO);
+												costDetailCountingSuc++;
+												
+												/*int costIoTotalWeight = 0;
 												
 												//보유 중인 원육 총 무게 합산하기
 												for(CostIoVO civ :stockList) {
@@ -180,8 +198,6 @@ public class StockServiceImpl implements StockService {
 												
 												costBreak : for(int stockCounting = 0; stockCounting < stockList.size(); stockCounting++) {
 													ciVO = stockList.get(stockCounting);
-													
-													System.out.println("원재료 무게 => "+ciVO.getCiWeight()+", 출고 무게 => "+ciVO.getCiOutputWeight());
 													costDetailCounting++; //원가 개수 최대치	
 													
 													addCostTotalWeight+=(ciVO.getCiWeight() - ciVO.getCiOutputWeight());
@@ -189,8 +205,7 @@ public class StockServiceImpl implements StockService {
 													//출고할 수 있는 원재료가 있을 경우  ** cdVO.getCdCost()는 임의로 무게를 가져왔음  database - dao형식과 맞지 않음 cdcost는 원칙적으로 원가임 **
 													if(addCostTotalWeight > cdVO.getCdCost()) {
 														cioVO = new CostIoOrderVO();
-														
-														System.out.println("**************** 출고 가능"+ciVO.toString());
+
 														
 														ciVO.setCiOutputWeight(cdVO.getCdCost());
 														ciVO.setCiOutputQty(omVO.getOmOptionAmount() * testOr.get(i).getOrAmount());
@@ -206,8 +221,7 @@ public class StockServiceImpl implements StockService {
 														break;
 													//원재료가 출고 불가할 정도로 적을 경우
 													}else{
-														System.out.println("**************** 원육이 적어 순차적으로 돌림"+ciVO.toString());
-														
+
 														//출고 원육이 적을 경우 전부 차감으로 돌림
 														ciVO.setCiOutputWeight(cdVO.getCdCost());
 														ciVO.setCiOutputQty(0);
@@ -222,7 +236,7 @@ public class StockServiceImpl implements StockService {
 												
 												if(outputFlag == true) {
 													
-												}
+												}*/
 												
 											}else {
 												checkFail++;
@@ -258,7 +272,6 @@ public class StockServiceImpl implements StockService {
 				if(successOptionStock.size() > 0 ) {
 					for(int optionInt = 0; optionInt < successOptionStock.size(); optionInt++) {
 						stockDao.updateOptionStockSubtract(successOptionStock.get(optionInt));
-						System.out.println("옵션 재고 할당 완료 "+successOptionStock.get(optionInt).toString());
 					}
 					
 				}
@@ -267,16 +280,24 @@ public class StockServiceImpl implements StockService {
 					for(int costDetailInt = 0; costDetailInt < successCostDetailList.size(); costDetailInt++) {
 						successCostDetailList.get(costDetailInt).setCiOutputLastTime(today);
 						stockDao.updateCostIoStockSubtract(successCostDetailList.get(costDetailInt));
-						System.out.println("원재료 재고 할당 완료"+successCostDetailList.get(costDetailInt).toString());
 					}
 					
 				}
 				
 				if(successOptionStock.size() > 0 || successCostDetailList.size() > 0) {
 					int result = stockDao.updateOrderStockComplete(testOr.get(i));
-
+					
+					ohVO = new OrderHistoryVO();
+					ohVO.setOhAdmin(adminId);
+					ohVO.setOhIp(ip);
+					ohVO.setOrFk(testOr.get(i).getOrPk());
+					ohVO.setOhEndPoint("재고");
+					ohVO.setOhRegdate(thisTime);
+					ohVO.setOhDetail("상품 재고 할당 완료");
+					
+					logService.insertOrderHistory(ohVO);
+					
 					if(result > 0) {
-						System.out.println("재고 할당 완료 => "+testOr.get(i).getOrPk());
 					}
 				}
 				
@@ -286,7 +307,6 @@ public class StockServiceImpl implements StockService {
 						int result = stockDao.updateCostIoStockSoldout(costDetailInitList.get(costDetailSoldOutInt));
 						
 						if(result > 0) {
-							System.out.println("원재료 차감 완료"+costDetailInitList.get(costDetailSoldOutInt).getCiPk());
 						}
 					}
 					
@@ -295,10 +315,7 @@ public class StockServiceImpl implements StockService {
 				if(costIoOrderList.size() > 0 ) {
 					for(int costIoOrderInt = 0; costIoOrderInt < costIoOrderList.size(); costIoOrderInt++) {
 						int result = stockDao.insertCio(costIoOrderList.get(costIoOrderInt));
-						
-						if(result > 0) {
-							System.out.println("원육 출고 데이터 입력 완료"+costIoOrderList.get(costIoOrderInt).toString());
-						}
+
 					}
 				}
 				
@@ -307,8 +324,10 @@ public class StockServiceImpl implements StockService {
 				costDetailInitList =  null;
 				costIoOrderList = null;
 				
+				
+				
 			}else {
-				System.out.println("** 재고 할당 실패 주문서 => "+testOr.get(i).getOrPk()+"**");
+
 			}
 			
 			optionCounting = 0;
@@ -316,8 +335,7 @@ public class StockServiceImpl implements StockService {
 			costDetailCounting = 0;
 			costDetailCountingSuc = 0;
 			checkFail = 0;
-			
-			System.out.println();
+
 		}// 주문서
 		
 	}
@@ -373,22 +391,19 @@ public class StockServiceImpl implements StockService {
 		//주문서 결과값 가져오기
 		OrdersVO orVO = stockDao.selectStockChangeOrderByOrPk(pramOrVO);
 		int orPk = orVO.getOrPk();
-		System.out.println("orPK = "+orPk);
 		boolean orInvFlag = orVO.getOrInvFlag();
 		
 		boolean result = false;
 		//재고할당이 되지 않은 상태라면
-		System.out.println("orInvFlag = "+orInvFlag);
+
 		if(orInvFlag == false)  return true;
 		
 		//아무 매칭이 되지 않은 상태라면
-		System.out.println("orVO.getProductMatchingVOList().size() = "+orVO.getProductMatchingVOList().size());
 		if(orVO.getProductMatchingVOList().size() == 0) return true;
 		
 		for(int i = 0; i < orVO.getProductMatchingVOList().size(); i++) {
 			
 			// 옵션매칭이 이뤄지지 않은 상태라면
-			System.out.println("orVO.getProductMatchingVOList().get(i).getOptionMatchingVOList().size() = "+orVO.getProductMatchingVOList().get(i).getOptionMatchingVOList().size());
 			if(orVO.getProductMatchingVOList().get(i).getOptionMatchingVOList().size() == 0) return true;
 			
 			for(int j = 0; j < orVO.getProductMatchingVOList().get(i).getOptionMatchingVOList().size(); j++) {
@@ -398,9 +413,8 @@ public class StockServiceImpl implements StockService {
 				for(int ii = 0; ii < omVO.getOptionsVOList().size(); ii++) {
 					OptionsVO opVO = omVO.getOptionsVOList().get(ii);
 					
-					System.out.println("원가 사용 여부 "+opVO.getOptionCostFlag()+", 원가 재고 체크 여부 "+opVO.getOptionStockFlag());
 					// 원가 매칭을 사용하지 않은 옵션을 경우
-					if(opVO.getOptionCostFlag() == true && opVO.getOptionStockFlag() == true) {
+					if(opVO.getOptionStockFlag() == true) {
 						
 						//다른 상품의 재고를 사용한다면
 						if(opVO.getAnotherOptionPk() != 0) {
@@ -559,6 +573,20 @@ public class StockServiceImpl implements StockService {
 	public int productInputDontPerm() {
 		// TODO Auto-generated method stub
 		return stockDao.productInputDontPerm();
+	}
+
+
+	@Override
+	public int changeOrderInvFlag(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return stockDao.changeOrderInvFlag(orVO);
+	}
+
+
+	@Override
+	public List<ProductOptionVO> checkOptionBarcodeDupli(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return stockDao.checkOptionBarcodeDupli(osVO);
 	}
 	
 	

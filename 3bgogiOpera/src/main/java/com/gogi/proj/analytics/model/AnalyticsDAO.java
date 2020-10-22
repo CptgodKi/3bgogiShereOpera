@@ -3,8 +3,10 @@ package com.gogi.proj.analytics.model;
 import java.util.List;
 import java.util.Map;
 
+import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.product.products.vo.ProductOptionVO;
 
 public interface AnalyticsDAO {
 
@@ -36,4 +38,49 @@ public interface AnalyticsDAO {
 	//통계 테스트
 	public List<Map<String, Object>> selectAnalyDataList(OrderSearchVO osVO);
 	
+	/**
+	 * 
+	 * @MethodName : selectReservProductQty
+	 * @date : 2020. 9. 9.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 예약된 물품 개수 보기
+	 */
+	public List<Map<String, Object>> selectReservProductQty(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : selectReservProductQtyInMonth
+	 * @date : 2020. 9. 9.
+	 * @author : Jeon KiChan
+	 * @param datesVO
+	 * @return
+	 * @메소드설명 : 물품 개수 테스트
+	 */
+	public List<Map<String, Object>> selectReservProductQtyInMonth(DatesVO datesVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectTotalSalesByDates
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 매출 조회하기
+	 */
+	public List<OrdersVO> selectTotalSalesByDates(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCancledSalesByDates
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 취소 건 조회하기
+	 */
+	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO);
 }

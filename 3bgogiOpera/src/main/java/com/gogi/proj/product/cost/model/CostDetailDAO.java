@@ -75,4 +75,75 @@ public interface CostDetailDAO {
 	 */
 	public List<CarcassInputListVO> selectCarcassInputList(OrderSearchVO osVO);
 	
+	
+	/**
+	 * 
+	 * @MethodName : selectCarcassInputListDetail
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @return
+	 * @메소드설명 : 도체 입력 상세사항
+	 */
+	public CarcassInputListVO selectCarcassInputListDetail(CarcassInputListVO cilVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateCarcassInputList
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @return
+	 * @메소드설명 : 도체 수정하기
+	 */
+	public int updateCarcassInputList(CarcassInputListVO cilVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : deleteCarcassInputList
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @return
+	 * @메소드설명 : 도체 삭제하기
+	 */
+	public int deleteCarcassInputList(CarcassInputListVO cilVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCostIoHistory
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 등록된 부분육 목록 가져오기
+	 */
+	public List<CostIoVO> selectCostIoHistory(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCostIoHistoryCounting
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 부분육 목록 전체 개수
+	 */
+	public int selectCostIoHistoryCounting(OrderSearchVO osVO); 
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCarcassInputListCount
+	 * @date : 2020. 10. 19.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 등록된 도체 개수 페이징
+	 */
+	public int selectCarcassInputListCount(OrderSearchVO osVO);
 }

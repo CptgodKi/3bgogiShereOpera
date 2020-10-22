@@ -13,6 +13,7 @@ import com.gogi.proj.classification.code.vo.PackingCombineCodeVO;
 @Repository
 public class AllClassificationCodeDAO extends SqlSessionDaoSupport implements AllClassificationCodeDAOMybatis{
 
+	
 	private String namespace = "classification.code";
 	private String packingCombineCode = "classification.code.packing_combine_code";
 	private String excelOrderSeq = "classification.code.excel_order_seq";
@@ -51,4 +52,48 @@ public class AllClassificationCodeDAO extends SqlSessionDaoSupport implements Al
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(cfCode+".selectCfListOrderbyCfPk");
 	}
+
+
+	@Override
+	public int updateExcelOrderSeq(ExcelOrderSeqVO eosVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(excelOrderSeq+".updateExcelOrderSeq", eosVO);
+	}
+
+
+	@Override
+	public int insertExcelOrderSeq(ExcelOrderSeqVO eosVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(excelOrderSeq+".insertExcelOrderSeq", eosVO);
+	}
+
+
+	@Override
+	public int updateClassificationCode(ClassificationVO cfVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(cfCode+".updateClassificationCode", cfVO);
+	}
+
+
+	@Override
+	public int insertClassificationCode(ClassificationVO cfVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(cfCode+".insertClassificationCode", cfVO);
+	}
+
+
+	@Override
+	public int updateCostCode(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(namespace+".updateCostCode", ccVO);
+	}
+
+
+	@Override
+	public int insertCostCode(CostCodeVO ccVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(namespace+".insertCostCode", ccVO);
+	}
+	
+	
 }

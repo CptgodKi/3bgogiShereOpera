@@ -102,6 +102,8 @@
                                     	<c:set var="outputReserve" value="${searchResult[0].outputReserve == null ? 0 : searchResult[0].outputReserve }" />
                                     	<c:set var="notInv" value="${searchResult[0].notInv == null ? 0 : searchResult[0].notInv }" />
                                     	<c:set var="notOutputToday" value="${searchResult[0].notInv == null ? 0 : searchResult[0].notOutputToday }" />
+                                    	<c:set var="specialRegion" value="${searchResult[0].specialRegion == null ? 0 : searchResult[0].specialRegion }" />
+                                    	
                                         <tbody>
                                             <tr>
                                                 <td colspan="2">출고가능 ${outputPosiv } 건 (미출고 :  ${notOutputToday } 건)</td>
@@ -116,11 +118,9 @@
                                                 <td colspan="2"> 재고 미할당  ${notInv } 건 </td>
                                                 <td colspan="2"><button class="btn btn-outline-danger btn-block" name="stockDetail" value="notInv"> 재고 미할당 목록 </button></td>
                                             </tr>
-                                            
-                                            
                                             <tr>
-                                                <td colspan="2"> 부분 재고 미할당  ${notInv } 건 </td>
-                                                <td colspan="2"><button class="btn btn-outline-danger btn-block" name="stockDetail" value="notInv"> 부분 재고 미할당 목록 </button></td>
+                                                <td colspan="2"> 특수지역  ${specialRegion } 건 </td>
+                                                <td colspan="2"><button class="btn btn-outline-danger btn-block" name="stockDetail" value="specialRegion"> 특수지역 목록 </button></td>
                                             </tr>
                                         </tbody>
                                     </table>

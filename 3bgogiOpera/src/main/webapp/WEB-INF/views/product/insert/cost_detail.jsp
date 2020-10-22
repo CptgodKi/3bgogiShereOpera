@@ -118,14 +118,14 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 데이터 관리 </h2>
+                            <h2 class="pageheader-title"> 원재료 입력 </h2>
                             <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 입력 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 원가 상세사항 입력</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 원재료 상세사항 입력 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 원재료 입력 </li>
                                     </ol>
                                 </nav>
                             </div>
@@ -141,17 +141,17 @@
                         <!-- ============================================================== -->
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
-                                <h5 class="card-header"> 원가 데이터 상세사항 입력</h5>
+                                <h5 class="card-header"> 원재료 데이터 상세사항 입력</h5>
                                 <div class="card-body">
                                     <form name="insertCostDetailForm" id="insertCostDetailData" action="<c:url value='/products/insert/cost_detail.do'/>" method="post">
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가명 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료명 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <input type="text" placeholder="원가명을 입력해주세요." class="form-control" id="cdName" name="cdName">
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 분류 코드 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 분류 코드 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <select class="form-control" id="ccFk" name="ccFk">
                                                 	<c:forEach var="cclist" items="${ccList }">

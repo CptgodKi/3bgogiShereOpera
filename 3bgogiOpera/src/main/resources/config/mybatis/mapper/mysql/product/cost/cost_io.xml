@@ -34,6 +34,7 @@
 			<result property="ciAbattoir" column="ci_abattoir" javaType="String"/>
 			<result property="ciCountryOfOrigin" column="ci_country_of_origin" javaType="String"/>
 			<result property="ciItemsManufNum" column="ci_items_manuf_num" javaType="String"/>
+			<result property="ciMarblingLevel" column="ci_marbling_level" javaType="String"/>
 			<result property="ciRegdate" column="ci_regdate" javaType="java.sql.Timestamp"/>
 		</collection>
 	</resultMap>
@@ -68,10 +69,13 @@
 	<!-- 상품 입출고 데이터 전부 가져오기 -->
 	<select id="selectCostIoData" parameterType="CostIoVO" resultType="CostIoVO">
 		SELECT
-			*
+			CONCAT(cc.cc_code_type, ' ', cd.cd_name) AS cost_detail_name,
+			ci.*
 		FROM
-			cost_io
-		WHERE
+			cost_io ci
+			INNER JOIN cost_detail cd	ON cd.cd_pk = ci.cd_fk
+            INNER JOIN cost_code cc 	ON cc.cc_pk = cd.cc_fk
+        WHERE
 			ci_pk = #{ciPk}
 	</select>
 	
@@ -86,6 +90,7 @@
 			ci_level = #{ciLevel},
 			ci_items_manuf_num = #{ciItemsManufNum},
 			ci_abattoir = #{ciAbattoir},
+			ci_marbling_level = #{ciMarblingLevel},
 			ci_country_of_origin = #{ciCountryOfOrigin}
 		WHERE
 			ci_pk = #{ciPk}
@@ -223,7 +228,8 @@
 		    ci.ci_country_of_origin,
 		    ci.ci_level,
 		    ci.ci_items_manuf_num,
-		    ci.ci_regdate
+		    ci.ci_regdate,
+		    ci.ci_output_flag
 		FROM
 			cost_detail cd
 		    INNER JOIN cost_io ci ON cd.cd_pk = ci.cd_fk
@@ -238,11 +244,45 @@
 		    ci.ci_country_of_origin,
 		    ci.ci_level,
 		    ci.ci_items_manuf_num,
-		    ci.ci_regdate
+		    ci.ci_regdate,
+		    ci.ci_output_flag
 		ORDER BY
 			ci.ci_regdate DESC
 		limit #{minNum}, #{maxNum}
 	</select>
+	
+	
+	<!-- 원가 코드가져오기 -->
+	<select id="selectCostDetailCode" resultType="CostDetailVO">
+		SELECT
+			CONCAT(cc.cc_code_type, ' ', cd.cd_name) AS cd_name,
+			cd.cd_pk
+		FROM
+			cost_detail cd
+			INNER JOIN cost_code cc 	ON cc.cc_pk = cd.cc_fk
+		WHERE
+			cc_carcass_flag = 1
+	</select>
+	
+	<update id="updateCostIoOutputFlagAllZero" parameterType="CostIoVO">
+		UPDATE
+			cost_io
+		SET
+			ci_output_flag = 0
+		WHERE
+			cd_fk = #{cdFk}
+	</update>
+	
+	<update id="updateCostIoOutputFlagPosib" parameterType="CostIoVO">
+		UPDATE
+			cost_io
+		SET
+			ci_output_flag = 1
+		WHERE
+			ci_pk = #{ciPk}
+	</update>
+	
+	
 </mapper>
 
 

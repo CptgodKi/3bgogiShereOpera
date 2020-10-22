@@ -53,6 +53,7 @@
 							WHERE
 								or_special_region_flag = 0
 								AND or_special_region_check_flag = 1
+								AND or_delivery_invoice_number IS NULL
 								AND
 								<![CDATA[					
 									or_regdate >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'), INTERVAL -1 DAY)

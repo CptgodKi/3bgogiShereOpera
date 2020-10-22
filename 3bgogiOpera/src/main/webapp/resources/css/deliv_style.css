@@ -1,5 +1,8 @@
 @CHARSET "utf-8";
-.deliv-styles{
+.deliv-styles{	
+	/* font-family: 'Do Hyeon', sans-serif; */
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 600;
 	
 }
 
@@ -9,7 +12,7 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;	
+		
 }
 
 .deliv-reserv-date{
@@ -18,7 +21,7 @@
 	left:160px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;	
+		
 }
 
 .deliv-buyer-name{
@@ -27,7 +30,7 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-ss-name{
 	position: absolute;
@@ -35,7 +38,7 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-order-number{
 	position: absolute;
@@ -43,7 +46,7 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 
 .deliv-box-weight{
@@ -52,7 +55,7 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-sending-price{
 	position: absolute;
@@ -60,7 +63,7 @@
 	left:130px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 
 .deliv-zip-barcode{
@@ -76,24 +79,27 @@
 	left:10px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-message{
+	display:block;
 	position: absolute;
 	top: 274px;
 	left:10px;
+	width:220px;
 	font-size: 12px;
+	white-space: pre-line;
 	color: black;
-	font-weight: bold;
+	
 }
 
 .arr-cnpo-before{
 	position: absolute;
-	top: 8.4px;
-	left:260px;
-	font-size: 55px;
+	top: 15.4px;
+	left:270px;
+	font-size: 40px;
 	color: black;
-	font-weight: bold;
+	
 }
 .arr-cnpo-nm{
 	position: absolute;
@@ -101,7 +107,7 @@
 	left:330px;
 	font-size: 15px;
 	color: black;
-	font-weight: bold;
+	
 }
 .arr-cnpo-nm-after{
 	position: absolute;
@@ -109,7 +115,7 @@
 	left:390px;
 	font-size: 40px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-po-nm{
 	position: absolute;
@@ -117,7 +123,7 @@
 	left:475px;
 	font-size: 15px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-po-nm-before{
 	position: absolute;
@@ -125,7 +131,7 @@
 	left:545px;
 	font-size: 40px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-po-nm-after{
 	position: absolute;
@@ -133,15 +139,31 @@
 	left:610px;
 	font-size: 40px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-sender{
 	position: absolute;
 	top: 110px;
 	left:270px;
-	font-size: 16px;
+	font-size: 22px;
 	color: black;
-	font-weight: bold;
+	
+}
+.deliv-dont-deliv-msg-top{
+	position: absolute;
+	top: 40px;
+	left:50px;
+	font-size: 11px;
+	color: black;
+	
+}
+.deliv-dont-deliv-msg-bottom{
+	position: absolute;
+	top: 390px;
+	left:50px;
+	font-size: 11px;
+	color: black;
+	
 }
 .deliv-sender-addr{
 	display: block;
@@ -151,7 +173,7 @@
 	width: 210px;
 	white-space: pre-line;
 	font-size: 12px;
-	font-weight: bold;
+	
 	color: black;
 }
 .deliv-sender-zip-num{
@@ -160,7 +182,7 @@
 	left:545px;
 	font-size: 12px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-sender-tel-num{
 	position: absolute;
@@ -168,7 +190,7 @@
 	left:510px;
 	font-size: 10px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-sender-mob-num{
 	position: absolute;
@@ -176,7 +198,7 @@
 	left:610px;
 	font-size: 15px;
 	color: black;
-	font-weight: bold;
+	
 }
 
 .rec-addr{
@@ -188,7 +210,7 @@
 	font-size: 20px;
 	white-space: pre-line;
 	color: black;
-	font-weight: bold;
+	
 }
 .receiver{
 	position: absolute;
@@ -196,7 +218,7 @@
 	left:270px;
 	font-size: 20px;
 	color: black;
-	font-weight: bold;
+	
 }
 .rec-tel-num{
 	position: absolute;
@@ -204,7 +226,7 @@
 	left:285px;
 	font-size: 10px;
 	color: black;
-	font-weight: bold;
+	
 }
 .rec-mob-num{
 	position: absolute;
@@ -212,13 +234,13 @@
 	left:285px;
 	font-size: 10px;
 	color: black;
-	font-weight: bold;
+	
 }
 .deliv-invoice-num{
 	position: absolute;
 	top: 330px;
 	left: 270px;
-	width: 200px;
+	width: 280px;
 }
 
 .total-qty{
@@ -227,7 +249,7 @@
 	left:700px;
 	font-size: 15px;
 	color: black;
-	font-weight: bold;
+	
 }
 .qty-title{
 	position: absolute;
@@ -235,5 +257,20 @@
 	left:690px;
 	font-size: 10px;
 	color: black;
-	font-weight: bold;
+	
+}
+.product-qty{
+	 position:absolute; 
+	 left:700px; 
+	 font-size:14px; 
+	 color:black; 
+}
+.product-name{
+	position:absolute; 
+	left:730px;  
+	width: 300px; 
+	font-size:14px; 
+	white-space: pre-line; 
+	color:black; 
+
 }

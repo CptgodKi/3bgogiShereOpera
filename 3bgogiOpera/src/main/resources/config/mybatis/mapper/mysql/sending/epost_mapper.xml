@@ -243,12 +243,27 @@
 		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
 		<result property="orSendingAddress" column="or_sending_address" javaType="String"/>
 		<result property="orDeliveryMessage" column="or_delivery_message" javaType="String"/>
+		<result property="reqNo" column="req_no" javaType="String"/>
+		<result property="resNo" column="res_no" javaType="String"/>
+		<result property="regiNo" column="regi_no" javaType="String"/>
+		<result property="regiPoNm" column="regi_po_nm" javaType="String"/>
+		<result property="resDate" column="res_date" javaType="String"/>
+		<result property="price" column="price" javaType="int"/>
+		<result property="vTelNo" column="v_tel_no" javaType="String"/>
+		<result property="arrCnpoNm" column="arr_cnpo_nm" javaType="String"/>
+		<result property="delivPoNm" column="deliv_po_nm" javaType="String"/>
+		<result property="delivAreaCd" column="deliv_area_cd" javaType="String"/>
+		
+		<!-- <collection property="orProductList" column="or_pk" ofType="String" javaType="java.util.List"/>	 -->	
 			
 			<collection property="productOptionList" ofType="ProductOptionVO">
-				<id property="productPk" column="or_pk" javaType="int"/>
+				<result property="anotherOptionPk" column="or_pk" javaType="int"/>
 				<result property="optionPk" column="option_pk" javaType="int"/>
-				<result property="optionName" column="option_name" javaType="String"/>
 				
+				<!--
+					<result property="productPk" column="or_pk" javaType="int"/>  
+				 -->
+				<result property="optionName" column="option_name" javaType="String"/>
 				<!-- another_option_qty 로 수량 가져옴  -->
 				<result property="anotherOptionQty" column="another_option_qty" javaType="int"/>
 				<result property="productName" column="product_name" javaType="String"/>
@@ -328,6 +343,7 @@
 					od.regi_no IS NULL
 					AND od.or_serial_special_number = #{searchKeyword}
 					AND od.or_cancled_flag = 0
+					AND od.or_excel_div_flag = 0
 				GROUP BY
 					od.or_pk,
 					od.or_serial_special_number,
@@ -454,16 +470,17 @@
 							AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
 						</if>
 					</if>
-			
-					<if test="searchType == 'matchingProduct'">
-						AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+					<if test="specialRegionFlag == 1">
+						AND or_special_region_flag = 1
+						AND or_special_region_check_flag = 1
 					</if>
-					<if test="searchType == 'matchingOption'">
-						AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
+					<if test="specialRegionFlag == 2">
+						AND or_special_region_flag = 1
+						AND or_special_region_check_flag = 0
 					</if>
 				    <![CDATA[
 						 AND od.or_cancled_flag = 0
-						 AND od.or_output_date IS NULL
+						 AND od.or_excel_div_flag = 0
 						 AND od.or_sending_deadline <= #{dateEnd}
 					]]>
 				</trim>
@@ -524,6 +541,8 @@
 				<![CDATA[
 					od.or_sending_deadline >= #{dateStart}
 				]]>
+				AND od.or_excel_div_flag = 0
+				AND od.or_cancled_flag = 0
 			GROUP BY
 				od.or_serial_special_number,
 				od.or_pk,
@@ -612,10 +631,19 @@
 						<if test="searchType == 'matchingOption'">
 							AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
 						</if>
+						
+					</if>
+					<if test="specialRegionFlag == 1">
+						AND or_special_region_flag = 1
+						AND or_special_region_check_flag = 1
+					</if>
+					<if test="specialRegionFlag == 2">
+						AND or_special_region_flag = 1
+						AND or_special_region_check_flag = 0
 					</if>
 		            <![CDATA[
 						AND od.or_cancled_flag = 0
-						AND od.or_output_date IS NULL
+						AND od.or_excel_div_flag = 0
 						AND od.or_sending_deadline <= #{dateEnd}
 					 ]]>
 				</trim>
@@ -689,35 +717,25 @@
 	<!-- 부여받은 송장의 자세한 정보  -->
 	<select id="selectEpostInfoByOrserialspecialnumber" parameterType="String" resultType="com.gogi.proj.epost.vo.RegDataVO">
 		SELECT
-			req_no,
-		    res_no,
-		    regi_no,
-		    regi_po_nm,
-		    res_date,
-		    v_tel_no,
-		    arr_cnpo_nm,
-		    deliv_po_nm,
-		    deliv_area_cd
+			GROUP_CONCAT(DISTINCT req_no SEPARATOR ',') AS req_no,
+			GROUP_CONCAT(DISTINCT res_no SEPARATOR ',') AS res_no,
+		    GROUP_CONCAT(DISTINCT regi_no SEPARATOR ',') AS regi_no,
+		    GROUP_CONCAT(DISTINCT regi_po_nm SEPARATOR ',') AS regi_po_nm,
+		    GROUP_CONCAT(DISTINCT res_date SEPARATOR ',') AS res_date,
+		    GROUP_CONCAT(DISTINCT v_tel_no SEPARATOR ',') AS v_tel_no,
+		    GROUP_CONCAT(DISTINCT  arr_cnpo_nm SEPARATOR ',') AS arr_cnpo_nm,
+		    GROUP_CONCAT(DISTINCT deliv_po_nm SEPARATOR ',') AS deliv_po_nm,
+		    GROUP_CONCAT(DISTINCT deliv_area_cd SEPARATOR ',') AS deliv_area_cd
 		FROM 
 			orders
 		WHERE
 			or_serial_special_number = #{orSerialSpecialNumber}
-		GROUP BY
-			req_no,
-		    res_no,
-		    regi_no,
-		    regi_po_nm,
-		    res_date,
-		    v_tel_no,
-		    arr_cnpo_nm,
-		    deliv_po_nm,
-		    deliv_area_cd
 	</select>
 	
 	
-	<select id="selectSelfprintTest" resultMap="renewalDeliveryInfoResultMap">
+	<select id="deliveryPrintTarget" resultMap="renewalDeliveryInfoResultMap" parameterType="OrderSearchVO">
 			SELECT
-				inne.or_pk,
+				INNE.or_pk,
                 INNE.or_serial_special_number,
                 INNE.ss_name,
                 INNE.or_buyer_name,
@@ -728,9 +746,10 @@
                 INNE.or_shipping_address_detail,
                 INNE.or_receiver_contract_number1,
 		        INNE.or_receiver_contract_number2,
-                GROUP_CONCAT(INNE.or_delivery_message separator ','),
+                GROUP_CONCAT(DISTINCT INNE.or_delivery_message separator ',') AS or_delivery_message,
                 INNE.product_name,
                 INNE.option_name,
+                INNE.om_pk,
                 INNE.option_pk,
                 SUM(INNE.totalQuantity) AS another_option_qty
 			FROM(
@@ -777,10 +796,9 @@
 					INNER JOIN products pro ON pro.product_pk = op.product_fk
 				WHERE 
 					od.regi_no IS NULL
-					<![CDATA[					
-						AND od.or_regdate >= '2020-09-07 11:00:00' 
-					]]>
+					AND od.or_excel_div_flag = 0
 					AND od.or_cancled_flag = 0
+					AND od.or_serial_special_number = #{searchKeyword}
 				GROUP BY
 					od.or_pk,
 					od.or_serial_special_number,
@@ -816,7 +834,7 @@
 					od.or_pk
 			) INNE
 		GROUP BY
-			inne.or_pk,
+			INNE.or_pk,
 			INNE.or_serial_special_number,
 			INNE.ss_name,
 			INNE.or_buyer_name,
@@ -829,8 +847,221 @@
 		    INNE.or_receiver_contract_number2,
 			INNE.product_name,
             INNE.option_pk,
+            INNE.om_pk,
 			INNE.option_name
+		ORDER BY
+			INNE.product_name DESC,
+			INNE.option_name DESC
 	</select>
+	
+	<update id="grantDeliveryInvoiceNumber" parameterType="OrdersVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = #{regiNo},
+			req_no = #{reqNo},
+			res_no = #{resNo},
+			regi_no = #{regiNo},
+			regi_po_nm = #{regiPoNm},
+			res_date = #{resDate},
+			price = #{price},
+			v_tel_no = #{vTelNo},
+			arr_cnpo_nm = #{arrCnpoNm},
+			deliv_po_nm = #{delivPoNm},
+			deliv_area_cd = #{delivAreaCd}
+		WHERE
+			or_pk IN 
+			<foreach item="item" collection="productOptionList" open="(" separator="," close=")">
+				#{item.anotherOptionPk}
+			</foreach>
+	</update>
+	
+	
+	<select id="deliveryInvoiceNumberReprinting" resultMap="renewalDeliveryInfoResultMap" parameterType="OrderSearchVO">
+			SELECT
+				INNE.or_pk,
+                INNE.or_serial_special_number,
+                INNE.ss_name,
+                INNE.or_buyer_name,
+                INNE.or_buyer_another_name,
+                INNE.or_receiver_name,
+                INNE.or_shipping_address_number,
+                INNE.or_shipping_address,
+                INNE.or_shipping_address_detail,
+                INNE.or_receiver_contract_number1,
+		        INNE.or_receiver_contract_number2,
+                GROUP_CONCAT(DISTINCT INNE.or_delivery_message separator ',') AS or_delivery_message,
+                INNE.or_delivery_invoice_number,
+                INNE.req_no, 
+                INNE.res_no,
+                INNE.regi_no,
+                INNE.regi_po_nm,
+                INNE.res_date,
+                INNE.price,
+                INNE.v_tel_no,
+                INNE.arr_cnpo_nm,
+                INNE.deliv_po_nm,
+                INNE.deliv_area_cd,
+                INNE.product_name,
+                INNE.option_name,
+                INNE.option_pk,
+                SUM(INNE.totalQuantity) AS another_option_qty
+			FROM(
+                
+                SELECT
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+					od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+                    GROUP_CONCAT(od.or_delivery_message separator ',') AS or_delivery_message,
+                    od.or_delivery_invoice_number,
+                    od.req_no, 
+                    od.res_no,
+                    od.regi_no,
+                    od.regi_po_nm,
+                    od.res_date,
+                    od.price,
+                    od.v_tel_no,
+                    od.arr_cnpo_nm,
+                    od.deliv_po_nm,
+                    od.deliv_area_cd,
+                    
+		            pm.pm_pk,
+					pro.product_pk,
+                    pro.product_name,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_pk,
+					om.om_store_option_name,
+					(od.or_amount * om.om_option_amount) as totalQuantity,
+					op.option_pk,
+                    op.option_name
+				FROM
+					orders od
+					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
+					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options op ON om.option_fk = op.option_pk
+					INNER JOIN products pro ON pro.product_pk = op.product_fk
+				WHERE 
+					od.regi_no IS NOT NULL
+					AND od.or_serial_special_number = #{searchKeyword}
+					AND od.or_cancled_flag = 0
+					AND od.or_excel_div_flag = 0
+				GROUP BY
+					od.or_pk,
+					od.or_serial_special_number,
+					ss.ss_name,
+					od.or_buyer_name,
+                    od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+		            od.or_product_order_number,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+					od.or_product_price,
+					od.or_total_price,
+					od.or_discount_price,
+		            od.or_product_fk,
+		            od.or_order_number,
+		            od.or_delivery_invoice_number,
+                    od.req_no, 
+                    od.res_no,
+                    od.regi_no,
+                    od.regi_po_nm,
+                    od.res_date,
+                    od.price,
+                    od.v_tel_no,
+                    od.arr_cnpo_nm,
+                    od.deliv_po_nm,
+                    od.deliv_area_cd,
+		            pm.pm_pk,
+		            om.om_pk,
+					pro.product_pk,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            op.option_name
+				ORDER BY
+					od.or_pk
+			) INNE
+		GROUP BY
+			INNE.or_pk,
+			INNE.or_serial_special_number,
+			INNE.ss_name,
+			INNE.or_buyer_name,
+			INNE.or_buyer_another_name,
+			INNE.or_receiver_name,
+			INNE.or_shipping_address_number,
+			INNE.or_shipping_address,
+			INNE.or_shipping_address_detail,
+			INNE.or_receiver_contract_number1,
+		    INNE.or_receiver_contract_number2,
+		    INNE.or_delivery_invoice_number,
+            INNE.req_no, 
+            INNE.res_no,
+            INNE.regi_no,
+            INNE.regi_po_nm,
+            INNE.res_date,
+            INNE.price,
+            INNE.v_tel_no,
+            INNE.arr_cnpo_nm,
+            INNE.deliv_po_nm,
+            INNE.deliv_area_cd,
+			INNE.product_name,
+            INNE.option_pk,
+			INNE.option_name
+		ORDER BY
+			INNE.product_name DESC,
+			INNE.option_name DESC
+	</select>
+	
+	<select id="selectDeliveryInvoiceNumberByDate" parameterType="OrderSearchVO" resultType="OrdersVO">
+		SELECT
+			or_buyer_name,
+			or_receiver_name,
+			or_shipping_address,
+			or_shipping_address_detail,
+			or_delivery_invoice_number
+		FROM
+			orders
+		WHERE
+			or_sending_deadline = #{dateStart}
+			AND or_cancled_flag = 0
+			AND or_refunds = 0
+		GROUP BY
+			or_buyer_name,
+			or_receiver_name,
+			or_shipping_address,
+			or_shipping_address_detail,
+			or_delivery_invoice_number
+	</select>
+	
 </mapper>
 
 

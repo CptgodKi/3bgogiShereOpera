@@ -1,5 +1,7 @@
 package com.gogi.proj.classification.code.vo;
 
+import java.util.List;
+
 public class ExcelOrderSeqVO {
 
 	private int eosPk; //주문서 위치 고유 번호
@@ -7,17 +9,20 @@ public class ExcelOrderSeqVO {
 	private String eosLocation; //담당 주문 위치 명
 	private String eosCode; //담당 위치 고유 코드
 	
+	private List<ExcelOrderSeqVO> eosList;
+	
 	public ExcelOrderSeqVO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ExcelOrderSeqVO(int eosPk, int eosSeq, String eosLocation, String eosCode) {
+	public ExcelOrderSeqVO(int eosPk, int eosSeq, String eosLocation, String eosCode, List<ExcelOrderSeqVO> eosList) {
 		super();
 		this.eosPk = eosPk;
 		this.eosSeq = eosSeq;
 		this.eosLocation = eosLocation;
 		this.eosCode = eosCode;
+		this.eosList = eosList;
 	}
 
 	public int getEosPk() {
@@ -52,10 +57,17 @@ public class ExcelOrderSeqVO {
 		this.eosCode = eosCode;
 	}
 
+	public List<ExcelOrderSeqVO> getEosList() {
+		return eosList;
+	}
+
+	public void setEosList(List<ExcelOrderSeqVO> eosList) {
+		this.eosList = eosList;
+	}
+
 	@Override
 	public String toString() {
 		return "ExcelOrderSeqVO [eosPk=" + eosPk + ", eosSeq=" + eosSeq + ", eosLocation=" + eosLocation + ", eosCode="
-				+ eosCode + "]";
+				+ eosCode + ", eosList=" + eosList + "]";
 	}
-
 }

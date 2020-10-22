@@ -373,7 +373,7 @@
                                         <a class="nav-link" id="pills-packages-tab" data-toggle="pill" href="#pills-packages" role="tab" aria-controls="pills-packages" aria-selected="false">휴무</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">프로젝트</a>
+                                        <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">정보 변경</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">로그</a>
@@ -602,31 +602,29 @@
 									<div class="tab-pane fade" id="pills-msg" role="tabpanel" aria-labelledby="pills-msg-tab">
                                         <div class="card">
                                             <h5 class="card-header">Send Messages</h5>
-                                            <div class="card-body">
-                                                <form>
-                                                    <div class="row">
-                                                        <div class="offset-xl-3 col-xl-6 offset-lg-3 col-lg-3 col-md-12 col-sm-12 col-12 p-4">
-                                                            <div class="form-group">
-                                                                <label for="name">Your Name</label>
-                                                                <input type="text" class="form-control form-control-lg" id="name" placeholder="">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="email">Your Email</label>
-                                                                <input type="email" class="form-control form-control-lg" id="email" placeholder="">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="subject">Subject</label>
-                                                                <input type="text" class="form-control form-control-lg" id="subject" placeholder="">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="messages">Messgaes</label>
-                                                                <textarea class="form-control" id="messages" rows="3"></textarea>
-                                                            </div>
-                                                            <button type="submit" class="btn btn-primary float-right">Send Message</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                            <form class="card-body">
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" type="text" name="adminId" placeholder="아이디" autocomplete="off">
+								                </div>
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" type="password" name="adminPass"placeholder="비밀번호" autocomplete="off">
+								                </div>
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" type="password" name="adminPassCheck"placeholder="비밀번호 확인" autocomplete="off">
+								                </div>
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" type="text" name="adminName" placeholder="이름">
+								                </div>
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" id="adminPhone" type="text" name="adminPhone" placeholder="연락처" onkeyup="checkphone()">
+								                </div>
+								                <div class="form-group">
+								                    <input class="form-control form-control-lg" type="text" name="adminAddress" placeholder="주소">
+								                </div>
+								                <div class="form-group pt-2">
+								                    <button class="btn btn-block btn-primary" id="signUp" type="button"> 수정하기 </button>
+								                </div>
+								            </form>
                                         </div>
                                     </div>
                                 </div>

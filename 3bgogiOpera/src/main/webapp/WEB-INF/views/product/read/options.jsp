@@ -9,7 +9,7 @@
 <!-- Required meta tags -->
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>주문서 나누기</title>
+<title>옵션</title>
 <!-- Bootstrap CSS -->
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
@@ -20,10 +20,19 @@
 	href="${pageContext.request.contextPath}/resources/libs/css/style.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/vendor/fonts/fontawesome/css/fontawesome-all.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/multi-select/css/multi-select.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/css/bootstrap-select.css">
+
+	
 <script
 	src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.3.1.min.js"></script>
 <script
 	src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/js/bootstrap-select.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+
+
 <script type="text/javascript">
     	$(function(){
     		var optionCostsMatchingCount = 1;
@@ -77,7 +86,7 @@
 	    				var costsConnectData = "";
 	    				
 	    				costsConnectData+='<div class="form-group row costsDiv">'
-					                        +'<label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 연결 선택 </label>'
+					                        +'<label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 연결 선택 </label>'
 					                        +'<div class="col-12 col-sm-8 col-lg-6 row">'
 					                            +'<div class="col-md-5 mb-3">'
 					                           	 	+'<label for="country">옵션 명</label>'
@@ -155,7 +164,7 @@
 			
 			
 			$(document).on("click", "button[name=deleteCostMatchingButton]", function(){
-				if(confirm("해당 원가 매칭을 정말로 삭제하시겠습니까?")){
+				if(confirm("해당 원재료 매칭을 정말로 삭제하시겠습니까?")){
 					var costUniqueNum = $(this).data("cost-unique-num");
                     var costName = $(this).data("cost-name");
                     var optionPk = $(this).data("option-pk");
@@ -504,13 +513,13 @@ body {
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"></label>
                                             <div class="col-12 col-sm-8 col-lg-6" style="text-align: center;">
-                                                <button type="button" class="btn btn-space btn-secondary" id="addCostsMatchingDivButton"> 원가 연결 창 추가하기 </button>
+                                                <button type="button" class="btn btn-space btn-secondary" id="addCostsMatchingDivButton"> 원재료 연결 창 추가하기 </button>
                                             </div>
                                         </div>
                                         <div class="costsConnectDiv">   
                                         	<c:forEach var="ocmList" items="${optionVO.optionCostsMatchingVOList }">
                                         		<div class="form-group row costsDiv">
-		                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 연결 선택 </label>
+		                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 연결 선택 </label>
 		                                            <div class="col-12 col-sm-8 col-lg-6 row">
 			                                            <div class="col-md-5 mb-3">
 			                                           	 	<label for="country">옵션 명</label>
@@ -563,7 +572,7 @@ body {
 				                                             <button type="button" class="btn btn-space btn-warning" name="deleteCostMatchingButton"
 				                                             data-cost-unique-num="${ocmList.costUniqueNum }"
 				                                             data-cost-name="${costNames }"
-				                                             data-option-pk="${optionVO.optionPk }"> 원가삭제 </button>
+				                                             data-option-pk="${optionVO.optionPk }"> 원재료 삭제 </button>
 			                                             </div>
 		                                            </div>
 		                                        </div>
@@ -586,4 +595,13 @@ body {
                     </div>
             </div>
 </body>
+<script src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#anotherOptionPk").selectpicker('refresh');
+	});
+	
+</script>
 </html>

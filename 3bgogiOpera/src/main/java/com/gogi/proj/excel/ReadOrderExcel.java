@@ -36,7 +36,7 @@ public class ReadOrderExcel {
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	public List<OrdersVO> readOrderExcelDataToXLS(String fileName, int ssFk) throws POIXMLException{
+	public List<OrdersVO> readOrderExcelDataToXLS(String fileName, int ssFk, boolean sendingDeadlineFlag) throws POIXMLException{
 		
 		List<OrdersVO> orderList = new ArrayList<OrdersVO>();
 		
@@ -45,7 +45,7 @@ public class ReadOrderExcel {
 		Calendar cal = Calendar.getInstance();
 		
 		Timestamp ts = new Timestamp(cal.getTimeInMillis());
-		
+
 		try {
 
 			FileInputStream fis= new FileInputStream("C:\\Users\\3bgogi\\Desktop\\server_file\\order_excel\\"+fileName);
@@ -332,7 +332,12 @@ public class ReadOrderExcel {
 			            		}
 			            		//발송기한 : 이걸로 예약자를 자동으로 걸러내거나 따로 예약을 잡을 수 있도록 함
 			            	}else if(columnindex==25) {
-			            		orderVO.setOrSendingDeadline(new Date(cell.getDateCellValue().getTime()));
+			            		if(sendingDeadlineFlag == true) {
+			            			orderVO.setOrSendingDeadline(new Date(cell.getDateCellValue().getTime()));
+			            			
+			            		}else {
+			            			orderVO.setOrSendingDeadline(new Date(ts.getTime()));
+			            		}
 			            		//발송처리일 : 현재 우리에게 필요없음
 			            	}else if(columnindex==26) {
 			            		
@@ -404,7 +409,7 @@ public class ReadOrderExcel {
 			            		
 			            		orderVO.setOrReceiverContractNumber1(value);
 			            		//수취인 연락처 2
-			            	}else if(columnindex==36) {
+			            	}else if(columnindex==55) {
 			            		orderVO.setOrReceiverContractNumber2(cell.getStringCellValue());
 			            		//배송지
 			            	}else if(columnindex==37) {
@@ -605,7 +610,7 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 
 
 	
-	public List<OrdersVO> readOrderExcelData(String fileName, int ssFk, StoreExcelDataSortingVO sortingVO) throws POIXMLException{
+	public List<OrdersVO> readOrderExcelData(String fileName, int ssFk, StoreExcelDataSortingVO sortingVO, boolean sendingDeadlineFlag) throws POIXMLException{
 		
 		List<OrdersVO> orderList = new ArrayList<OrdersVO>();
 		
@@ -664,7 +669,6 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 			            	
 			            	if(columnindex==sortingVO.getSedsBuyerName()) {
 			            		orderVO.setOrBuyerName(cell.getStringCellValue());
-			            		System.out.println("구매장 테스트 ("+cell.getStringCellValue()+")");
 			            		//구매자ID		
 			            	}if(columnindex==sortingVO.getSedsBuyerId()) {
 			            		
@@ -915,9 +919,16 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 			            		//발송기한 : 이걸로 예약자를 자동으로 걸러내거나 따로 예약을 잡을 수 있도록 함
 			            		
 			            	}if(columnindex==sortingVO.getSedsSendingDeadline()) {
-			            		String value = cellTypeReturn(cell);
-			            		 
-			            		orderVO.setOrSendingDeadline(new Date(sdfWithoutTime.parse(value).getTime()));
+			            		
+			            		if(sendingDeadlineFlag == true) {
+			            			String value = cellTypeReturn(cell);
+				            		 
+				            		orderVO.setOrSendingDeadline(new Date(sdfWithoutTime.parse(value).getTime()));
+				            		
+			            		}else {
+			            			orderVO.setOrSendingDeadline(new Date(ts.getTime()));
+			            		}
+			            		
 			            		//발송처리일 : 현재 우리에게 필요없음
 			            	}if(columnindex==26) {
 			            		
@@ -1207,24 +1218,34 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 						orderVO = new OrdersVO();
 						
 						if(row !=null){
-							
+							boolean nullCount = false;
 							for(columnindex=0;columnindex<58;columnindex++){
 								
 								XSSFCell cell=row.getCell(columnindex);
 								// 판매처별로 엑셀 열을 읽어서 씀
 								//구매자명
 								if(cell==null) {
+									nullCount = true;
 									continue;
 									
 								}else {
 									orderVO = originalOrVO.copy();
 									
 									if(columnindex==0) {
-										String value = cellTypeReturn(cell);
-										
-										orderVO.setOrBuyerName(value);
+										if(cell.getStringCellValue() == null) {
+											
+										}else {											
+											String value = cellTypeReturn(cell);
+											
+											orderVO.setOrBuyerAnotherName(value);
+										}
 											
 									}if(columnindex==1) {
+										String value = cellTypeReturn(cell);
+										
+										orderVO.setOrReceiverName(value);
+											
+									}if(columnindex==2) {
 										
 										String value = cellTypeReturn(cell);
 										
@@ -1234,7 +1255,7 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 										
 										orderVO.setOrShippingAddressNumber(value);
 										
-									}if(columnindex==2) {
+									}if(columnindex==3) {
 										
 										String value = cellTypeReturn(cell);
 										
@@ -1252,34 +1273,40 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 					            			orderVO.setOrShippingAddressDetail("");
 					            		}
 											
-									}if(columnindex==3) {
+									}if(columnindex==4) {
 										String value = cellTypeReturn(cell);
 										
 										orderVO.setOrReceiverContractNumber1(value);
 											
-									}if(columnindex==4) {
-										String value = cellTypeReturn(cell);
-										
-										orderVO.setOrReceiverContractNumber2(value);
 									}if(columnindex==5) {
 										String value = cellTypeReturn(cell);
 										
-										orderVO.setOrAmount((int)Integer.parseInt(value));
-											
+										orderVO.setOrReceiverContractNumber2(value);
 									}if(columnindex==6) {
-										String value = cellTypeReturn(cell);
 										
-										orderVO.setOrProduct(value);
+										orderVO.setOrAmount((int)cell.getNumericCellValue());
 											
 									}if(columnindex==7) {
 										String value = cellTypeReturn(cell);
 										
-										orderVO.setOrProductOption(value);
+										orderVO.setOrProduct(value);
 											
 									}if(columnindex==8) {
 										String value = cellTypeReturn(cell);
 										
-										orderVO.setOrDeliveryMessage(value);
+										orderVO.setOrProductOption(value);
+											
+									}if(columnindex==9) {
+										
+										if(cell.getStringCellValue() == null) {
+											orderVO.setOrDeliveryMessage("");
+										}else {											
+											String value = cellTypeReturn(cell);
+											
+											orderVO.setOrDeliveryMessage(value);
+										}
+										
+										
 											
 									}
 									orderVO.setOrOrderNumber(originalOrVO.getOrOrderNumber()+"-"+orderCounting);
@@ -1289,16 +1316,22 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 									orderVO.setOrDiscountPrice(originalOrVO.getOrDiscountPrice()/originalOrVO.getOrAmount());
 									orderVO.setOrTotalPrice(originalOrVO.getOrTotalPrice()/originalOrVO.getOrAmount());
 									orderVO.setOrTotalCost(0);
+									if(orderCounting > 1) {
+										orderVO.setOrDeliveryPrice(0);
+										orderVO.setOrDeliveryDiscountPrice(0);
+									}
 									orderVO.setOrPaymentCommision(originalOrVO.getOrPaymentCommision()/originalOrVO.getOrAmount());
 									orderVO.setOrAnotherPaymentCommision(originalOrVO.getOrAnotherPaymentCommision()/originalOrVO.getOrAmount());
+									orderVO.setOrFk(orderVO.getOrPk());
 									
 									orderCounting++;
 								}
 								
 							}//for
+							if(nullCount == false) orderList.add(orderVO);
 						}
 						
-						orderList.add(orderVO);
+						
 						
 					}//for
 				
@@ -1325,6 +1358,8 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 					orderVO = new OrdersVO();
 					
 					if(row !=null){
+						boolean nullCount = false;
+						
 						
 						for(columnindex=0;columnindex<58;columnindex++){
 							
@@ -1332,17 +1367,26 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 							// 판매처별로 엑셀 열을 읽어서 씀
 							//구매자명
 							if(cell==null) {
-								continue;
-								
+								nullCount = true;
+
 							}else {
 								orderVO = originalOrVO.copy();
 								
 								if(columnindex==0) {
-									String value = cellTypeReturnHSS(cell);
-									
-									orderVO.setOrBuyerName(value);
+									if(cell.getStringCellValue() == null) {
+										
+									}else {											
+										String value = cellTypeReturnHSS(cell);
+										
+										orderVO.setOrBuyerAnotherName(value);
+									}
 										
 								}if(columnindex==1) {
+									String value = cellTypeReturnHSS(cell);
+									
+									orderVO.setOrReceiverName(value);
+										
+								}if(columnindex==2) {
 									
 									String value = cellTypeReturnHSS(cell);
 									
@@ -1352,7 +1396,7 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 									
 									orderVO.setOrShippingAddressNumber(value);
 									
-								}if(columnindex==2) {
+								}if(columnindex==3) {
 									
 									String value = cellTypeReturnHSS(cell);
 									
@@ -1370,34 +1414,38 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 				            			orderVO.setOrShippingAddressDetail("");
 				            		}
 										
-								}if(columnindex==3) {
+								}if(columnindex==4) {
 									String value = cellTypeReturnHSS(cell);
 									
 									orderVO.setOrReceiverContractNumber1(value);
 										
-								}if(columnindex==4) {
-									String value = cellTypeReturnHSS(cell);
-									
-									orderVO.setOrReceiverContractNumber2(value);
 								}if(columnindex==5) {
 									String value = cellTypeReturnHSS(cell);
 									
-									orderVO.setOrAmount((int)Integer.parseInt(value));
-										
+									orderVO.setOrReceiverContractNumber2(value);
 								}if(columnindex==6) {
-									String value = cellTypeReturnHSS(cell);
-									
-									orderVO.setOrProduct(value);
+
+									orderVO.setOrAmount((int)cell.getNumericCellValue());
 										
 								}if(columnindex==7) {
 									String value = cellTypeReturnHSS(cell);
 									
-									orderVO.setOrProductOption(value);
+									orderVO.setOrProduct(value);
 										
 								}if(columnindex==8) {
 									String value = cellTypeReturnHSS(cell);
 									
-									orderVO.setOrDeliveryMessage(value);
+									orderVO.setOrProductOption(value);
+										
+								}if(columnindex==9) {
+									if(cell.getStringCellValue() == null) {
+										orderVO.setOrDeliveryMessage("");
+										
+									}else {											
+										String value = cellTypeReturnHSS(cell);
+										
+										orderVO.setOrDeliveryMessage(value);
+									}
 										
 								}
 								orderVO.setOrOrderNumber(originalOrVO.getOrOrderNumber()+"-"+orderCounting);
@@ -1407,16 +1455,21 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 								orderVO.setOrDiscountPrice(originalOrVO.getOrDiscountPrice()/originalOrVO.getOrAmount());
 								orderVO.setOrTotalPrice(originalOrVO.getOrTotalPrice()/originalOrVO.getOrAmount());
 								orderVO.setOrTotalCost(0);
+								if(orderCounting > 1) {
+									orderVO.setOrDeliveryPrice(0);
+									orderVO.setOrDeliveryDiscountPrice(0);
+								}
 								orderVO.setOrPaymentCommision(originalOrVO.getOrPaymentCommision()/originalOrVO.getOrAmount());
 								orderVO.setOrAnotherPaymentCommision(originalOrVO.getOrAnotherPaymentCommision()/originalOrVO.getOrAmount());
+								orderVO.setOrFk(orderVO.getOrPk());
 								
 								orderCounting++;
 							}
 							
 						}//for
+						
+						if(nullCount == false) orderList.add(orderVO);
 					}
-					
-					orderList.add(orderVO);
 					
 				}//for
 			}

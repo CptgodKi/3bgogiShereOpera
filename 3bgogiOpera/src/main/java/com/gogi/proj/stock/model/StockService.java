@@ -13,7 +13,7 @@ import com.gogi.proj.stock.vo.ProductInputListVO;
 
 public interface StockService {
 
-	public void stockChecking(OrderSearchVO osVO);
+	public void stockChecking(OrderSearchVO osVO, String ip, String adminId);
 	
 	/**
 	 * 
@@ -156,4 +156,26 @@ public interface StockService {
 	 * @메소드설명 : 상품 입고 처리 승인이 되지 않은 항목 개수 조회
 	 */
 	public int productInputDontPerm();
+	
+	/**
+	 * 
+	 * @MethodName : changeOrderInvFlag
+	 * @date : 2020. 6. 19.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 재고할당 초기화 시키기
+	 */
+	public int changeOrderInvFlag(OrdersVO orVO);
+	
+	/**
+	 * 
+	 * @MethodName : checkOptionBarcodeDupli
+	 * @date : 2020. 10. 19.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 바코드 중복 번호 검색하기
+	 */
+	public List<ProductOptionVO> checkOptionBarcodeDupli(OrderSearchVO osVO);
 }

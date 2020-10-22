@@ -1,5 +1,6 @@
 package com.gogi.proj.orders.model;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gogi.proj.configurations.model.ConfigurationDAO;
 import com.gogi.proj.configurations.vo.StoreMergeVO;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.delivery.model.DeliveryDAO;
+import com.gogi.proj.delivery.model.DeliveryService;
+import com.gogi.proj.excel.ReadOrderExcel;
+import com.gogi.proj.log.model.LogDAO;
+import com.gogi.proj.log.model.LogService;
+import com.gogi.proj.log.util.LogUtil;
+import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.orders.config.model.StoreExcelDataSortingDAO;
 import com.gogi.proj.orders.util.OrderUtilityClass;
 import com.gogi.proj.orders.vo.IrregularOrderVO;
@@ -40,6 +48,18 @@ public class OrdersServiceImpl implements OrdersService{
 	
 	@Autowired
 	private StoreExcelDataSortingDAO sedsDao;
+	
+	@Autowired
+	private ReadOrderExcel readOrderExcel;
+	
+	@Autowired
+	private LogService logService;
+	
+	@Autowired
+	private DeliveryDAO deliDao;
+	
+	@Autowired
+	private LogDAO logDao;
 	
 	@Transactional
 	public int [] insertOrderData(List<OrdersVO> orderList, int ssPk) {
@@ -275,11 +295,13 @@ public class OrdersServiceImpl implements OrdersService{
 
 	@Override
 	@Transactional
-	public boolean devideOrders(int [] orPkList) {
+	public boolean devideOrders(int [] orPkList, String ip, String adminId) {
 		// TODO Auto-generated method stub
 		OrdersVO orVO =  ordersDAO.selectOrdersByPk(orPkList[0]);
 		
 		StoreSectionVO ssVO =  configDAO.selectStoreSectionBySspk(orVO.getSsFk());
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		int specialNumber = ssVO.getSsSpecialNumberCount();
 		
@@ -292,6 +314,16 @@ public class OrdersServiceImpl implements OrdersService{
 			ordersDAO.grantOrSerialSpecialNumberByOrPk(tempOrdersVO);
 			ordersDAO.writeDevideOrderFlag(tempOrdersVO);
 
+			
+			OrderHistoryVO ohVO = new OrderHistoryVO();
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhIp(ip);
+			ohVO.setOrFk(tempOrdersVO.getOrPk());
+			ohVO.setOhEndPoint("상품");
+			ohVO.setOhRegdate(sdf.format(new Date()));
+			ohVO.setOhDetail("주문서 분리로 나누기");
+			
+			logService.insertOrderHistory(ohVO);
 		}
 		
 		specialNumber++;
@@ -312,9 +344,13 @@ public class OrdersServiceImpl implements OrdersService{
 	@Transactional
 	@Override
 	public boolean selfDevideOrders(int orPk, int orderDevideType, int radioDevideValue, int selfDevideOriginalValue,
-			int selfDevideValue) throws CloneNotSupportedException {
+			int selfDevideValue, String ip, String adminId) throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
 		OrdersVO ordersVO = ordersDAO.selectOrdersByPk(orPk);
+		
+		stockService.updateProductChangeValues(ordersVO);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		StoreSectionVO ssVO =  configDAO.selectStoreSectionBySspk(ordersVO.getSsFk());
 		
@@ -329,6 +365,16 @@ public class OrdersServiceImpl implements OrdersService{
 		if(orderDevideType == 0) {
 			firstOrder = Math.round((ordersVO.getOrAmount()/radioDevideValue)+ ordersVO.getOrAmount()%radioDevideValue) ;
 			secondOrder= Math.abs(ordersVO.getOrAmount()/radioDevideValue);
+			
+			OrderHistoryVO ohVO = new OrderHistoryVO();
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhIp(ip);
+			ohVO.setOrFk(ordersVO.getOrPk());
+			ohVO.setOhEndPoint("상품");
+			ohVO.setOhRegdate(sdf.format(new Date()));
+			ohVO.setOhDetail("상품 개수 비율로 나누기 => 첫 주문서 "+firstOrder+" 개, 이후 상품 "+secondOrder+" 개씩 "+(radioDevideValue - 1)+" 개의 주문서로");
+			
+			logService.insertOrderHistory(ohVO);
 			
 			for(int i = 0; i < radioDevideValue; i++) {
 				
@@ -349,6 +395,16 @@ public class OrdersServiceImpl implements OrdersService{
 			firstOrder = selfDevideOriginalValue;
 			ordersDAO.updateDevideOrderData( ouc.returnDevideOrdersData(ordersVO.copy(), firstOrder, true, ordersVO.getOrSerialSpecialNumber()));
 			
+			OrderHistoryVO ohVO = new OrderHistoryVO();
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhIp(ip);
+			ohVO.setOrFk(ordersVO.getOrPk());
+			ohVO.setOhEndPoint("상품");
+			ohVO.setOhRegdate(sdf.format(new Date()));
+			ohVO.setOhDetail("상품 개수 지정 나누기 => 첫 주문서 상품 개수 "+firstOrder+" 개, 두번째 주문서  "+secondOrder+" 개");
+			
+			logService.insertOrderHistory(ohVO);
+			
 			secondOrder= selfDevideValue;
 			ordersDAO.insertDevideOrderData(ouc.returnDevideOrdersData(ordersVO.copy(), secondOrder, false, ssVO.getSsStoreNickname()+"-"+specialNumber));
 			specialNumber++;
@@ -359,8 +415,6 @@ public class OrdersServiceImpl implements OrdersService{
 			
 			return false;
 		}
-		
-		stockService.updateProductChangeValues(ordersVO);
 		
 		ssVO.setSsSpecialNumberCount(specialNumber);
 		
@@ -379,9 +433,10 @@ public class OrdersServiceImpl implements OrdersService{
 
 	@Transactional
 	@Override
-	public boolean updateCombineOrders(List<String> orSerialSpecialNumber, OrdersVO combineOrderData) {
+	public boolean updateCombineOrders(List<String> orSerialSpecialNumber, OrdersVO combineOrderData, String accessIp, String adminId) {
 		// TODO Auto-generated method stub
 		OrdersVO tempVO = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		try {			
 			for(int i=0; i<orSerialSpecialNumber.size(); i++) {
@@ -390,6 +445,8 @@ public class OrdersServiceImpl implements OrdersService{
 				
 				for(int j=0; j<originalOrdersVO.size(); j++) {
 					tempVO.setOrPk(originalOrdersVO.get(j).getOrPk());
+					logService.changeOrderHistory(tempVO, true, accessIp, adminId, "주문서 합포 및 변경", sdf.format(new Date()));
+					
 					ordersDAO.updateCombineOrders(tempVO);
 				}
 				
@@ -404,9 +461,24 @@ public class OrdersServiceImpl implements OrdersService{
 		return true;
 	}
 
+	@Transactional
 	@Override
-	public int changeProductAndOptionByOrPk(OrdersVO orVO) {
+	public int changeProductAndOptionByOrPk(OrdersVO orVO, String ip, String adminId) {
 		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		OrderHistoryVO ohVO = new OrderHistoryVO();
+		ohVO.setOhAdmin(adminId);
+		ohVO.setOhIp(ip);
+		ohVO.setOrFk(orVO.getOrPk());
+		ohVO.setOhEndPoint("상품");
+		ohVO.setOhRegdate(sdf.format(new Date()));
+		ohVO.setOhDetail("상품 변경, 상품 재고 초기화");
+		
+		logService.insertOrderHistory(ohVO);
+		
+		stockService.updateProductChangeValues(orVO);
+				
 		return ordersDAO.changeProductAndOptionByOrPk(orVO);
 	}
 
@@ -435,8 +507,11 @@ public class OrdersServiceImpl implements OrdersService{
 	}
 
 	@Override
+	@Transactional
 	public boolean deleteOrdersOne(OrdersVO orVO) {
 		// TODO Auto-generated method stub
+		
+		stockService.updateProductChangeValues(orVO);
 		
 		int result = ordersDAO.deleteOrdersByOrPk(orVO);
 		
@@ -468,26 +543,124 @@ public class OrdersServiceImpl implements OrdersService{
 	}
 
 	@Override
-	public int outputCancledBySerialNumber(OrdersVOList orVOList) {
+	public int outputCancledBySerialNumber(OrdersVOList orVOList, String ip, String adminId) {
 		// TODO Auto-generated method stub
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date now = new Date();
+		
+		String todayYMD = sdf.format(now);
+		
+		OrdersVO changeOr = null;
+		OrderHistoryVO ohVO = null;
+		
+		for(int i = 0; i < orVOList.getOrVoList().size(); i++) {
+			
+			changeOr = new OrdersVO();
+			changeOr.setOrSerialSpecialNumber(orVOList.getOrVoList().get(i).getOrSerialSpecialNumber());
+			
+			List<OrdersVO> changeOrderList = logDao.selectOrdersChangeBeforeValueBySerialSpecialNumber(changeOr);
+			
+			for(int j = 0; j < changeOrderList.size(); j++) {
+				
+				ohVO = new OrderHistoryVO();
+				 
+				ohVO.setOrFk(changeOrderList.get(j).getOrPk());
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhEndPoint("cs - 발송 취소");
+				ohVO.setOhRegdate(todayYMD);
+				ohVO.setOhDetail("cs 페이지에서의 일괄 발송 취소 처리");
+				
+				logService.insertOrderHistory(ohVO);
+				
+			}
+			
+			
+		}
+		
 		return ordersDAO.outputCancledBySerialNumber(orVOList);
 	}
 
 	@Override
-	public int changeSendingDeadline(OrderSearchVO osVO) {
+	@Transactional
+	public int changeSendingDeadline(OrderSearchVO osVO, String ip, String adminId) {
 		// TODO Auto-generated method stub
+		OrdersVO changeOr = null;
+		OrderHistoryVO ohVO = null;
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String today = sdf.format(new Date());
+		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
+			
+			changeOr = new OrdersVO();
+			changeOr.setOrSerialSpecialNumber(osVO.getOrSerialSpecialNumberList().get(i));
+			
+			List<OrdersVO> changeOrderList = logDao.selectOrdersChangeBeforeValueBySerialSpecialNumber(changeOr);
+			
+			for(int j = 0; j < changeOrderList.size(); j++) {
+				
+				ohVO = new OrderHistoryVO();
+				 
+				ohVO.setOrFk(changeOrderList.get(j).getOrPk());
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhEndPoint("cs - 발송일 변경");
+				ohVO.setOhRegdate(today);
+				ohVO.setOhDetail("발송일 변경 [ "+changeOrderList.get(j).getOrSendingDeadline()+" => "+osVO.getDateStart()+"]");
+				
+				logService.insertOrderHistory(ohVO);
+				
+			}
+			
+			
+		}
+		
 		return ordersDAO.changeSendingDeadline(osVO);
 	}
 
 	@Override
 	@Transactional
-	public int updateOutputDateBySerialNumber(OrdersVOList orVOList) {
+	public int updateOutputDateBySerialNumber(OrdersVOList orVOList, String ip, String adminId) {
 		// TODO Auto-generated method stub
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		Date now = new Date();
 		
-		orVOList.setOrSerialSpecialNumber(sdf.format(now));
+		String todayYMD = sdf.format(now);
 		
+		orVOList.setOrSerialSpecialNumber(sdf.format(now));
+		OrdersVO changeOr = null;
+		OrderHistoryVO ohVO = null;
+		
+		for(int i = 0; i < orVOList.getOrVoList().size(); i++) {
+			
+			changeOr = new OrdersVO();
+			changeOr.setOrSerialSpecialNumber(orVOList.getOrVoList().get(i).getOrSerialSpecialNumber());
+			changeOr.setOrDeliveryInvoiceNumber(orVOList.getOrVoList().get(i).getOrDeliveryInvoiceNumber());
+			deliDao.updateSendingDone(changeOr);
+			
+			List<OrdersVO> changeOrderList = logDao.selectOrdersChangeBeforeValueBySerialSpecialNumber(changeOr);
+			
+			for(int j = 0; j < changeOrderList.size(); j++) {
+				
+				ohVO = new OrderHistoryVO();
+				 
+				ohVO.setOrFk(changeOrderList.get(j).getOrPk());
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhEndPoint("cs - 발송처리");
+				ohVO.setOhRegdate(todayYMD);
+				ohVO.setOhDetail("cs 페이지에서의 발송처리");
+				
+				logService.insertOrderHistory(ohVO);
+				
+			}
+			
+			
+		}
+
 		return ordersDAO.updateOutputDateBySerialNumber(orVOList);
 	}
 
@@ -637,6 +810,54 @@ public class OrdersServiceImpl implements OrdersService{
 			return "주문서 복수 매칭 나누기 실패";
 		}
 
+	}
+
+	@Transactional
+	@Override
+	public int [] updateExcelDivOrders(OrdersVO orVO, String fileName) {
+		// TODO Auto-generated method stub
+		if(orVO.getOrPk() == 0) {
+			return null;
+		}
+		
+		List<OrdersVO> orderList= null;
+		
+		OrdersVO  originalOrVO = ordersDAO.selectOrdersByPk(orVO.getOrPk());
+		
+		orderList = readOrderExcel.readGiftSetExcelFile(fileName, originalOrVO);
+		
+		System.out.println(orderList.size()+", "+originalOrVO.getOrAmount());
+		if(originalOrVO.getOrAmount() != orderList.size()) {
+			return null;
+		}
+		
+		int [] result = insertOrderData(orderList, originalOrVO.getSsFk());
+		
+		if(result[0] != orderList.size()) {
+			throw new RuntimeException("개수가 같지 않음");
+		}
+		
+		ordersDAO.updateExcelDivOrders(originalOrVO);
+		
+		return result;
+	}
+
+	@Override
+	public List<OrdersVO> newSearchCustomerOrderInfo(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.newSearchCustomerOrderInfo(osVO);
+	}
+
+	@Override
+	public int newSearchCustomerOrderInfoCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.newSearchCustomerOrderInfoCounting(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> newSearchCustomerOrderInfoToExcelFile(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.newSearchCustomerOrderInfoToExcelFile(osVO);
 	}
 	
 	/*cs 부분 끝*/

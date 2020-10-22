@@ -52,8 +52,26 @@ public class EpostDAOMybatis extends SqlSessionDaoSupport implements EpostDAO{
 	}
 
 	@Override
-	public List<OrdersVO> selectSelfprintTest() {
+	public OrdersVO deliveryPrintTarget(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
-		return getSqlSession().selectList(epostNameSpace+".selectSelfprintTest");
+		return getSqlSession().selectOne(epostNameSpace+".deliveryPrintTarget", osVO);
+	}
+
+	@Override
+	public int grantDeliveryInvoiceNumber(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(epostNameSpace+".grantDeliveryInvoiceNumber", orVO);
+	}
+
+	@Override
+	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(epostNameSpace+".deliveryInvoiceNumberReprinting", osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectDeliveryInvoiceNumberByDate(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(epostNameSpace+".selectDeliveryInvoiceNumberByDate", osVO);
 	}
 }

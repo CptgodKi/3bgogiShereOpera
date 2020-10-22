@@ -87,4 +87,39 @@ public interface CostIoDAO {
 	 * @메소드설명 : 메인 페이지에 들어갈 최근 입고된 상품 조회
 	 */
 	public List<CostDetailVO> selectCostInputList(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCostDetailCode
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 원재료 입고에 필요한 원재료 코드
+	 */
+	public List<CostDetailVO> selectCostDetailCode();
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateCostIoOutputFlagAllZero
+	 * @date : 2020. 10. 22.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @return
+	 * @메소드설명 : 라벨지에 표기될 원육 전부 false 표기
+	 */
+	public int updateCostIoOutputFlagAllZero(CostIoVO ciVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateCostIoOutputFlagPosib
+	 * @date : 2020. 10. 22.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @return
+	 * @메소드설명 : 라벨지에 표기될 원육 선택하기
+	 */
+	public int updateCostIoOutputFlagPosib(CostIoVO ciVO);
 }

@@ -323,7 +323,36 @@
 			
 			//$('#optgroup').multiSelect({ selectableOptgroup: true });
 			
-			
+			$.ajax({
+				url:"<c:url value='/delivery/sending_req.do'/>",
+				method:"GET",
+				async:false,
+				success:function(data){
+					
+					
+					if(data.length == 0){
+						
+					}else{
+						sendingReqHTML = "";
+						$.each(data, function(){
+							
+							sendingReqHTML+='<div class="list-group-item list-group-item-action" >'
+		                        +'<div class="notification-info">'
+		                            +'<div class="notification-list-user-block" style="padding-left: 10px;">'
+		                            	+'<span class="notification-list-user-name"> '+this.srAdminName+'('+this.srAdminId+')</span>'
+		                            		+'송장번호 <a href="/orders/search/customer_orders.do?datePeriod=1&searchType=invoiceNum&searchKeyword='+this.srInvoiceNum+'">'+this.srInvoiceNum+'</a> 사유 ('+this.srReason+' )'
+		                                +'<div class="notification-date"> '+this.srRegdate+'</div>'
+		                            +'</div>'
+		                        +'</div>'
+		                    +'</div>'; 
+						});
+						
+						$("#sendingReqHTML").html(sendingReqHTML);
+						
+					}
+					
+				}
+			});
 		});
 		
 		window.paceOptions = {

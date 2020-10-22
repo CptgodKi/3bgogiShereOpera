@@ -12,6 +12,7 @@ import com.gogi.proj.classification.code.vo.CostCodeVO;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.paging.PaginationInfo;
 import com.gogi.proj.product.cost.vo.CostDetailVO;
+import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.cost.vo.CostsVO;
 import com.gogi.proj.product.cost_io.model.CostIoDAO;
 import com.gogi.proj.product.costs.model.CostsDAO;
@@ -151,7 +152,7 @@ public class CostDetailServiceImpl implements CostDetailService{
 	public int insertCarcassAndCostIo(AdminVO adminVO, CarcassInputListVO cilVO) {
 		// TODO Auto-generated method stub
 		if(cilVO.getCostIoList().size() == 0) return 0;
-		cilVO.setCilAdmin(adminVO.getAdminId()+"("+adminVO.getAdminName()+")");
+		cilVO.setCilAdmin(adminVO.getUsername());
 		cilVO.setCilAdminPk(adminVO.getAdminPk());
 		
 		int result = costDetailDAO.insertCarcass(cilVO);
@@ -171,6 +172,42 @@ public class CostDetailServiceImpl implements CostDetailService{
 	public List<CarcassInputListVO> selectCarcassInputList(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return costDetailDAO.selectCarcassInputList(osVO);
+	}
+
+	@Override
+	public CarcassInputListVO selectCarcassInputListDetail(CarcassInputListVO cilVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCarcassInputListDetail(cilVO);
+	}
+
+	@Override
+	public int updateCarcassInputList(CarcassInputListVO cilVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.updateCarcassInputList(cilVO);
+	}
+
+	@Override
+	public int deleteCarcassInputList(CarcassInputListVO cilVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.deleteCarcassInputList(cilVO);
+	}
+
+	@Override
+	public List<CostIoVO> selectCostIoHistory(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCostIoHistory(osVO);
+	}
+
+	@Override
+	public int selectCostIoHistoryCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCostIoHistoryCounting(osVO);
+	}
+
+	@Override
+	public int selectCarcassInputListCount(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selectCarcassInputListCount(osVO);
 	}
 
 }

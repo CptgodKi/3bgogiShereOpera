@@ -102,65 +102,6 @@
 	    }
 	    
 	});
- 
-  $.ajax({
-	    type       : 'GET',
-	    url        : '/analytics/six_month_total_sales.do',
-	    success    : function(data){
-	    	orderCountDataList = devideDateAndData(data);
-	    	
-	    	 var ctx = document.getElementById("widgetChart4");
-	    	    if (ctx) {
-	    	      ctx.height = 190;
-	    	      var myChart = new Chart(ctx, {
-	    	        type: 'bar',
-	    	        data: {
-		    	          labels: orderCountDataList[3],
-		    	          type: 'line',
-		    	          datasets: [{
-		    	            data: orderCountDataList[1],
-		    	            label: ' 수수료 제외 매출 ',
-		    	            backgroundColor: 'rgba(0,48,219,.30)',
-		    	            borderWidth: "0",
-		    	            borderColor: 'rgba(255,255,255,.55)',
-		    	          },]
-		    	        },
-	    	        options: {
-	    		          maintainAspectRatio: true,
-	    		          legend: {
-	    		            display: false
-	    		          },
-	    		          scales: {
-	    		            xAxes: [{
-	    		              display: true,
-	    		              categoryPercentage: 1,
-	    		              barPercentage: 0.8
-	    		            }],
-	    		            yAxes: [{
-	    			              display: false,
-	    			              barPercentage: 0.2,
-	    			              ticks: {
-	    			                  suggestedMin: 0,    // minimum will be 0, unless there is a lower value.
-	    			                  // OR //
-	    			                  beginAtZero: true   // minimum value will be 0.
-	    			              }
-	    			            }]
-	    		          },
-	    		          tooltips: {
-	    		        	    callbacks: {
-	    		        	      label: function (tooltipItem, data) {
-	    		        	        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-	    		        	        return parseInt(tooltipValue).toLocaleString()+" 원";
-	    		        	      }
-	    		        	    }
-	    		        	  }
-	    		        }
-	    	      });
-	    	    }
-	    	 
-	    }
-	    
-	});
   
   window.chartColors = {
 			red: 'rgb(255, 99, 132)',

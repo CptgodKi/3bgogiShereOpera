@@ -104,6 +104,15 @@
 				 var checkVal = onlyNumberInsertFunc($(this).val());
 				 $(this).val(checkVal);
 			 });
+    		 
+    		 $("input[name=ciOutputFlag]").click(function(){
+    			var cdFk = $(this).data("cd-fk");
+    			var ciPk = $(this).data("ci-pk");
+    			
+    			location.href="<c:url value='/products/choose_cost_io.do?ciPk="+ciPk+"&cdFk="+cdFk+"'/>";
+    			
+    			
+    		 });
     		
     	});
     	
@@ -150,13 +159,13 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 데이터 관리 </h2>
+                            <h2 class="pageheader-title"> 상품 및 원재료 </h2>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 입력 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 원가 상세사항 수정</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 입력 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 원재료 상세사항 수정</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -183,13 +192,13 @@
                                     <form name="insertCostDetailForm" id="insertCostDetailData" action="<c:url value='/products/insert/cost_detail.do'/>" method="post">
                                     	<input type="hidden" name="cdPk" value="${cdVO.cdPk }">
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가명 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료명 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <input type="text" placeholder="원가명을 입력해주세요." class="form-control" id="cdName" name="cdName" value="${cdVO.cdName }">
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 분류 코드 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 분류 코드 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <select class="form-control" id="ccFk" name="ccFk">
                                                 	<c:forEach var="cclist" items="${ccList }">
@@ -297,7 +306,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 설명란 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 설명란 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <textarea class="form-control" id="cdRemark" name="cdRemark" rows="3" style="resize: none;" placeholder="적지 않아도 무관.">${cdVO.cdRemark }</textarea>
                                             </div>
@@ -361,41 +370,48 @@
                         </div>
                         <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
 	                        <div class="card">
-                                <h5 class="card-header">원가 변동 사항</h5>
+                                <h5 class="card-header">원재료 변동 사항</h5>
                                 <div class="card-body">
 	                                <div class="table-responsive">
 	                                    <table id="example2" class="table table-bordered" style="text-align:center; font-size: 12px; word-break: keep-all; white-space: nowrap;">
 	                                        <thead>
 	                                            <tr>
-	                                                <th scope="col" width="10%">원가</th>
 	                                                <th scope="col" width="10%">입고무게</th>
-	                                                <th scope="col" width="10%">출고 무게</th>
 	                                                <th scope="col" width="20%">이력번호</th>
 	                                                <th scope="col" width="5%">등급</th>
 	                                                <th scope="col" width="10%">도축장</th>
 	                                                <th scope="col" width="10%">원산지</th>
 	                                                <th scope="col" width="15%">품목제조번호</th>
 	                                                <th scope="col" width="10%">등록일</th>
+	                                                <th scope="col" width="15%">출력라벨선택</th>
 	                                            </tr>
 	                                        </thead>
+	                                        
 	                                        <tbody>
 	                                        	<c:if test="${!empty cdVO.costIoVOList}">                                        	
 		                                        	<c:forEach var="costIoVOlist" items="${cdVO.costIoVOList }">                                    	
-			                                            <tr class="table-3bgogi-hover" onclick="openCostIoDetail(${costIoVOlist.ciPk })">
-			                                                <td><fmt:formatNumber value="${costIoVOlist.ciPrice }" pattern="#,###"/>원</td>
-			                                                <td><fmt:formatNumber value="${costIoVOlist.ciWeight }" pattern="#,###"/>g</td>
-			                                                <td><fmt:formatNumber value="${costIoVOlist.ciOutputWeight }" pattern="#,###"/>g</td>
-			                                                <td>${costIoVOlist.ciAnimalProdTraceNum }</td>
-			                                                <td>${costIoVOlist.ciLevel }</td>
-			                                                <td>${costIoVOlist.ciAbattoir }</td>
-			                                                <td>${costIoVOlist.ciCountryOfOrigin }</td>
-			                                                <td>${costIoVOlist.ciItemsManufNum }</td>
-			                                                <td><fmt:formatDate value="${costIoVOlist.ciRegdate }" pattern="yyyy-MM-dd"/> </td>
+			                                            <tr class="table-3bgogi-hover">
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })"><fmt:formatNumber value="${costIoVOlist.ciWeight }" pattern="#,###"/>g</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })">${costIoVOlist.ciAnimalProdTraceNum }</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })">${costIoVOlist.ciLevel }</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })">${costIoVOlist.ciAbattoir }</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })">${costIoVOlist.ciCountryOfOrigin }</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })">${costIoVOlist.ciItemsManufNum }</td>
+			                                                <td onclick="openCostIoDetail(${costIoVOlist.ciPk })"><fmt:formatDate value="${costIoVOlist.ciRegdate }" pattern="yyyy-MM-dd"/> </td>
+			                                                <td>
+			                                                	<label class="custom-control custom-radio custom-control-inline">
+						                                        	<input type="radio"  name="ciOutputFlag" value="0" data-cd-fk="${cdVO.cdPk }" data-ci-pk="${costIoVOlist.ciPk }"
+						                                        		<c:if test="${costIoVOlist.ciOutputFlag == true }">
+																			 checked="checked"
+																		</c:if>
+						                                        	class="custom-control-input"><span class="custom-control-label"></span>
+						                                        </label>
+			                                                </td>
 			                                            </tr>
 		                                        	</c:forEach>
 	                                        	</c:if>
 	                                        	<c:if test="${empty cdVO.costIoVOList}">
-	                                        		<td colspan="9"> 원가 변동 내역이 없습니다</td>
+	                                        		<td colspan="8"> 원재료 변동 내역이 없습니다</td>
 	                                        	</c:if>
 	                                        </tbody>
 	                                    </table>

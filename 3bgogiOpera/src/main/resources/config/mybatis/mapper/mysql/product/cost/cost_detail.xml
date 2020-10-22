@@ -219,7 +219,8 @@
 		    ci.ci_level,
 		    ci.ci_abattoir,
 		    ci.ci_country_of_origin,
-		    ci.ci_regdate
+		    ci.ci_regdate,
+		    ci.ci_output_flag
 		FROM
 			cost_detail cd
 		    LEFT JOIN cost_io ci ON cd.cd_pk = ci.cd_fk

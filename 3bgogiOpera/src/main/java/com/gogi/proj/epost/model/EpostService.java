@@ -1,6 +1,11 @@
 package com.gogi.proj.epost.model;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
+
+import org.json.simple.parser.ParseException;
 
 import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.orders.vo.OrdersVO;
@@ -19,25 +24,39 @@ public interface EpostService {
 	
 	public int selectDontGrantDelivOrderListInMonthCounting(OrderSearchVO osVO);
 	
+	
 	/**
 	 * 
-	 * @MethodName : selectSelfprintTest
-	 * @date : 2020. 9. 4.
+	 * @MethodName : deliveryPrintTarget
+	 * @date : 2020. 9. 9.
 	 * @author : Jeon KiChan
+	 * @param osVO
 	 * @return
-	 * @메소드설명 : 테스트
+	 * @메소드설명 : 송장 부여 및 업데이트하기
 	 */
-	public List<OrdersVO> selectSelfprintTest();
+	public OrdersVO deliveryPrintTarget(OrderSearchVO osVO, String ip, String adminId);
 	
 	
 	/**
 	 * 
-	 * @MethodName : grantDeliveryNumber
-	 * @date : 2020. 9. 7.
+	 * @MethodName : deliveryReprinting
+	 * @date : 2020. 9. 25.
 	 * @author : Jeon KiChan
-	 * @param orVO
+	 * @param osVO
 	 * @return
-	 * @메소드설명 : 웹에서 직접 송장을 프린트 할 때 송장부여하기
+	 * @메소드설명 : 송장 재출력
 	 */
-	public int grantDeliveryNumber(OrdersVO orVO);
+	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectDeliveryInvoiceNumberByDate
+	 * @date : 2020. 9. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 발송일을 기준으로 송장번호를 가져와 우체국에 접수가 되었는지 여부 확인
+	 */
+	public List<OrdersVO> selectDeliveryInvoiceNumberByDate(OrderSearchVO osVO) throws IOException, ParseException;
 }

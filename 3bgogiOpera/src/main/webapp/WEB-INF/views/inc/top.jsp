@@ -58,7 +58,13 @@
 			100% {opacity:1;}
 		}
 			
-			
+		.selected-values{
+			background-color: #FFA2A2;
+		}
+		
+		.selected-values option{
+			background-color: #fff;
+		}
     </style>
 </head>
 <script type="text/javascript">
@@ -66,6 +72,7 @@
 		$(".createNewOrder").click(function(){
 			
 			window.open('/orders/create/order.do', "새주문생성" , "width=1500, height=900, top=100, left=100, scrollbars=no");
+			
 		});
 	});
 $.ajaxSetup({
@@ -96,11 +103,12 @@ $.ajaxSetup({
 				setTimeout(function(){
 					openProjectWhenSetupPage();
 					clearTimeout(this);
-				}, 10000);
+				}, 60000);
 				
 			}
 		});
 	}
+	
 	
 	$.ajax({
 		url:"<c:url value='/project/project_alarm.do'/>",
@@ -201,9 +209,20 @@ function projectTopRewrite(data){
                 <div class="collapse navbar-collapse " id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto navbar-right-top">
                         <li class="nav-item">
-                            <div id="custom-search" class="top-search-bar">
-                                <input class="form-control" type="text" placeholder="Search..">
-                            </div>
+                        </li>
+                        
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fa-comments" id="alarmBellIcon"></i> <span class="indicator"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="notification-title"> 강제 출고 요청  </div>
+                                    <div class="notification-list">
+                                        <div id="sendingReqHTML" class="list-group">
+                                            
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown notification">
                             <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell" id="alarmBellIcon"></i> <span class="indicator"></span></a>
@@ -218,8 +237,7 @@ function projectTopRewrite(data){
                                                     	<img src="${pageContext.request.contextPath}/resources/images/avatar-2.jpg" alt="" class="user-avatar-md rounded-circle">
                                                     </div>
                                                     <div class="notification-list-user-block">
-                                                    	<span class="notification-list-user-name"> 전기찬 - 시스템운영개발</span>
-                                                    	리뉴얼 웹페이지 언젠가 제작 다 하겠지?
+                                                    	<span class="notification-list-user-name"> </span>
                                                     </div>
                                                 </div>
                                             </a>
@@ -227,39 +245,7 @@ function projectTopRewrite(data){
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="list-footer"><a href="<c:url value='/project/insert_project.do'/>"> 모든 업무 보기 </a></div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown connection">
-                            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-fw fa-th"></i> </a>
-                            <ul class="dropdown-menu dropdown-menu-right connection-dropdown">
-                                <li class="connection-list">
-                                    <div class="row">
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/github.png" alt=""> <span> 업무용 모달 테스트 </span></a>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/dribbble.png" alt="" > <span>Dribbble</span></a>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/dropbox.png" alt="" > <span>Dropbox</span></a>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/bitbucket.png" alt=""> <span>Bitbucket</span></a>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/mail_chimp.png" alt="" ><span>Mail chimp</span></a>
-                                        </div>
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="${pageContext.request.contextPath}/resources/images/slack.png" alt="" > <span>Slack</span></a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="conntection-footer"><a href="#">More</a></div>
+                                    <div class="list-footer"><a href="<c:url value='/project/projects.do'/>"> 모든 업무 보기 </a></div>
                                 </li>
                             </ul>
                         </li>
@@ -267,8 +253,11 @@ function projectTopRewrite(data){
                             <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="${pageContext.request.contextPath}/resources/images/3bgogi_icon.png" alt="" class="user-avatar-md rounded-circle"></a>
                             <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
                                 <div class="nav-user-info">
-                                    <h5 class="mb-0 text-white nav-user-name"> 전기찬  </h5>
-                                    <span class="status"></span><span class="ml-2">- 개발팀 </span>
+                                    <h5 class="mb-0 text-white nav-user-name">
+										<sec:authentication var="principal" property="principal" />
+										접속자 ID [ ${principal.username } ] 
+									 </h5>
+                                    <span class="status"></span><span class="ml-2">- ${principal.adminname } </span>
                                 </div>
                                 <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i> 계정 </a>
                                 <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i> 환경설정 </a>

@@ -94,8 +94,10 @@ body {
 													data-buyer-name="${orders.orBuyerName }"
 													data-buyer-name="${orders.orBuyerAnotherName }"
 													data-buyer-contract-number1="${orders.orBuyerContractNumber1 }"
+													data-buyer-contract-number2="${orders.orBuyerContractNumber2 }"
 													data-receiver-name="${orders.orReceiverName }"
 													data-receiver-contract-number1="${orders.orReceiverContractNumber1 }"
+													data-receiver-contract-number2="${orders.orReceiverContractNumber2 }"
 													data-delivery-message="${orders.orDeliveryMessage }"
 													data-shipping-address="${orders.orShippingAddress }"
 													data-shipping-address-detail="${orders.orShippingAddressDetail }"
@@ -168,8 +170,16 @@ body {
 								<input class="form-control" id="orBuyerContractNumber1" type="text" name="orBuyerContractNumber1">
 							</div>
 							<div class="form-group">
+								<label for="orReceiverContractNumber1">구매자연락처</label> 
+								<input class="form-control" id="orBuyerContractNumber2" type="text" name="orBuyerContractNumber2">
+							</div>
+							<div class="form-group">
 								<label for="orReceiverContractNumber1">수령자핸드폰</label> 
 								<input class="form-control" id="orReceiverContractNumber1" type="text" name="orReceiverContractNumber1">
+							</div>
+							<div class="form-group">
+								<label for="orReceiverContractNumber1">수령자연락처</label> 
+								<input class="form-control" id="orReceiverContractNumber2" type="text" name="orReceiverContractNumber2">
 							</div>
 							<div class="form-group">
 								<label for="orDeliveryMessage">배송메세지</label> 

@@ -1,6 +1,7 @@
 package com.gogi.proj.classification.code.vo;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class ClassificationVO {
 	
@@ -13,18 +14,22 @@ public class ClassificationVO {
 	//추가 사항
 	private int cfProductCount; // 분류코드 당 상품 개수
 	
+	private List<ClassificationVO> cfList; 
+	
 	public ClassificationVO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ClassificationVO(int cfPk, int cfCode, String cfCodeType, Timestamp cfRegdate, int cfProductCount) {
+	public ClassificationVO(int cfPk, int cfCode, String cfCodeType, Timestamp cfRegdate, int cfProductCount,
+			List<ClassificationVO> cfList) {
 		super();
 		this.cfPk = cfPk;
 		this.cfCode = cfCode;
 		this.cfCodeType = cfCodeType;
 		this.cfRegdate = cfRegdate;
 		this.cfProductCount = cfProductCount;
+		this.cfList = cfList;
 	}
 
 	public int getCfPk() {
@@ -67,10 +72,18 @@ public class ClassificationVO {
 		this.cfProductCount = cfProductCount;
 	}
 
+	public List<ClassificationVO> getCfList() {
+		return cfList;
+	}
+
+	public void setCfList(List<ClassificationVO> cfList) {
+		this.cfList = cfList;
+	}
+
 	@Override
 	public String toString() {
 		return "ClassificationVO [cfPk=" + cfPk + ", cfCode=" + cfCode + ", cfCodeType=" + cfCodeType + ", cfRegdate="
-				+ cfRegdate + ", cfProductCount=" + cfProductCount + "]";
+				+ cfRegdate + ", cfProductCount=" + cfProductCount + ", cfList=" + cfList + "]";
 	}
 	
 }

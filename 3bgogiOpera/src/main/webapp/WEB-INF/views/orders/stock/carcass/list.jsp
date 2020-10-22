@@ -49,7 +49,19 @@
     			}
     		});
     		
+    		
+    		$("#carcassListForm").submit(function(){
+    			var minNum = $("#minNum").val();
+    			var manNum = $("#manNum").val();
+    			
+    			if(minNum == ''){
+    				$("#minNum").val("0");
     				
+    			}if(maxNum == ''){
+    				$("#manNum").val("10000000");
+    				
+    			}
+    		});
     	});
     	function pageFunc(index){
 			$("input[name=currentPage]").val(index);
@@ -127,7 +139,10 @@
 	                                        	<c:if test="${!empty cilList }">
 		                                        	<c:forEach var="cillist" items="${cilList }">                                        	
 			                                            <tr class="table-3bgogi-hover">
-			                                                <td>${cillist.cilProduct }</td>
+			                                                <td>
+			                                                	<a href="<c:url value='/stock/carcass/read.do?cilPk=${cillist.cilPk }'/>">${cillist.cilProduct }</a>
+			                                                </td>
+			                                                
 			                                                <td>${cillist.cilQty }</td>
 			                                                <td>${cillist.cilAnimalProdTraceNum }</td>
 			                                                <td>
@@ -151,10 +166,8 @@
                                 </div>
                             </div>
                         </div>
-                        	
-                        	
 						<div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12">
-                        	<form id="costDetailListForm" action="<c:url value='/products/list/cost_detail.do'/>" method="get">
+                        	<form id="carcassListForm" action="<c:url value='/stock/carcass/list.do'/>" method="get">
                         	<input type="hidden" name="searchCondition" >
                         	<input type="hidden" name="searchKeyword">
                         	<input type="hidden" name="currentPage" value="${osVO.currentPage}">
@@ -202,10 +215,10 @@
 										<h3 class="font-16"> 입고일 </h3>
 										<div class="form-row">
 											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-												<input type="text" class="form-control" name="dateStart" id="dateStart" placeholder="시작일" required value="">
+												<input type="text" class="form-control" name="dateStart" id="dateStart" placeholder="시작일" required value="${osVO.dateStart }">
 											</div>
 											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-												<input type="text" class="form-control" name="dateEnd" id="dateEnd" placeholder="종료일" required value="">
+												<input type="text" class="form-control" name="dateEnd" id="dateEnd" placeholder="종료일" required value="${osVO.dateEnd }">
 											</div>
 										</div>
 									</div>
@@ -213,14 +226,16 @@
 										<h3 class="font-16"> 구입금액대 </h3>
 										<div class="form-row">
 											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-												<input type="text" class="form-control" name="searchMinPrice" id="minCost" placeholder="최소금액" required value="">
+												<input type="text" class="form-control" name="minNum" id="minNum" placeholder="최소금액" value="0">
 											</div>
 											<div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12"> 
 												원부터
 											</div>
+											
 											<div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-12">
-												<input type="text" class="form-control" name="searchMaxPrice" id="maxCost" placeholder="최대금액" required value="">
+												<input type="text" class="form-control" name="maxNum" id="maxNum" placeholder="최대금액" value="0">
 											</div>
+											
 											<div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-12">
 												원
 											</div>
@@ -232,7 +247,7 @@
 								</div>
 							</form>
 						</div>
-						<%-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 							<nav aria-label="Page navigation" style="text-align: center;">
 								<ul class="pagination" style="display: inline-flex;  flex-wrap: wrap;">
 									<c:if test='${osVO.firstPage>1 }'>
@@ -250,7 +265,8 @@
 									</c:if>
 								</ul>
 							</nav>
-						</div> --%>
+						</div>
+
 
 						<!-- ============================================================== -->
                         <!-- end valifation types -->

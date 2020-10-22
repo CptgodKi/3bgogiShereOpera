@@ -1,12 +1,17 @@
 package com.gogi.proj.matching.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.gogi.proj.log.model.LogService;
+import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.matching.vo.OptionMatchingVO;
 import com.gogi.proj.matching.vo.ProductMatchingVO;
 import com.gogi.proj.orders.model.OrdersDAO;
@@ -23,16 +28,24 @@ public class MatchingServiceImpl implements MatchingService{
 	
 	@Autowired
 	private OrdersDAO ordersDAO;
+	
+	@Autowired
+	private LogService logService;
 
 	//미매칭 주문 건 매칭쪽에서 상품명을 검색하여 고유값 획득 뒤 매칭시켜주기
+	
+	@Transactional
 	@Override
-	public int[] matchingsProductAndOrders() {
+	public int[] matchingsProductAndOrders(String ip, String adminId) {
 		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String today = sdf.format(new Date());
 		
 		int successedResult = 0;
 		int notMatchingedResult = 0;
 		int pmPk = 0;
 		List<OrdersVO> notMatchingedOrderList = matchingDAO.selectOrdersNotMatchinged();
+		OrderHistoryVO ohVO = null;
 		
 		for(int i = 0; i < notMatchingedOrderList.size(); i++) {
 			
@@ -50,7 +63,14 @@ public class MatchingServiceImpl implements MatchingService{
 			}else {
 				notMatchingedOrderList.get(i).setPmFk(pmPk);
 				int results = matchingDAO.matchingProductForOrders(notMatchingedOrderList.get(i));
-				successedResult++;
+				ohVO = new OrderHistoryVO();
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhIp(ip);
+				ohVO.setOrFk(notMatchingedOrderList.get(i).getOrPk());
+				ohVO.setOhEndPoint("매칭");
+				ohVO.setOhRegdate(today);
+				ohVO.setOhDetail("상품 매칭 완료");
+				successedResult+=logService.insertOrderHistory(ohVO);
 			}
 			
 		}

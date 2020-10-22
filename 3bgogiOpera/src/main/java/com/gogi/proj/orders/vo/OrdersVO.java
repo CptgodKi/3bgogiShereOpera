@@ -63,6 +63,8 @@ public class OrdersVO implements Cloneable{
 	private int orRefunds; // 환불 개수 : 기본값 0
 	private Timestamp orRegdate; //현 주문서 등록일
 	private boolean orCancledFlag; // 주문취소여부
+	private boolean orSpecialRegionFlag;
+	private boolean orSpecialRegionCheckFlag;
 	
 	//뒤늦게 추가사항
 	private String orDeliveryInvoiceNumber; // 송장번호
@@ -84,6 +86,8 @@ public class OrdersVO implements Cloneable{
 	private boolean orInvFlag;
 	private int orCancledQty; // 취소 주문 개수
 	private boolean orRequestCombFlag; // 생고기일 경우 무게를 무시하고 한 번에 포장할 때
+	private boolean orExcelDivFlag; //엑셀파일 삽입 여부
+	private int orFk; //주문서 테이블 참조
 	
 	//cs에서 묶음번호를 통해 값을 검색 할 수 있도록 함
 	//null값일 경우 상품주문번호를 통해 가져올 수 있도록
@@ -124,6 +128,14 @@ public class OrdersVO implements Cloneable{
 	private String delivAreaCd;					//배달구구분코드
 	private int ediPk;	
 	
+	private String cancelregino;				//취소(삭제) 운송장번호
+	private String cancelDate;					//취소일시
+	private String canceledyn;					//취소결과 여부 Y:취소, N:미취소, D:삭제
+	private String notcancelReason;				//미 취소 사유
+	private String resno;
+	private String reqno;
+	private String error_code;
+	private String message;
 	
 	// 우체국 발송용
 	private List<ProductOptionVO> productOptionList;
@@ -138,7 +150,7 @@ public class OrdersVO implements Cloneable{
 		
 		return copyOrder;
 	}
-
+	
 	public OrdersVO(int orPk, int pmFk, int ssFk, String orSerialSpecialNumber, String orBuyerId, String orBuyerName,
 			String orBuyerAnotherName, String orBuyerContractNumber1, String orBuyerContractNumber2,
 			String orReceiverName, String orProduct, String orProductType, String orProductOption, int orAmount,
@@ -152,16 +164,19 @@ public class OrdersVO implements Cloneable{
 			boolean orSpecialRegionDetail, String orSendingAddress, String orPaymentType, int orPaymentCommision,
 			int orAnotherPaymentCommision, String orInflowRoute, String orRequest, boolean orTaxFlag,
 			boolean orDevideFlag, int orRefunds, Timestamp orRegdate, boolean orCancledFlag,
-			String orDeliveryInvoiceNumber, String orDeliveryChargePaymentType, int orDeliverySpecialPrice,
-			String orUserColumn1, String orUserColumn2, String orUserColumn3, String orUserColumn4,
-			String orUserColumn5, String orUserColumn6, String orUserColumn7, String orMerge, List<String> orMergeList,
-			boolean orOutputFlag, Timestamp orOutputDate, boolean orOutputPosibFlag, boolean orInvFlag,
-			String hidingSpecialNumber, boolean specialNumberType, int totalOrderCount, String ssName,
-			boolean productMatchingChecking, boolean optionMatchingChecking,
-			List<ProductMatchingVO> productMatchingVOList, List<Integer> orAmountList, List<String> orProductList,
-			List<String> orProductOptionList, List<Integer> orTotalPriceList, String reqNo, String resNo, String regiNo,
-			String regiPoNm, String resDate, int price, String vTelNo, String arrCnpoNm, String delivPoNm,
-			String delivAreaCd, int ediPk) {
+			boolean orSpecialRegionFlag, boolean orSpecialRegionCheckFlag, String orDeliveryInvoiceNumber,
+			String orDeliveryChargePaymentType, int orDeliverySpecialPrice, String orUserColumn1, String orUserColumn2,
+			String orUserColumn3, String orUserColumn4, String orUserColumn5, String orUserColumn6,
+			String orUserColumn7, String orMerge, List<String> orMergeList, boolean orOutputFlag,
+			Timestamp orOutputDate, boolean orOutputPosibFlag, boolean orInvFlag, int orCancledQty,
+			boolean orRequestCombFlag, boolean orExcelDivFlag, int orFk, String hidingSpecialNumber,
+			boolean specialNumberType, int totalOrderCount, String ssName, boolean productMatchingChecking,
+			boolean optionMatchingChecking, List<ProductMatchingVO> productMatchingVOList, List<Integer> orAmountList,
+			List<String> orProductList, List<String> orProductOptionList, List<Integer> orTotalPriceList, String reqNo,
+			String resNo, String regiNo, String regiPoNm, String resDate, int price, String vTelNo, String arrCnpoNm,
+			String delivPoNm, String delivAreaCd, int ediPk, String cancelregino, String cancelDate, String canceledyn,
+			String notcancelReason, String resno2, String reqno2, String error_code, String message,
+			List<ProductOptionVO> productOptionList) {
 		super();
 		this.orPk = orPk;
 		this.pmFk = pmFk;
@@ -215,6 +230,8 @@ public class OrdersVO implements Cloneable{
 		this.orRefunds = orRefunds;
 		this.orRegdate = orRegdate;
 		this.orCancledFlag = orCancledFlag;
+		this.orSpecialRegionFlag = orSpecialRegionFlag;
+		this.orSpecialRegionCheckFlag = orSpecialRegionCheckFlag;
 		this.orDeliveryInvoiceNumber = orDeliveryInvoiceNumber;
 		this.orDeliveryChargePaymentType = orDeliveryChargePaymentType;
 		this.orDeliverySpecialPrice = orDeliverySpecialPrice;
@@ -231,6 +248,10 @@ public class OrdersVO implements Cloneable{
 		this.orOutputDate = orOutputDate;
 		this.orOutputPosibFlag = orOutputPosibFlag;
 		this.orInvFlag = orInvFlag;
+		this.orCancledQty = orCancledQty;
+		this.orRequestCombFlag = orRequestCombFlag;
+		this.orExcelDivFlag = orExcelDivFlag;
+		this.orFk = orFk;
 		this.hidingSpecialNumber = hidingSpecialNumber;
 		this.specialNumberType = specialNumberType;
 		this.totalOrderCount = totalOrderCount;
@@ -253,8 +274,113 @@ public class OrdersVO implements Cloneable{
 		this.delivPoNm = delivPoNm;
 		this.delivAreaCd = delivAreaCd;
 		this.ediPk = ediPk;
+		this.cancelregino = cancelregino;
+		this.cancelDate = cancelDate;
+		this.canceledyn = canceledyn;
+		this.notcancelReason = notcancelReason;
+		resno = resno2;
+		reqno = reqno2;
+		this.error_code = error_code;
+		this.message = message;
+		this.productOptionList = productOptionList;
 	}
-	
+
+	public boolean isOrSpecialRegionCheckFlag() {
+		return orSpecialRegionCheckFlag;
+	}
+
+	public void setOrSpecialRegionCheckFlag(boolean orSpecialRegionCheckFlag) {
+		this.orSpecialRegionCheckFlag = orSpecialRegionCheckFlag;
+	}
+
+	public boolean isOrSpecialRegionFlag() {
+		return orSpecialRegionFlag;
+	}
+
+	public void setOrSpecialRegionFlag(boolean orSpecialRegionFlag) {
+		this.orSpecialRegionFlag = orSpecialRegionFlag;
+	}
+
+	public boolean isOrExcelDivFlag() {
+		return orExcelDivFlag;
+	}
+
+	public void setOrExcelDivFlag(boolean orExcelDivFlag) {
+		this.orExcelDivFlag = orExcelDivFlag;
+	}
+
+	public int getOrFk() {
+		return orFk;
+	}
+
+	public void setOrFk(int orFk) {
+		this.orFk = orFk;
+	}
+
+	public String getCancelregino() {
+		return cancelregino;
+	}
+
+	public void setCancelregino(String cancelregino) {
+		this.cancelregino = cancelregino;
+	}
+
+	public String getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(String cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public String getCanceledyn() {
+		return canceledyn;
+	}
+
+	public void setCanceledyn(String canceledyn) {
+		this.canceledyn = canceledyn;
+	}
+
+	public String getNotcancelReason() {
+		return notcancelReason;
+	}
+
+	public void setNotcancelReason(String notcancelReason) {
+		this.notcancelReason = notcancelReason;
+	}
+
+	public String getResno() {
+		return resno;
+	}
+
+	public void setResno(String resno) {
+		this.resno = resno;
+	}
+
+	public String getReqno() {
+		return reqno;
+	}
+
+	public void setReqno(String reqno) {
+		this.reqno = reqno;
+	}
+
+	public String getError_code() {
+		return error_code;
+	}
+
+	public void setError_code(String error_code) {
+		this.error_code = error_code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 	public List<ProductOptionVO> getProductOptionList() {
 		return productOptionList;
 	}
@@ -999,21 +1125,55 @@ public class OrdersVO implements Cloneable{
 		this.ediPk = ediPk;
 	}
 	
+	private String byteSplit(String splitString, int ByteLength, int maxLength) {
+		
+		if(splitString == null) return "";
+		
+		byte [] inputByte = splitString.getBytes();
+		int resultByte = 0;
+		for(int i = 0; i < splitString.length() - 1; i++) {
+			
+			if(isIncHangul(splitString.substring(i, i+1))) {
+				if(resultByte + ByteLength > maxLength) {
+					break;
+				}
+				resultByte+=ByteLength;
+			}else {
+				if(resultByte + 1 > maxLength) {
+					break;
+				}
+				resultByte+=1;
+			}
+		}
+		
+		return new String(inputByte, 0, resultByte);
+	}
+	
+	private boolean isIncHangul(String splitString) {
+		for(int i = 0; i < splitString.length(); i++) {
+			if(Character.getType(splitString.charAt(i)) == Character.OTHER_LETTER) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public String epostDelivSelfPrintToString() {
 		return "custNo=0004610509&reqType=1&officeSer=01&weight=2"
 				+ "&volume=30&ordCompNm=" + ssName + "&ordNm=삼형제고기&ordZip=21126" 
 				+ "&ordAddr1=인천광역시 계양구 효서로 388&ordAddr2=(작전동) 3층 삼형제고기&ordTel=050713121620&ordMob=050713121620"
 				+ "&recNm=" + orReceiverName + "&recZip=" + orShippingAddressNumber 
 				+ "&recAddr1=" + orShippingAddress 
-				+ "&recAddr2=" + (orShippingAddressDetail == null ? "" : orShippingAddressDetail)
+				+ "&recAddr2=" + (orShippingAddressDetail == null || orShippingAddressDetail.equals("") ? ". " : orShippingAddressDetail)
 				+ "&recTel=" + (orReceiverContractNumber2 == null ? "" : orReceiverContractNumber2.replaceAll("-", "")) 
 				+ "&recMob=" + (orReceiverContractNumber1 == null ? "" : orReceiverContractNumber1.replaceAll("-", "")) 
 				+ "&apprNo=4003181560&payType=1"
 				+ "&microYn=N&contCd=022&goodsNm=" + (productOptionList.size() > 1 ? productOptionList.get(0).getProductName()+productOptionList.get(0).getOptionName()+" 외 "+productOptionList.size() : productOptionList.get(0).getProductName()+productOptionList.get(0).getOptionName()) 
 				+ "&goodsCd=" 
 				+ "&goosMdl=&goodsSize=&goodsColor=&qty=" + productOptionList.size()
-				+ "&orderNo=" + orSerialSpecialNumber + "&delivMsg=" + orDeliveryMessage + "&retReason=&retVisitYmd="
-				+ "&testYn=Y&printYn=Y";
+				+ "&orderNo=" + orSerialSpecialNumber + "&delivMsg=" + byteSplit(orDeliveryMessage, 2, 180) + "&retReason=&retVisitYmd="
+				+ "&testYn=N&printYn=Y";
 	}
 
 	@Override

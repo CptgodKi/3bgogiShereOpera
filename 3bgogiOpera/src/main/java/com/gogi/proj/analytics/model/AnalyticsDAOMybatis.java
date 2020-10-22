@@ -6,8 +6,10 @@ import java.util.Map;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.product.products.vo.ProductOptionVO;
 
 @Repository
 public class AnalyticsDAOMybatis extends SqlSessionDaoSupport implements AnalyticsDAO {
@@ -70,6 +72,30 @@ public class AnalyticsDAOMybatis extends SqlSessionDaoSupport implements Analyti
 	public List<Map<String, Object>> selectAnalyDataList(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectAnalyDataList", osVO);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectReservProductQty(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectReservProductQty", osVO);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectReservProductQtyInMonth(DatesVO datesVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectReservProductQtyInMonth", datesVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectTotalSalesByDates(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectTotalSalesByDates", osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectCancledSalesByDates", osVO);
 	}
 	
 }

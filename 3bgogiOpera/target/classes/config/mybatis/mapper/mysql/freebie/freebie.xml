@@ -174,7 +174,12 @@
 			    COUNT(ori_od.or_pk) AS or_pk,
 				SUM(ori_od.or_amount) AS or_amount,
 			    SUM(ori_od.or_total_price) AS or_total_price,
-			    ori_od.or_serial_special_number,
+			    
+			   if( #{fbType}, 
+                   ori_od.or_order_number,
+                   ori_od.or_serial_special_number
+                ) AS ss_name,
+                GROUP_CONCAT(DISTINCT ori_od.or_serial_special_number,',') AS or_serial_special_number,
 				ori_od.or_buyer_id,
 				ori_od.or_buyer_name,
 				ori_od.or_buyer_another_name,
@@ -200,9 +205,6 @@
 				ori_od.ss_fk,
 				ori_od.or_delivery_charge_payment_type,
 				ori_od.or_delivery_special_price,
-				ori_od.or_user_column1,
-				ori_od.or_user_column2,
-				ori_od.or_user_column3,
 				ori_od.or_output_date,
 				ori_od.or_output_flag,
 				ori_od.or_output_posib_flag,
@@ -275,7 +277,7 @@
 						</if>
 				) inner_od ON ori_od.or_pk = inner_od.or_pk
 			GROUP BY
-				ori_od.or_serial_special_number,
+				ss_name,
 				ori_od.or_buyer_id,
 				ori_od.or_buyer_name,
 				ori_od.or_buyer_another_name,
@@ -301,9 +303,6 @@
 				ori_od.ss_fk,
 				ori_od.or_delivery_charge_payment_type,
 				ori_od.or_delivery_special_price,
-				ori_od.or_user_column1,
-				ori_od.or_user_column2,
-				ori_od.or_user_column3,
 				ori_od.or_output_date,
 				ori_od.or_output_flag,
 				ori_od.or_output_posib_flag,
@@ -338,19 +337,11 @@
 				    </if>
 				</if>
 			    <if test="fbCheckList.size != 0">
-			    	<if test="fbType == 0">
-			    		AND ori_od.or_serial_special_number NOT IN 
+			    		AND ss_name NOT IN 
 						<foreach item="item" collection="fbCheckList" open="(" separator="," close=")">
 						    #{item.fcOrderTarget}
 						</foreach>
-			    	</if>
-			    	<if test="fbType == 1">
-			    		AND ori_od.or_order_number NOT IN
-						<foreach item="item" collection="fbCheckList" open="(" separator="," close=")">
-						    #{item.fcOrderTarget}
-						</foreach>
-			    	</if>
-					
+
 				</if>
 			</trim>
 				

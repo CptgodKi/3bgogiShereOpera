@@ -79,13 +79,13 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 데이터 관리 </h2>
+                            <h2 class="pageheader-title"> 상품 및 원재료 </h2>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 입력 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 원가 상세사항 입력</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 목록 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 원재료 목록 </li>
                                     </ol>
                                 </nav>
                             </div>
@@ -102,14 +102,14 @@
                         <!-- ============================================================== -->
                         <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12">
 	                        <div class="card">
-                                <h5 class="card-header">입력된 원가 목록</h5>
+                                <h5 class="card-header">입력된 원재료 목록</h5>
                                 <div class="card-body">
                                 	<div class="table-responsive">
 	                                    <table id="example2" class="table table-bordered" style="text-align:center; font-size: 12px; word-break: keep-all; white-space: nowrap;">
 	                                        <thead class="bg-light">
 	                                            <tr>
 	                                                <th width="17%">분류</th>
-	                                                <th width="15%">원가명</th>
+	                                                <th width="15%">원재료명</th>
 	                                                <th width="15%">원가</th>
 	                                                <th width="10%">손실률</th>
 	                                                <th width="10%">손실 계산 원가</th>
@@ -167,7 +167,7 @@
                         	<input type="hidden" name="currentPage" value="${PaginationInfo.currentPage}">
 								<div class="card">
 									<div class="card-body border-top">
-										<h3 class="font-16"> 원가명 </h3>
+										<h3 class="font-16"> 원재료명 </h3>
 										<input type="text" class="form-control" id="cdName" name="searchOne" placeholder="원가명 입력 란" value="${PaginationInfo.searchOne }">
 									</div>
 									<div class="card-body">
@@ -184,7 +184,7 @@
 										</select>
 									</div>
 									<div class="card-body">
-										<h3 class="font-16"> 페이지 당 원가 목록 개수 </h3>
+										<h3 class="font-16"> 페이지 당 원재료 목록 개수 </h3>
 										<select class="form-control" name=recordCountPerPage>
 											<option value="10"
 												<c:if test="${PaginationInfo.recordCountPerPage == 10 }">
@@ -244,7 +244,7 @@
 										</div>
 									</div>
 									<div class="card-body border-top">
-										<h3 class="font-16"> 원가 금액대 </h3>
+										<h3 class="font-16"> 원재료 금액대 </h3>
 										<div class="form-row">
 											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
 												<input type="text" class="form-control" name="searchMinPrice" id="minCost" placeholder="최소금액" required value="${PaginationInfo.searchMinPrice }">

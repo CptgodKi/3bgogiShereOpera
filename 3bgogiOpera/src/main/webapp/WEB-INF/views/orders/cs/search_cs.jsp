@@ -4,6 +4,28 @@
     <%@ include file="../../inc/top_nav.jsp" %>
     <script type="text/javascript">
 		$(function(){
+			$("#excelResultDown").click(function(){
+
+				if(confirm("검색 결과를 엑셀파일로 다운로드하시겠습니까?")){
+
+	    			var divs = document.createElement("div");
+	    			
+	    			var excelDownloadForm =  document.createElement("form");
+	    			excelDownloadForm.action="/orders/search/customer_orders_excel.do";
+	    			excelDownloadForm.method="POST";
+
+	    			var searchCustomerInfo = $("#searchCustomerInfo").children().clone(true).appendTo(excelDownloadForm);
+	    			
+	    			/* excelDownloadForm.append(analyForms); */
+	    			divs.append(excelDownloadForm);
+	    			
+	    			$("#excelDownloadIframe").append(divs);
+	    		
+	    			excelDownloadForm.submit();
+	    			$("#excelDownloadIframe").html("");
+	    		}
+		});
+			
 			$("#searchKeyword").focus();
 			$(".table-3bgogi-hover  > tr").click(function(){
     			if($(this).next().hasClass('show')){
@@ -36,6 +58,28 @@
     			$("#userSelect").prop("checked", true);
     		});
     		
+    		$(".reprinting_deliv_invoice").click(function(){
+    			
+    			if(confirm("송장을 재출력하시겠습니까? ( * 주의 : 송장이 중복으로 나올 수 있으니 송장 삭제 후 재출력 권장 * )")){
+    				serialNumber = $(this).data("reprint");
+    				
+    				window.open("<c:url value='/security/reprinting_deliv_invoice.do?searchKeyword="+serialNumber+"'/>", "송장 재출력" , "width=700, height=800, top=100, left=300, scrollbars=no");
+    				
+    				
+    			}else{
+    				event.preventDefault();
+    				
+    			}
+    			
+    			
+    		});
+    		
+			$("#delivResultBtn").click(function(){
+    			window.open("<c:url value='/security/epost/deliv_date.do'/>", "송장 결과" , "width=700, height=800, top=100, left=300, scrollbars=no");
+
+    		});
+			
+    		
 		});
 		
 		function pageFunc(index){
@@ -51,6 +95,7 @@
     	.table-3bgogi-hover > tr :hover{
     		background: #FFC6C6;
     	}
+    	
     </style>
     
         <!-- page content -->
@@ -93,10 +138,26 @@
 		                        		<div class="card-body">
 				                            <div class="btn-group">
 				                                <select class="form-control form-control-sm" name="dateType">
-								                    <option value="or_regdate">주문 등록일</option>
-								                    <option value="or_settlement_day">주문 결제일</option>
-								                    <option value="or_sending_day">주문 발송일</option>
-								                    <option value="or_sending_deadline">주문 발송기한</option>
+								                    <option value="or_regdate"
+								                    	<c:if test="${osVO.dateType == 'or_regdate' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 등록일</option>
+								                    <option value="or_settlement_day"
+								                    	<c:if test="${osVO.dateType == 'or_settlement_day' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 결제일</option>
+								                    <option value="or_sending_day"
+								                    	<c:if test="${osVO.dateType == 'or_sending_day' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 발송일</option>
+								                    <option value="or_sending_deadline"
+								                    	<c:if test="${osVO.dateType == 'or_sending_deadline' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 발송기한</option>
 							                    </select>
 				                            </div>
 				                            &nbsp;
@@ -197,7 +258,7 @@
 								                    	<c:if test="${osVO.searchType == 'matchingOption' }">
 															 selected="selected"
 														</c:if>
-								                    >옵션 옵션명</option>
+								                    >매칭 옵션명</option>
 								                    <option value="storeProduct"
 								                    	<c:if test="${osVO.searchType == 'storeProduct' }">
 															 selected="selected"
@@ -259,7 +320,7 @@
 		                        </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
-                            	<div class="card-body">
+                            	<div class="card-body" style="padding-bottom: 5px;">
 	                            	<div class="form-inline">
 		                            	<div class="form-group">                            	
 			                            	<select class="form-control" name="outputPosiv">
@@ -361,21 +422,50 @@
 			                            		>취소만</option>
 			                            	</select>
 		                            	</div>
-		                            	<div class="form-group">                            	
+		                            	<!-- <div class="form-group">                            	
 			                            	<select class="form-control" name="taxFlag">
 			                            		<option value="0">면세 여부</option>
 			                            		<option value="1">면세</option>
 			                            		<option value="2">과세</option>
 			                            	</select>
-		                            	</div>
+		                            	</div> -->
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="specialRegionFlag">
-			                            		<option value="0">섬지역 여부</option>
-			                            		<option value="1">섬지역만</option>
-			                            		<option value="2">섬지역 아닌</option>
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.specialRegionFlag != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="specialRegionFlag"
+			                            		
+			                            	>
+			                            		<option value="0"
+			                            			<c:if test="${osVO.specialRegionFlag == 0 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>특수지역 여부</option>
+			                            		<option value="1"
+			                            			<c:if test="${osVO.specialRegionFlag == 1 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>특수지역</option>
+			                            		<option value="2"
+			                            			<c:if test="${osVO.specialRegionFlag == 2 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>특수지역 체크 안된</option>
+			                            		<option value="3"
+			                            			<c:if test="${osVO.specialRegionFlag == 3 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>특수지역 체크 된</option>
+			                            		<option value="4"
+			                            			<c:if test="${osVO.specialRegionFlag == 4 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>특수지역이 아닌</option>
 			                            	</select>
 		                            	</div>
-		                            	<div class="form-group">                            	
+		                            	<%-- <div class="form-group">                            	
 			                            	<select class="form-control" name="deliveryPrice">
 			                            		<option value="0"
 			                            			<c:if test="${osVO.deliveryPrice == 0 }">
@@ -393,7 +483,7 @@
 			                            			</c:if>
 			                            		>회사 부담</option>
 			                            	</select>
-		                            	</div>
+		                            	</div> --%>
 		                            	<div class="form-group">                            	
 			                            	<select class="form-control" name="specialReq">
 			                            		<option value="0"
@@ -430,6 +520,94 @@
 				                        </div>
 	                            	</div>
                             	</div>
+                            			<div class="card-body" style="padding-top: 0px;">
+                            				<div class="btn-group">
+				                            	<select class="form-control" name="searchAddType">
+				                            		<option value="0"
+				                            			<c:if test="${osVO.searchAddType == 0 }">
+				                            				selected="selected"
+				                            			</c:if>
+				                            		> 합계 검색 </option>
+				                            		<option value="1"
+				                            			<c:if test="${osVO.searchAddType == 1 }">
+				                            				selected="selected"
+				                            			</c:if>
+				                            		> 제외 검색 </option>
+				                            	</select>
+				                            </div>
+	                            			<div class="btn-group">
+				                            	<select class="form-control" name="searchAddKind">
+				                            		<option value="orderNames" 
+								                    	<c:if test="${osVO.searchAddKind == 'orderNames' }">
+															 selected="selected"
+														</c:if>
+								                    >구매자 / 수령자 통합</option>
+								                    <option value="buyerName" 
+								                    	<c:if test="${osVO.searchAddKind == 'buyerName' }">
+															 selected="selected"
+														</c:if>
+								                    >구매자</option>
+								                    <option value="receiverName"
+								                    	<c:if test="${osVO.searchAddKind == 'receiverName' }">
+															 selected="selected"
+														</c:if>
+								                    >수령인</option>
+								                    <option value="buyerNum"
+								                    	<c:if test="${osVO.searchAddKind == 'buyerNum' }">
+															 selected="selected"
+														</c:if>
+								                    >구매자 번호</option>
+								                    <option value="receiverNum"
+								                    	<c:if test="${osVO.searchAddKind == 'receiverNum' }">
+															 selected="selected"
+														</c:if>
+								                    >수령인 번호</option>
+								                    <option value="orderNum"
+								                    	<c:if test="${osVO.searchAddKind == 'orderNum' }">
+															 selected="selected"
+														</c:if>
+								                    >주문번호</option>
+								                    <option value="receiverAddress"
+								                    	<c:if test="${osVO.searchAddKind == 'receiverAddress' }">
+															 selected="selected"
+														</c:if>
+								                    >주소</option>
+								                    <option value="orderProductNum"
+								                    	<c:if test="${osVO.searchAddKind == 'orderProductNum' }">
+															 selected="selected"
+														</c:if>
+								                    >상품주문번호</option>
+								                    <option value="matchingProduct"
+								                    	<c:if test="${osVO.searchAddKind == 'matchingProduct' }">
+															 selected="selected"
+														</c:if>
+								                    >매칭 상품명</option>
+								                    <option value="matchingOption"
+								                    	<c:if test="${osVO.searchAddKind == 'matchingOption' }">
+															 selected="selected"
+														</c:if>
+								                    >옵션 옵션명</option>
+								                    <option value="storeProduct"
+								                    	<c:if test="${osVO.searchAddKind == 'storeProduct' }">
+															 selected="selected"
+														</c:if>
+								                    >판매처 상품명(옵션명)</option>
+								                    <option value="invoiceNum"
+								                    	<c:if test="${osVO.searchAddKind == 'invoiceNum' }">
+															 selected="selected"
+														</c:if>
+								                    >송장번호</option>
+								                    <option value="deliveryMessage"
+								                    	<c:if test="${osVO.searchAddKind == 'deliveryMessage' }">
+															 selected="selected"
+														</c:if>
+								                    >요청사항</option>
+							                    </select>
+				                            </div>
+				                            <div class="btn-group">
+				                            	<input class="form-control" id="searchAddKeyword" name="searchAddKeyword" type="text"  placeholder="추가 검색어 입력" value="${osVO.searchAddKeyword }">
+				                            </div>
+                            	</div>
                             </div>
                         </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -441,16 +619,22 @@
                             		</div>
 	                                <div class="card-body">
 	                                	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
+	                                	
+	                                		<button class="btn btn-success btn-xs mb-2" id="excelResultDown" type="button"> 검색 결과 엑셀 다운로드 </button>
+	                                		<button class="btn btn-brand btn-xs mb-2" id="delivResultBtn" type="button"> 발송 결과 보기 </button>
 	                                		<button class="btn btn-success btn-xs mb-2 createNewOrder" type="button" id="createNewOrder"> 새주문생성 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="addProductButton"> 상품추가 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="aligoSmsBtn"> 문자 보내기 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="changeSendingDeadlineBtn"> 발송일 변경 </button>
-	                                		<button class="btn btn-danger btn-xs mb-2" type="button" id="deleteOrderButton"> 삭제하기 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="combineOrderButton"> 주문서 합치기 및 정보변경</button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="devideOrderButton"> 주문서 나누기 </button>
 	                                		<button class="btn btn-danger btn-xs mb-2" type="button" id="deleteDelivButton"> 송장 삭제 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="outputBtn"> 발송 하기 </button>
 	                                		<button class="btn btn-danger btn-xs mb-2" type="button" id="outputCancledBtn"> 발송 취소 처리 </button>
+	                                		&nbsp;
+	                                		&nbsp;
+	                                		<button class="btn btn-danger btn-xs mb-2" type="button" id="deleteOrderButton" style="text-align: right;"> 삭제하기 </button>
+	                                		
 	                                	</div>
 	                                	<div class="table-responsive">
 		                                    <table class="table table-hover table-3bgogi-hover " style="font-size: 12px; word-break: keep-all; white-space: nowrap;">
@@ -467,10 +651,10 @@
 		                                                <th scope="col">구매자/수령인</th>
 		                                                <th scope="col"><i class="fas fa-phone mr-2  text-danger"></i>연락처</th>
 		                                                <th scope="col"><i class="fa fa-map-marker-alt mr-2  text-primary"></i>주소</th>
-		                                                <th scope="col">주문수</th>
-		                                                <th scope="col">수량</th>
+		                                                <th scope="col">주문건</th>
+		                                                <th scope="col">상품개수</th>
 		                                                <th scope="col">금액</th>
-		                                                <th scope="col">송장번호</th>
+		                                                <th scope="col" style="text-align: center;">송장번호</th>
 		                                                <th scope="col">발송상태</th>
 		                                            </tr>
 		                                        </thead>
@@ -489,13 +673,12 @@
 										                                <input class="custom-control-input chk_all" type="checkbox" name="orSerialSpecialNumberList" 
 										                                	
 										                                	<c:if test="${empty orderlist.orDeliveryInvoiceNumber and empty orderlist.orSendingDay }">
-										                                		data-deliv-weiting="1"
+										                                		data-deliv-weiting="1" 
 										                                	</c:if>
 										                                	
 										                                	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber and empty orderlist.orSendingDay }">
-										                                		data-deliv="1"
+										                                		data-deliv="1" data-deliv-num="${orderlist.orDeliveryInvoiceNumber }"
 										                                	</c:if>
-										                                	
 										                                	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber and !empty orderlist.orSendingDay }">
 										                                		data-output="1"
 										                                	</c:if>
@@ -518,6 +701,7 @@
 				                                                <td>
 				                                                	${orderlist.ssName }
 				                                                </td>
+				                                                
 				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">${orderlist.orBuyerName }/<br>
 				                                                	${orderlist.orReceiverName }
 				                                                </td>
@@ -527,26 +711,30 @@
 				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">
 			                                                       	${orderlist.orShippingAddress } ${orderlist.orShippingAddressDetail }  
 			                                                    </td>
-			                                                    <td>${orderlist.totalOrderCount }개</td>
+			                                                    <td>
+			                                                    	${orderlist.totalOrderCount } 건
+			                                                    </td>
 			                                                    <td>총 ${orderlist.orAmount + orderlist.orCancledQty }개
 			                                                    	<c:if test="${orderlist.orCancledQty > 0 }">
-			                                                    		<br> 취소  ${orderlist.orCancledQty } 개
+			                                                    		<br> <span class="text-danger">취소  ${orderlist.orCancledQty } 개 </span>
 			                                                    	</c:if>
 			                                                    	
 			                                                    	<c:if test="${orderlist.orRefunds > 0 }">
-			                                                    		<br> 환불  ${orderlist.orRefunds } 개
+			                                                    		<br> <span class="text-danger">환불  ${orderlist.orRefunds } 개 </span>
 			                                                    	</c:if>
 			                                                    </td>
+			                                                    
 			                                                    <td><fmt:formatNumber value="${orderlist.orTotalPrice }" pattern="#,###"/> 원
 			                                                    </td>
-			                                                    <td>
+			                                                    <td style="text-align: center;">
 			                                                    	<c:if test="${empty orderlist.orDeliveryInvoiceNumber }">
 			                                                    		<button type="button" class="btn btn-outline-success btn-xs insertDelivNum" value="${orderlist.orSerialSpecialNumber }">송장직접입력</button>
 			                                                    	</c:if>
 			                                                    	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber }">
 			                                                    		<a onclick="searchDeliveryState(${orderlist.orDeliveryInvoiceNumber})" href="javascript:void(0)">${orderlist.orDeliveryInvoiceNumber }</a>
 			                                                    		<br>
-			                                                    		<span>(${orderlist.orDeliveryCompany})</span>
+			                                                    		<span class="text-brand reprinting_deliv_invoice" data-reprint="${orderlist.orSerialSpecialNumber }" style="cursor: pointer;">송장재출력</span>
+			                                                    		
 			                                                    	</c:if>
 			                                                    </td>
 			                                                    <td>
@@ -642,8 +830,7 @@
 									<h3 class="font-16">주문 정보</h3>
 									<div class="">
 										<ul class="list-unstyled mb-0" style="font-size: 12px;">
-											<li class="mb-2" id="orderDetailSettlementDay"></li>
-											<li class="mb-2" id="orderDetailCheckDay"></li>
+											<!-- <li class="mb-2" id="orderDetailSettlementDay"></li> -->
 											<li class="mb-2" id="orderDetailInflowRoute"></li>
 											<li class="mb-0" id="orderDetailDeliveryPrice"></li>
 										</ul>
@@ -712,6 +899,7 @@
 											</div>
 										</div>
 										<div class="section-block">
+											<button class="btn btn-primary btn-xs" id="orderHistoryBtn">작업 기록 확인</button>
 											<button class="btn btn-primary btn-xs" id="SelfdevisionOrderBtn">상품 나누기</button>
 											<button class="btn btn-danger btn-xs" id="deleteOrderTargetingDeleteBtn"> 주문 삭제 </button>
 											<button class="btn btn-primary btn-xs" id="changeProductBtn"> 상품 변경 </button>
@@ -845,6 +1033,8 @@
 			</div>
 		</div>
 	</div>
+	<iframe id="excelDownloadIframe" width="0" height="0">
+	</iframe>  
 	<script src="${pageContext.request.contextPath}/resources/libs/js/renewal_cs_manage.js"></script>
 	<%@ include file="../../inc/bottom.jsp" %>
         

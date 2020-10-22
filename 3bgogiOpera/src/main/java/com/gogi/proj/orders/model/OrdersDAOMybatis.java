@@ -22,6 +22,7 @@ public class OrdersDAOMybatis extends SqlSessionDaoSupport implements OrdersDAO{
 	private String orderExcelNameSpace = "order.excel";
 	private String irregularNameSpace = "order.irregular";
 	private String orderCsNameSpace = "order.cs";
+	private String searchNameSpace = "order.search_customer_order_info";
 
 	@Override
 	public int insertOrderData(OrdersVO ordersVO) {
@@ -328,5 +329,29 @@ public class OrdersDAOMybatis extends SqlSessionDaoSupport implements OrdersDAO{
 	public List<ProductOptionVO> selectOrdersMatchingProductByOrPk(OrdersVO orVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(orderCsNameSpace+".selectOrdersMatchingProductByOrPk", orVO);
+	}
+
+	@Override
+	public int updateExcelDivOrders(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(orderCsNameSpace+".updateExcelDivOrders", orVO);
+	}
+
+	@Override
+	public List<OrdersVO> newSearchCustomerOrderInfo(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(searchNameSpace+".newSearchCustomerOrderInfo", osVO);
+	}
+
+	@Override
+	public int newSearchCustomerOrderInfoCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(searchNameSpace+".newSearchCustomerOrderInfoCounting", osVO);
+	}
+
+	@Override
+	public List<OrdersVO> newSearchCustomerOrderInfoToExcelFile(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(searchNameSpace+".newSearchCustomerOrderInfoToExcelFile", osVO);
 	}
 }

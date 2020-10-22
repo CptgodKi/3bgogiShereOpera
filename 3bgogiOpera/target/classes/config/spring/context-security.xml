@@ -24,6 +24,7 @@
 	</security:authentication-manager>	
 		
 	<security:http auto-config="true" use-expressions="true">
+		<security:intercept-url pattern="/stock/carcass/*.do" access="hasRole('ROLE_ADMIN')" />
 		<security:intercept-url pattern="/security/*.do" access="hasRole('ROLE_ADMIN')" />
 		<security:intercept-url pattern="/products/*/*.do" access="hasRole('ROLE_DEVELOPER')"/>
 		<security:intercept-url pattern="/options/*/*.do" access="hasRole('ROLE_DEVELOPER')"/>
@@ -33,6 +34,7 @@
 		<security:intercept-url pattern="/admin/team/team_auth.do" access="hasRole('ROLE_ADMIN')"/>
 		<security:intercept-url pattern="/admin/team/attendance_change.do" access="hasRole('ROLE_ADMIN')"/>
 		<security:intercept-url pattern="/login.do" access="permitAll"/>
+		<security:intercept-url pattern="/delivery/*.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/admin/attendance.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/project/*.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/admin/attendance/*.do" access="hasRole('ROLE_USER')"/>

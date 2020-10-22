@@ -183,6 +183,7 @@ public class AttendanceServiceImpl implements AttendanceService{
 		List<AdminAttendanceVO> list =  attendanceDAO.selectTotalAdminBreaksByDatesVO(datesVO);
 		AdminVO adminVO = adminService.selectAdminInfoByAdminPk(datesVO.getAdminPk());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat hourCal = new SimpleDateFormat("HH:mm:ss");
 		java.util.Date toDay = new java.util.Date();
 		toDay.setHours(0);
 		toDay.setMinutes(0);
@@ -217,7 +218,8 @@ public class AttendanceServiceImpl implements AttendanceService{
 						}
 						
 						vo.setAaWorkEnd(new Timestamp(date.getTime()));
-						vo.setWorkTime("퇴근 기록 X<br>임의로 기록 삽입");
+						/*vo.setWorkTime(hourCal.format(date.getTime()-ts.getTime()));*/
+						vo.setWorkTime("퇴근시간X 계산불가");
 						
 					}
 					

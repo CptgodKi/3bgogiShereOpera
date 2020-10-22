@@ -11,12 +11,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.UrlPathHelper;
+
+import com.gogi.proj.security.AdminVO;
 
 public class ForAjaxAdminSessionFilter implements Filter{
 
 	private String ajaxHeader;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ForAjaxAdminSessionFilter.class);
 	
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,6 +62,21 @@ public class ForAjaxAdminSessionFilter implements Filter{
 			}
 			
 		}else {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			
+			try {
+				
+				AdminVO adminVo = (AdminVO)auth.getPrincipal();
+				
+				UrlPathHelper urlPathHelper = new UrlPathHelper();
+				String pathUrl = urlPathHelper.getOriginatingRequestUri(req);
+				
+				logger.info(adminVo.getUsername()+" ["+adminVo.getAdminname()+"]"+" 접근 주소={}",pathUrl);
+			}catch(ClassCastException e) {
+				chain.doFilter(req, res);
+			}
+
+
 			
 			chain.doFilter(req, res);
 		}

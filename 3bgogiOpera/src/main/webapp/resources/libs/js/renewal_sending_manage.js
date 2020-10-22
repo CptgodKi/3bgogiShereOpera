@@ -1,5 +1,83 @@
 jQuery(document).ready(function($) {
 	
+	function formatDate(date) {
+	    var d = new Date(date),
+	        month = '' + (d.getMonth() + 1),
+	        day = '' + d.getDate(),
+	        year = d.getFullYear();
+	
+	    if (month.length < 2) month = '0' + month;
+	    if (day.length < 2) day = '0' + day;
+	
+	    return [year, month, day].join('-');
+	}
+	
+	$("#sendingReqReason").click(function(){
+
+		var sendingReqForm = document.createElement("form");
+		sendingReqForm.method="POST";
+		sendingReqForm.id="sendingReqFormId";
+
+		invoiceNum = $("#invoiceValue").val();
+		
+		if(invoiceNum == ''){
+			alert("입력된 송장이 없습니다");
+			return false;
+		}
+		
+		var srInvoiceNum = document.createElement("input");
+		srInvoiceNum.name="srInvoiceNum";
+		srInvoiceNum.type="hidden";
+		srInvoiceNum.value=invoiceNum;
+		
+		sendingReqForm.append(srInvoiceNum);
+		
+		
+		var srReason = document.createElement("input");
+		srReason.name="srReason";
+		srReason.type="hidden";
+		srReason.value=$("input[name=srReason]:checked").val();
+		
+		sendingReqForm.append(srReason);
+		
+		var sendingReqFormData = jQuery(sendingReqForm).serialize();
+		
+		$.ajax({
+			type       : 'POST',
+			data       : sendingReqFormData,
+			url        : '/delivery/sending_req.do',
+			success    : function(data){		
+				if(data == 1){
+					alert("요청 완료");
+					location.reload();
+					
+				}else{
+					alert("중복된 요청사항이 있습니다");
+					location.reload();
+					
+				}
+								
+			}
+			
+		});
+	});
+	
+	$("#sendingReqBtn").click(function(){	
+		invoiceNum = $("#invoiceValue").val();
+		/*if(invoiceNum == ''){
+			alert("입력된 송장이 없습니다");
+			return false;
+		}*/
+		
+		
+		$("#reasonBtn").click();
+
+	});
+	
+	$("#barcodeInit").click(function(){
+		location.reload();
+	});
+	
 	function makeDelay(s){
 		var timer = 0;
 		
@@ -76,23 +154,43 @@ jQuery(document).ready(function($) {
 						$("#orDeliveryInvoiceNumber").focus();
 						
 			    	}else{
-			    		
-			    		if(data[0].orSendingDay != null){
-			    			afterSending.play();
+			    		if(formatDate(new Date(data[0].orSendingDeadline)) > formatDate(new Date())){
+			    			
+			    			alert("예약된 송장입니다");
+			    			
 			    			completeProduct = 0;
 			    			$("#orDeliveryInvoiceNumber").val("");
 							$("#orDeliveryInvoiceNumber").focus();
-			    		}else{
-			    			startSending.play();
-				    		sendingProductListWrite(data);
-				    		$("#invoiceValue").val(orDeliveryInvoiceNumber);
-				    		totalLength = $("td[data-cancled='N']").length;
-							completeProduct = 0;
-							$("#orDeliveryInvoiceNumber").val("");
-							$("#orDeliveryInvoiceNumber").focus();
 							
-							console.log(" 총 물품 개수 => "+totalLength);
+							
+			    		}else{			    			
+			    			if(data[0].orSendingDay != null){
+			    				afterSending.play();
+			    				completeProduct = 0;
+			    				$("#orDeliveryInvoiceNumber").val("");
+			    				$("#orDeliveryInvoiceNumber").focus();
+			    			}else{
+			    				
+			    				startSending.play();
+			    				sendingProductListWrite(data);
+			    				$("#invoiceValue").val(orDeliveryInvoiceNumber);
+			    				totalLength = $("td[data-cancled='N']").length;
+			    				
+			    				if(totalLength == 0){
+			    					$("#sendingProductList").html("");
+									$("#invoiceValue").val("");
+			    					$("#sendingTargetOrder").html("");
+									$("#finishedOrder").html("");
+									alert("해당 송장은 주문 취소되었습니다");
+			    				}
+			    				
+			    				completeProduct = 0;
+			    				$("#orDeliveryInvoiceNumber").val("");
+			    				$("#orDeliveryInvoiceNumber").focus();
+
+			    			}
 			    		}
+			    		
 			    		
 			    	}
 			    	
@@ -103,21 +201,19 @@ jQuery(document).ready(function($) {
 			var forSearch = 0;
 			var searchCounting = 0;
 			var noneProdCounting = 0;
-			console.log(" 바코드 번호  => "+orDeliveryInvoiceNumber);
-			
+
 			$("#sendingProductList td[name=productLists]").each(function(idx){
-				console.log(" 물품 순회 시작  => "+idx);
-				
-				
+
 				numberCounting+=1;
 				
 				//var barcodeNum = $(this).data("barcodenum");
 				var barcodeNum = $(this).attr("data-barcodenum");
-				if(!barcodeNum){
+				var barcodeNum2 = $(this).attr("data-barcodenum2");
+				if(!barcodeNum || !barcodeNum2){
 					console.log(" 바코드 번호 ");
 					
 				}else{		
-					if( barcodeNum == orDeliveryInvoiceNumber && $(this).data("cancled") != "Y"){
+					if( (barcodeNum == orDeliveryInvoiceNumber || barcodeNum2 == orDeliveryInvoiceNumber) && $(this).data("cancled") != "Y"){
 						console.log(" 바코드 같음 1  => ");
 						
 						if( $(this).data("finished") == "N" && $(this).data("barcodenum") != "N"){
@@ -151,7 +247,6 @@ jQuery(document).ready(function($) {
 								
 								
 								if(totalLength == completeProduct){
-									
 									finished.play();
 									
 									$("#sendingProductList").html("");
@@ -203,12 +298,7 @@ jQuery(document).ready(function($) {
 				
 	
 			});
-			
-			console.log(" 같지 않은 개수 "+forSearch);
-			console.log(" 물품 개수 "+totalLength);
-			console.log(" 검색 개수 "+searchCounting);
-			console.log(" 없는 바코드 개수 "+noneProdCounting);
-			
+
 			if((forSearch == totalLength && searchCounting == 0) || noneProdCounting == totalLength){
 				nonExistsProduct.play();
 				$("#orDeliveryInvoiceNumber").val("");
@@ -244,8 +334,11 @@ jQuery(document).ready(function($) {
 			if(this.orCancledFlag == true){
 				productList+=" - 취소된 상품 - ";
 			}
+			if(this.orExcelDivFlag == true){
+				productList+=" - 대량 엑셀 파일 - ";
+			}
 			
-			if(this.orCancledFlag == true){
+			if(this.orCancledFlag == true || this.orExcelDivFlag == true){
 				productList+="</td>"
 					+"<td width='15%;'>"+this.orAmount+"개</td>"
 					+"<td width='15%;' name='productLists' data-barcodenum='";
@@ -253,9 +346,27 @@ jQuery(document).ready(function($) {
 				if(!this.orUserColumn1){
 					productList+="N";
 				}else{
-					productList+=this.orUserColumn1
+					productList+=this.orUserColumn1;
 				}
-				productList+="' data-amount='"+this.orAmount+"' data-finished='N' data-cancled='Y' data-quantity='"+this.orAmount+"'> 취소 </td>"
+				
+				productList+="' data-barcodenum2='";
+				
+				
+				if(!this.orUserColumn2){
+					productList+="N";
+				}else{
+					productList+=this.orUserColumn2;
+					
+				}
+				
+				productList+="' data-amount='"+this.orAmount+"' data-finished='N' data-cancled='Y' data-quantity='"+this.orAmount+"'>";
+				
+				if(this.orCancledFlag == true){
+					productList+=" 취소 ";
+				}else if(this.orExcelDivFlag == true){
+					productList+=" 엑셀 주소 파일 ";
+				}
+				productList+="</td>"
 				+"</tr>";
 				
 				var orPkInput = document.createElement("input");
@@ -274,6 +385,18 @@ jQuery(document).ready(function($) {
 				}else{
 					productList+=this.orUserColumn1
 				}
+				
+				productList+="' data-barcodenum2='";
+				
+				
+				if(!this.orUserColumn2){
+					productList+="N";
+					
+				}else{
+					productList+=this.orUserColumn2;
+					
+				}
+				
 				productList+="' data-amount='"+this.orAmount+"' data-finished='N' data-cancled='N' data-quantity='0'>0개</td>"
 				+"</tr>";
 				

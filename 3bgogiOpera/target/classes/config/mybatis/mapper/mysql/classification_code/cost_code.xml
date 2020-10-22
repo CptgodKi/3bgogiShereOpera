@@ -25,6 +25,29 @@
 			BY cc.cf_code
 	</select>
 	
+	<update id="updateCostCode" parameterType="CostCodeVO">
+		UPDATE
+			cost_code
+		SET
+			cc_code = #{ccCode},
+			cc_code_type = #{ccCodeType},
+			cc_carcass_flag = #{ccCarcassFlag}
+		WHERE
+			cc_pk = #{ccPk}
+	</update>
+	
+	<insert id="insertCostCode" parameterType="CostCodeVO">
+		INSERT INTO
+			cost_code(
+				cc_code,
+				cc_code_type
+			)
+		VALUES(
+			#{ccCode},
+			#{ccCodeType}
+		)
+	</insert>
+	
 </mapper>
 
 

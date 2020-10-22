@@ -1,11 +1,13 @@
 package com.gogi.proj.orders.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.gogi.proj.aligo.util.AligoSendingForm;
 import com.gogi.proj.aligo.util.AligoVO;
@@ -38,6 +43,7 @@ import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreMergeVO;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.excel.ReadOrderExcel;
+import com.gogi.proj.excel.xlsxWriter;
 import com.gogi.proj.matching.model.MatchingService;
 import com.gogi.proj.orders.config.model.OrderConfigService;
 import com.gogi.proj.orders.config.model.StoreExcelDataSortingService;
@@ -51,6 +57,7 @@ import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.product.options.vo.OptionsVO;
+import com.gogi.proj.security.AdminVO;
 import com.gogi.proj.stock.model.StockService;
 import com.gogi.proj.util.FileuploadUtil;
 import com.gogi.proj.util.PageUtility;
@@ -131,12 +138,11 @@ public class OrdersController {
 	 * @메소드설명 : 엑셀 형태의 주문서 받아오기 (스마트스토어)
 	 */
 	@RequestMapping(value="/order_page.do", method=RequestMethod.POST)
-	public String insertOrdersPagePost(HttpServletRequest request, @ModelAttribute StoreExcelDataSortingVO sedsVO, Model model) {
+	public String insertOrdersPagePost(HttpServletRequest request, @ModelAttribute StoreExcelDataSortingVO sedsVO, @RequestParam boolean sendingDeadlineFlag, Model model) {
+		
 		String msg = "";
 		String url = "/orders/order_page.do";
 		
-		logger.info("smart_store excel data checking..");
-
 		String fileName = "";
 		
 		try {
@@ -154,9 +160,7 @@ public class OrdersController {
 			
 			return "common/message";
 		}
-		
-		logger.info("checking fileName = {}", fileName);
-		
+
 		List<OrdersVO> orderList= null;
 		
 		StoreSectionVO ssVO = new StoreSectionVO();
@@ -168,10 +172,10 @@ public class OrdersController {
 		
 		try {
 			if(sedsVO.getSsFk() == 3) {				
-				orderList = readOrderExcel.readOrderExcelDataToXLS(fileName, sedsVO.getSsFk());
+				orderList = readOrderExcel.readOrderExcelDataToXLS(fileName, sedsVO.getSsFk(), sendingDeadlineFlag);
 				
 			}else {
-				orderList = readOrderExcel.readOrderExcelData(fileName, sedsVO.getSsFk(), sedsData);
+				orderList = readOrderExcel.readOrderExcelData(fileName, sedsVO.getSsFk(), sedsData, sendingDeadlineFlag);
 				
 			}
 			
@@ -232,7 +236,10 @@ public class OrdersController {
 		model.addAttribute("checkingIroList",checkingIroList);
 		
 		//자동으로 매칭 시키기
-		matchingService.matchingsProductAndOrders();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
 		
 		
 		return "orders/insert_orders_result";
@@ -267,8 +274,6 @@ public class OrdersController {
 	public String insertSmartStoreSendingOrdersPagePost(HttpServletRequest request, @RequestParam int ssFk, Model model) {
 		String msg = "";
 		String url = "/orders/order_page.do";
-		
-		logger.info("smart_store excel data checking..");
 
 		String fileName = "";
 		
@@ -287,9 +292,7 @@ public class OrdersController {
 			
 			return "common/message";
 		}
-		
-		logger.info("checking fileName = {}", fileName);
-		
+
 		List<OrdersVO> orderList= null;
 		
 		try {
@@ -346,7 +349,7 @@ public class OrdersController {
 			osVO.setSearchKeywordList(searchLists);
 		}
 		
-		int totalRecord = ordersService.searchCustomerOrderInfoCounting(osVO);
+		int totalRecord = ordersService.newSearchCustomerOrderInfoCounting(osVO);
 		
 		/*if(osVO.getInsertingCount() == null || osVO.getInsertingCount().equals("")) {
 			osVO.setInsertingCount("0");
@@ -378,18 +381,89 @@ public class OrdersController {
 			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
 			
 		}
-		List<OrdersVO> orderList = ordersService.searchCustomerOrderInfo(osVO);
+		
+		List<OrdersVO> orderList = ordersService.newSearchCustomerOrderInfo(osVO);
 		List<StoreSectionVO> ssList =configService.selectStoreSectionList();
 		List<OrdersVO> insertStoreOrderList = ordersService.selectOrdersCountingByInputDate();
-		
-		logger.info("osVO = {}", osVO.toString());
-		
+	
 		model.addAttribute("insertStoreOrderList", insertStoreOrderList);
 		model.addAttribute("ssList", ssList);
 		model.addAttribute("orderList",orderList);
 		model.addAttribute("osVO", osVO);
 		
 		return "orders/cs/search_cs";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : searchCustomerExcelFileDownload
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 고객 검색 결과 엑셀파일 다운로드
+	 */
+	@RequestMapping(value="/search/customer_orders_excel.do", method=RequestMethod.POST)
+	public ModelAndView searchCustomerExcelFileDownload(@ModelAttribute OrderSearchVO osVO, Model model){
+		
+		if(osVO.getDateType() == null) {
+			osVO.setDateType("or_regdate");
+		}
+		
+		if(osVO.getSearchKeyword() != null && osVO.getSearchType().equals("orderNames")) {
+			String [] searchList = osVO.getSearchKeyword().split(",");
+			List<String> searchLists = new ArrayList<String>();
+			for(int i =0; i<searchList.length; i++) {
+				searchLists.add(searchList[i]);
+			}
+			osVO.setSearchKeywordList(searchLists);
+		}
+		
+		int totalRecord = ordersService.newSearchCustomerOrderInfoCounting(osVO);
+		
+		/*if(osVO.getInsertingCount() == null || osVO.getInsertingCount().equals("")) {
+			osVO.setInsertingCount("0");
+		}*/
+		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar calendar = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, -7);
+			Date sevenDays = calendar.getTime();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(sevenDays));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+		
+		osVO.setTotalRecord(totalRecord);
+		osVO.setBlockSize(10);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
+			
+		}
+		List<OrdersVO> orderList = ordersService.newSearchCustomerOrderInfoToExcelFile(osVO);
+		xlsxWriter xw = new xlsxWriter();
+		
+		File resultFile = xw.csSearchResultExcelFile(orderList);
+		
+		Map<String, Object> fileMap = new HashMap<String, Object>();
+		fileMap.put("myfile", resultFile);
+		ModelAndView mav = new ModelAndView("downloadView", fileMap);
+
+		return mav;
+		
 	}
 	
 	
@@ -457,9 +531,13 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/config/devide.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean devideOrderPagePost(@RequestParam int [] orPkList) {
+	public boolean devideOrderPagePost(HttpServletRequest request ,@RequestParam int [] orPkList) {
 				
-		return ordersService.devideOrders(orPkList);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		return ordersService.devideOrders(orPkList, request.getRemoteAddr(), adminVo.getUsername());
 			
 	}
 	
@@ -503,10 +581,15 @@ public class OrdersController {
 										@RequestParam int orderDevideType,
 										@RequestParam(defaultValue="0", required=false) int radioDevideValue,
 										@RequestParam(defaultValue="0", required=false) int selfDevideOriginalValue,
-										@RequestParam(defaultValue="0", required=false) int selfDevideValue) {
+										@RequestParam(defaultValue="0", required=false) int selfDevideValue,
+										HttpServletRequest request) {
 		
 		try {
-			ordersService.selfDevideOrders(orPk, orderDevideType, radioDevideValue, selfDevideOriginalValue, selfDevideValue);
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			
+			AdminVO adminVo = (AdminVO)auth.getPrincipal();
+			
+			ordersService.selfDevideOrders(orPk, orderDevideType, radioDevideValue, selfDevideOriginalValue, selfDevideValue, request.getRemoteAddr(), adminVo.getUsername());
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -548,9 +631,13 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/config/combine_order.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean combineOrderPost(@RequestParam List<String> orSerialList, @ModelAttribute OrdersVO orVO) {
+	public boolean combineOrderPost(@RequestParam List<String> orSerialList, @ModelAttribute OrdersVO orVO, HttpServletRequest req) {
 		
-		return ordersService.updateCombineOrders(orSerialList, orVO);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		return ordersService.updateCombineOrders(orSerialList, orVO, req.getRemoteAddr(), adminVo.getUsername());
 	}
 	
 	
@@ -587,16 +674,14 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/config/change_product_option.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean changeProductOptionPagePost(@ModelAttribute OrdersVO orVO) {
-	
+	public boolean changeProductOptionPagePost(HttpServletRequest request ,@ModelAttribute OrdersVO orVO) {
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
-		logger.info("orVO={}", orVO.toString());
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
 		boolean changeStat = false;
-		
-		int result = ordersService.changeProductAndOptionByOrPk(orVO);
-		
-		boolean invResult = stockService.updateProductChangeValues(orVO);
-		
+		int result = ordersService.changeProductAndOptionByOrPk(orVO, request.getRemoteAddr(), adminVo.getUsername());
 		
 		if(result > 0) {
 			changeStat = true;
@@ -723,9 +808,14 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/change/deadline.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean changeSendingDeadlinePagePost(@ModelAttribute OrderSearchVO osVO) {
+	public boolean changeSendingDeadlinePagePost(HttpServletRequest request, @ModelAttribute OrderSearchVO osVO) {
 		
-		int result = ordersService.changeSendingDeadline(osVO);
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		int result = ordersService.changeSendingDeadline(osVO, request.getRemoteAddr(), adminVo.getUsername());
 		
 		if(result != 0) {
 			
@@ -966,7 +1056,7 @@ public class OrdersController {
 	@RequestMapping(value="/irregular/add.do", method=RequestMethod.POST)
 	@Transactional
 	public String irregularOrdersAddPost(@ModelAttribute IrregularOrderVO iroVO, Model model) {
-		logger.info("현재 들어온 iroVO 값 = {}", iroVO.toString());
+		
 		String msg = "";
 		String url = "";
 		
@@ -1123,21 +1213,19 @@ public class OrdersController {
 			throw new RuntimeException("파일 입력 오류", e);
 		}
 
-		List<OrdersVO> orderList= null;
 		
 		OrdersVO originalOrVO = ordersService.selectOrdersByPk(orVO.getOrPk());
-		
-		orderList = readOrderExcel.readGiftSetExcelFile(fileName, originalOrVO);
 
-		if(originalOrVO.getOrAmount() != orderList.size()) {
+		
+		int [] result = ordersService.updateExcelDivOrders(originalOrVO, fileName);
+
+		if(result == null || result[0] == 0) {
 			msg = "엑셀의 개수와 개수가 다릅니다. 다시 한 번 확인해주세요.";
 			model.addAttribute("msg", msg);
 			model.addAttribute("closing", closing);
 			return "common/message";
 		}
 		
-		int [] result = ordersService.insertOrderData(orderList, originalOrVO.getSsFk());
-
 		msg = result[0]+" 개 등록 완료. 페이지를 새로고침 합니다.";
 		
 		model.addAttribute("msg", msg);
@@ -1191,7 +1279,7 @@ public class OrdersController {
 		try {
 			
 			fileName = fileUploadUtil.fileupload(request, FileuploadUtil.ORDER_EXCEL);
-			System.out.println("파일 명 => "+fileName);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.info("upload error! checking fileExtension or excel file");
@@ -1207,9 +1295,7 @@ public class OrdersController {
 		StoreCancleExcelDataSortingVO scedsVO = sedsService.selectStoreCancleExcelDataSorting(ssVO);
 		
 		List<OrdersVO> orList = readOrderExcel.cancledExcelFile(fileName, scedsVO);
-		
-		System.out.println("해당 개수 "+orList.size());
-		
+
 		List<OrdersVO> cancledOrderList = sedsService.cancledOrderSearch(orList);
 		
 		List<StoreSectionVO> storeList = configService.selectStoreSectionList();
@@ -1252,9 +1338,13 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/order_output.do", method=RequestMethod.POST)
 	@ResponseBody
-	public int orderOutputPost(@ModelAttribute OrdersVOList orVOList) {
+	public int orderOutputPost(HttpServletRequest request, @ModelAttribute OrdersVOList orVOList) {
 		
-		int result = ordersService.updateOutputDateBySerialNumber(orVOList);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		int result = ordersService.updateOutputDateBySerialNumber(orVOList, request.getRemoteAddr(), adminVo.getUsername());
 		
 		return result;
 	}
@@ -1271,9 +1361,13 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/order_output_canled.do", method=RequestMethod.POST)
 	@ResponseBody
-	public int orderOutputCancledPost(@ModelAttribute OrdersVOList orVOList) {
+	public int orderOutputCancledPost(HttpServletRequest request, @ModelAttribute OrdersVOList orVOList) {
 		
-		int result = ordersService.outputCancledBySerialNumber(orVOList);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		int result = ordersService.outputCancledBySerialNumber(orVOList, request.getRemoteAddr(), adminVo.getUsername());
 		
 		return result;
 	}
@@ -1533,4 +1627,27 @@ public class OrdersController {
 		return ordersService.multiMatchingDevide(paramOrVO);
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : deleteOrderByRegdate
+	 * @date : 2020. 9. 24.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 판매처 번호와 주문등록일을 이용해서 일괄 삭제
+	 */
+	@RequestMapping(value="/delete_order_regdate.do", method=RequestMethod.GET)
+	public String deleteOrderByRegdate(@ModelAttribute OrdersVO orVO, Model model) {
+		String msg = "삭제완료";
+		String url = "/orders/order_page.do";
+		
+		logger.info("regdate => {}, ss_fk => {}",orVO.getOrRegdate(),orVO.getSsFk());
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url",url);
+		
+		return "common/message";
+
+	}
 }

@@ -814,11 +814,21 @@ jQuery(document).ready(function($) {
 		});
 	});
 	
-	regexFunction('keyup', 'input[name=orTotalPrice]');
+	// regexFunction('keyup', 'input[name=orTotalPrice]');
 	
-	var addCounting = 0;
+	
+	// var addCounting = 0;
+	
+	$(document).on('click', 'button[name*="deleteOption"]', function(){
+		$(this).parent().remove();
+		
+		
+	});
 	
 	$(document).on('click', 'button[name=addOrderProduct]', function(){
+		var addCounting = $(opener.document).find("#productCounting").val();
+		
+		
 		$("#addProductAndOptionForm").html("");
 		var orProduct = $(this).data("product-name");
 		var orProductOption = $(this).data("option-name");
@@ -830,15 +840,21 @@ jQuery(document).ready(function($) {
 		
 		var orAmount = $(this).parent().prev().prev().find("input[name=orAmount]").val();
 		
+		if(orAmount == '' || orAmount == 0){
+			alert("상품의 개수를 입력해주세요");
+			
+			return false;
+		}
+		
 		var appendForm = '<li class="list-group-item d-flex justify-content-between">'
 			+'<input type="hidden" name="orAmountList['+addCounting+']" value="'+orAmount+'">'
 			+'<input type="hidden" name="orProductList['+addCounting+']" value="'+orProduct+'">'
-			+'<input type="hidden" name="orTotalPriceList['+addCounting+']" value="'+orTotalPrice+'">'
+			+'<input type="hidden" class="orderTotalPrice" name="orTotalPriceList['+addCounting+']" value="'+orTotalPrice+'">'
 			+'<input type="hidden" name="orProductOptionList['+addCounting+']" value="'+orProductOption+'">'
 			
 		+'<div>'
 			+'<h6 class="my-0"> '+orProduct+' </h6>'
-			+'<small class="text-muted"> '+orProductOption+' '+orAmount+'개 ( '+orTotalPrice+' 원)</small>'
+			+'<small class="text-muted"> '+orProductOption+' '+orAmount+'개 ( '+comma(orTotalPrice)+' 원)</small>'
 		+'</div> <span class="text-muted"><button class="btn btn-danger btn-sm deleteCreateOrderProduct"> 삭제 </button></span>'
 	+'</li>';
 		
@@ -859,6 +875,16 @@ jQuery(document).ready(function($) {
 		}
 		
 		addCounting++;
+		$(opener.document).find("#productCounting").val(addCounting);
+		var orderTotalPrice = Number(0);
+		
+		$(opener.document).find(".orderTotalPrice").each(function(){
+			orderTotalPrice+=Number($(this).val());
+			
+		});
+		
+		
+		$(opener.document).find("#orderTotalPrice").text(comma(orderTotalPrice)+" 원");
 		
 		// opener.document.getElementById("createOrderProductList").html(appendForm);
 	});
@@ -925,5 +951,28 @@ jQuery(document).ready(function($) {
 
 	}
 	// 상품 추가 끝
+	
+	function comma(num){
+		
+	    var len, point, str; 
+	    
+	    if(num==null){
+	    	str = 'No Data';
+	    	return str;
+	    }
+	    num = num + ""; 
+	    point = num.length % 3 ;
+	    len = num.length; 
+	   
+	    str = num.substring(0, point); 
+	    while (point < len) { 
+	        if (str != "") str += ","; 
+	        str += num.substring(point, point + 3); 
+	        point += 3; 
+	    } 
+	     
+	    return str;
+	 
+	}
 	
 }); // AND OF JQUERY

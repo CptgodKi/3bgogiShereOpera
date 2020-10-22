@@ -190,4 +190,10 @@ public class StockDAOMybatis extends SqlSessionDaoSupport implements StockDAO {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(productInputNameSpace+".productInputDontPerm");
 	}
+
+	@Override
+	public List<ProductOptionVO> checkOptionBarcodeDupli(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".checkOptionBarcodeDupli", osVO);
+	}
 }

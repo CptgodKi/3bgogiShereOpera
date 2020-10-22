@@ -24,11 +24,11 @@
 								'<table class="table table-striped">'
 			                        +'<thead>'
 			                        +'<tr>'
-			                            +'<th scope="col">원가명</th>'
+			                            +'<th scope="col">원재료명</th>'
 			                            +'<th scope="col">상품 생산 원가</th>'
 			                            +'<th scope="col">단위</th>'
 			                            +'<th scope="col">생산 단위(Gram, Ml, Ea)</th>'
-			                            +'<th scope="col">원가 등록일</th>'
+			                            +'<th scope="col">원재료 등록일</th>'
 			                        +'</tr>'
 			                    +'</thead>'
 			                    +'<tbody>';
@@ -95,14 +95,14 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 다중 원가 목록 </h2>
+                            <h2 class="pageheader-title"> 다중 원재료 목록 </h2>
                             <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 목록 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 다중 원가 목록 </li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 목록 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 다중 원재료 목록 </li>
                                     </ol>
                                 </nav>
                             </div>
@@ -119,7 +119,7 @@
 						<div class="col-lg-12">
 							<div class="email-search">
 								<div class="input-group input-search">
-									<input class="form-control" type="text" placeholder="다중 원가 검색"><span class="input-group-btn">
+									<input class="form-control" type="text" placeholder="다중 원재료 검색"><span class="input-group-btn">
 										<button class="btn btn-secondary" type="button">
 											<i class="fas fa-search"></i>
 										</button>

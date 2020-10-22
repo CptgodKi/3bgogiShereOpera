@@ -35,6 +35,9 @@ import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.paging.PaginationInfo;
 import com.gogi.proj.product.cost.model.CostDetailService;
 import com.gogi.proj.product.cost.vo.CostDetailVO;
+import com.gogi.proj.product.cost.vo.CostIoVO;
+import com.gogi.proj.product.cost_io.model.CostIoService;
+import com.gogi.proj.product.costs.model.CostsService;
 import com.gogi.proj.product.options.vo.OptionsVO;
 import com.gogi.proj.product.products.vo.ProductOptionVO;
 import com.gogi.proj.security.AdminVO;
@@ -61,6 +64,9 @@ public class StockController {
 	private CostDetailService cdService;
 	
 	@Autowired
+	private CostIoService ciService;
+	
+	@Autowired
 	private AllClassificationCodeService accService;
 	
 	@Autowired
@@ -78,13 +84,13 @@ public class StockController {
 	 * @메소드설명 : 재고 체크 
 	 */
 	@RequestMapping(value="/stk_check.do" , method=RequestMethod.GET )
-	public String stockCheck(OrderSearchVO osVO, Model model) {
+	public String stockCheck(HttpServletRequest request,OrderSearchVO osVO, Model model) {
 		
 		if(osVO.getDateStart() == null) {
 			
 			Calendar calendar = Calendar.getInstance();
 			Calendar cal = Calendar.getInstance();
-			calendar.add(Calendar.DAY_OF_MONTH, -7);
+			calendar.add(Calendar.DAY_OF_MONTH, -30);
 			Date sevenDays = calendar.getTime();
 			Date today = cal.getTime();
 			
@@ -95,8 +101,11 @@ public class StockController {
 			
 		}
 		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
-		stockService.stockChecking(osVO);
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		stockService.stockChecking(osVO, request.getRemoteAddr(), adminVo.getUsername());
 		
 		// 재고 할당에 따른 주문서 검색 결과 가져오기
 		/*int[] result = stockService.stockSearchList(osVO);*/
@@ -214,13 +223,7 @@ public class StockController {
 		try {
 			
 			List<Map<String, Object>> fileInfo = fileUploadUtil.fileupload2(request, FileuploadUtil.STOCK_STATEMENT_IMG);
-			
-			logger.info("checking oriFileName = {}", fileInfo.get(0).get("oriFileName"));
-			logger.info("checking uniFileName = {}", fileInfo.get(0).get("uniFileName"));
-			logger.info("checking fileSize = {}", fileInfo.get(0).get("fileSize"));
-			logger.info("checking fileExtType = {}", fileInfo.get(0).get("fileExtType"));
-			logger.info("checking filePath = {}", fileInfo.get(0).get("filePath"));
-			
+
 			pilVO.setPilFileExe(fileInfo.get(0).get("fileExtType")+"");
 			pilVO.setPilFileName(fileInfo.get(0).get("uniFileName")+"");
 			pilVO.setPilFilePath(fileInfo.get(0).get("filePath")+"");
@@ -375,7 +378,37 @@ public class StockController {
 	@RequestMapping(value="/carcass/list.do", method=RequestMethod.GET)
 	public String carcassListGet(@ModelAttribute OrderSearchVO osVO, Model model) {
 		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar calendar = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, -7);
+			Date sevenDays = calendar.getTime();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(sevenDays));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+		
+		int totalRecord = cdService.selectCarcassInputListCount(osVO);
+		
+		osVO.setTotalRecord(totalRecord);
+		osVO.setBlockSize(10);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
+			
+		}
+		
 		List<CarcassInputListVO> cilList = cdService.selectCarcassInputList(osVO);
+		
 		
 		model.addAttribute("cilList", cilList);
 		model.addAttribute("osVO", osVO);
@@ -425,6 +458,25 @@ public class StockController {
 		return "orders/stock/carcass/insert";
 	}
 	
+	/**
+	 * 
+	 * @MethodName : carcassDetail
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 입력사항 상세보기
+	 */
+	@RequestMapping(value="/carcass/read.do", method=RequestMethod.GET)
+	public String carcassDetail(@ModelAttribute CarcassInputListVO cilVO, Model model) {
+		
+		CarcassInputListVO cilList = cdService.selectCarcassInputListDetail(cilVO);
+		
+		model.addAttribute("cilList", cilList);
+		
+		return "orders/stock/carcass/read";
+	}
 	
 	/**
 	 * 
@@ -460,9 +512,7 @@ public class StockController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		AdminVO adminVO = (AdminVO)auth.getPrincipal();
-		
-		logger.info("cilVO toString() => {}", cilVO.toString());
-		
+
 		int result = 0;
 		
 		String msg = "도체 등록 실패";
@@ -501,4 +551,224 @@ public class StockController {
 		
 		return "common/message";
 	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateCarcass
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 수정하기
+	 */
+	@RequestMapping(value="/carcass/update.do", method=RequestMethod.POST)
+	public String updateCarcass(@ModelAttribute CarcassInputListVO cilVO, Model model) {
+		
+		String msg = "";
+		String url = "/stock/carcass/read.do?cilPk="+cilVO.getCilPk();
+		
+		int result = cdService.updateCarcassInputList(cilVO);
+		
+		if(result > 0) {
+			msg = "도체 수정 완료";
+			
+		}else {
+			msg = "도체 수정 실패";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : deleteCarcass
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param cilVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 도체 삭제하기
+	 */
+	@RequestMapping(value="/carcass/delete.do", method=RequestMethod.POST)
+	public String deleteCarcass(@ModelAttribute CarcassInputListVO cilVO, Model model) {
+		
+		String msg = "";
+		String url = "";
+		
+		int result = cdService.deleteCarcassInputList(cilVO);
+		
+		if(result > 0) {
+			msg = "도체 삭제 완료";
+			url = "/stock/carcass/list.do";
+		}else {
+			msg = "삭제 실패";
+			url = "/stock/carcass/read.do?cilPk="+cilVO.getCilPk();
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : carcassCutListGet
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 부분육 입고 목록 확인하기
+	 */
+	@RequestMapping(value="/carcass/carcass_cut/list.do", method=RequestMethod.GET)
+	public String carcassCutListGet(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar calendar = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, -7);
+			Date sevenDays = calendar.getTime();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(sevenDays));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+		int totalRecord = cdService.selectCostIoHistoryCounting(osVO);
+		
+		osVO.setTotalRecord(totalRecord);
+		osVO.setBlockSize(10);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
+			
+		}
+		
+		
+		List<CostIoVO> ciList = cdService.selectCostIoHistory(osVO);
+		
+		model.addAttribute("ciList", ciList);
+		model.addAttribute("osVO", osVO);
+		
+		return "orders/stock/carcass/carcass_cut/list";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : carcassCutRead
+	 * @date : 2020. 10. 15.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 부분육 입고 내역 상세 확인
+	 */
+	@RequestMapping(value="/carcass/carcass_cut/read.do", method=RequestMethod.GET)
+	public String carcassCutRead(@ModelAttribute CostIoVO ciVO, Model model) {
+		
+		CostIoVO result = ciService.selectCostIoData(ciVO);
+		
+		model.addAttribute("ciVO", result);
+		
+		return "orders/stock/carcass/carcass_cut/read";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : carcassCutInsertGet
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @param model
+	 * @return
+	 * @메소드설명 : 부분육 입고 페이지
+	 */
+	@RequestMapping(value="/carcass/carcass_cut/insert.do", method=RequestMethod.GET)
+	public String carcassCutInsertGet(Model model) {
+		List<CostDetailVO> cdList = ciService.selectCostDetailCode();
+		
+		model.addAttribute("cdList", cdList);
+		
+		return "orders/stock/carcass/carcass_cut/insert";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : caracssCutInsertPost
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 부분육 입고 처리하기
+	 */
+	@RequestMapping(value="/carcass/carcass_cut_insert.do", method=RequestMethod.POST)
+	public String caracssCutInsertPost(@ModelAttribute CostIoVO ciVO, Model model) {
+		
+		String msg = "";
+		String url = "/stock/carcass/carcass_cut/list.do";
+		
+		int result = ciService.insertCostInputData(ciVO);
+		
+		if(result > 0 ) {
+			msg = "부분육 입력 완료";
+		}else {
+			msg = "입력 실패";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : checkOptionBarcodeDupli
+	 * @date : 2020. 10. 19.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 바코드 중복 확인 페이지 들어가기
+	 */
+	@RequestMapping(value="/check_barcode_dupli.do", method=RequestMethod.GET)
+	public String checkOptionBarcodeDupli() {
+		
+		return "orders/stock/manage/check_barcode_num";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : checkOptionBarcodeDupliAjax
+	 * @date : 2020. 10. 19.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 바코드 중복값 가져오기
+	 */
+	@RequestMapping(value="/check_barcode_dupli.do", method=RequestMethod.POST)
+	@ResponseBody
+	public List<ProductOptionVO> checkOptionBarcodeDupliAjax(@ModelAttribute OrderSearchVO osVO){
+		
+		return stockService.checkOptionBarcodeDupli(osVO);
+	}
+	
 }

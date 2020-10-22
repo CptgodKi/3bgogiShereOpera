@@ -55,4 +55,22 @@ public class CostIoDAOMybatis extends SqlSessionDaoSupport implements CostIoDAO{
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectCostInputList", osVO);
 	}
+
+	@Override
+	public List<CostDetailVO> selectCostDetailCode() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectCostDetailCode");
+	}
+
+	@Override
+	public int updateCostIoOutputFlagAllZero(CostIoVO ciVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(namespace+".updateCostIoOutputFlagAllZero", ciVO);
+	}
+
+	@Override
+	public int updateCostIoOutputFlagPosib(CostIoVO ciVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(namespace+".updateCostIoOutputFlagPosib", ciVO);
+	}
 }

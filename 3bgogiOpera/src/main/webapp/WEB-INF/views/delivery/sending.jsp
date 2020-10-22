@@ -35,7 +35,7 @@
 								<tr>
 									<td width="50%">
 										<div class="input-group">
-											<input type="text" class="form-control" id="orDeliveryInvoiceNumber">
+											<input type="text" class="form-control" id="orDeliveryInvoiceNumber" autocomplete="off">
 											<div class="input-group-append">
 												<button class="btn btn-primary btn-xs" type="submit">입력</button>
 											</div>
@@ -45,14 +45,15 @@
 										<div class="input-group">
 											<input type="text" class="form-control" disabled="disabled" id="invoiceValue">
 											<div class="input-group-append">
-												<button class="btn btn-secondary btn-xs" type="button">초기화</button>
+												<button class="btn btn-secondary btn-xs" type="button" id="barcodeInit">초기화</button>
 											</div>
 										</div>
 									</td>
 								</tr>
 								<tr>
 									<td colspan="2">
-										<button class="btn btn-secondary btn-xs btn-block" type="button">강제출고</button>
+										<button class="btn btn-secondary btn-xs btn-block" type="button" id="sendingReqBtn">강제출고</button>
+										
 									</td>
 								</tr>
 							</tbody>
@@ -90,7 +91,7 @@
 						<table class="table table-hover">
 							<thead>
 								<tr style="font-size: 10px;">
-									<th width="70%"> 출 고 완 료 상 품</th>
+									<th width="70%"> 분류 완료 상품</th>
 									<th width="15%">개수</th>
 									<th width="15%">출고</th>
 								</tr>
@@ -103,6 +104,47 @@
 			</div>
 		</div>
 	</div>
+	<button type="button" class="btn btn-primary btn-xs" id="reasonBtn" data-toggle="modal" data-target="#reasonModal" style="display:none; "> 모달  </button>
+	<div class="modal fade" id="reasonModal" tabindex="-1" role="dialog" aria-labelledby="#reasonModal" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="max-width: 700px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="stockModal"> 강제출고사유 </h5>
+						<a href="#" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</a>
+					</div>
+					<div class="modal-body" >
+						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <label class="custom-control custom-radio">
+                            	<input type="radio" name="srReason" checked class="custom-control-input" value="바코드 없음">
+                            	<span class="custom-control-label">바코드 없음</span>
+                            </label>
+                            <label class="custom-control custom-radio">
+                            	<input type="radio" name="srReason" class="custom-control-input" value="바코드 안읽힘">
+                            	<span class="custom-control-label">바코드 안읽힘</span>
+                            </label>
+                            <label class="custom-control custom-radio">
+                            	<input type="radio" name="srReason" class="custom-control-input" value="이미 찍은 상품">
+                            	<span class="custom-control-label">이미 찍은 상품</span>
+                            </label>
+                            <label class="custom-control custom-radio">
+                            	<input type="radio" name="srReason" class="custom-control-input" value="너무 많은 수량">
+                            	<span class="custom-control-label">너무 많은 수량</span>
+                            </label>
+                            <label class="custom-control custom-radio">
+                            	<input type="radio" name="srReason" class="custom-control-input" value="찍을 수 없는 선물세트">
+                            	<span class="custom-control-label"> 찍을 수 없는 선물세트 </span>
+                            </label>
+                        </div>
+					</div>
+					 <div class="modal-footer">
+					 	<a href="#" class="btn btn-primary" id="sendingReqReason"> 출고요청 </a>
+						<a href="#" class="btn btn-secondary" data-dismiss="modal"> 닫기 </a>
+					</div>
+				</div>
+			</div>
+		</div>
 </body> 
 <script src="${pageContext.request.contextPath}/resources/libs/js/renewal_sending_manage.js"></script>
 </html>

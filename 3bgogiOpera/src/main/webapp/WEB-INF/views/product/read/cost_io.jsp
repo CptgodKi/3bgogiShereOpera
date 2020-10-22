@@ -9,7 +9,7 @@
 <!-- Required meta tags -->
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title> 원가 상세 기록 </title>
+<title> 원재료 상세 기록 </title>
 <!-- Bootstrap CSS -->
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
@@ -51,8 +51,9 @@
 </script>
 <style>
 	html, body {
-		height: 100%;
+		
 	}
+	
 	body {
 		display: -ms-flexbox;
 		display: flex;
@@ -90,7 +91,12 @@
 								<label for="ciLevel">등급</label> 
 								<input type="text" class="form-control" id="ciLevel" name="ciLevel" placeholder="" required="" value="${ciVO.ciLevel }">
 							</div>
+							<div class="col-md-3 mb-3">
+								<label for="ciMarblingLevel">근내지방등급</label> 
+								<input type="text" class="form-control" id="ciMarblingLevel" name="ciMarblingLevel" placeholder="" required="" value="${ciVO.ciMarblingLevel }">
+							</div>
 						</div>
+						
 						<div class="mb-3">
 							<label for="ciAnimalProdTraceNum">이력번호</label> 
 							<input type="text" class="form-control" id="ciAnimalProdTraceNum" name="ciAnimalProdTraceNum" placeholder="이력번호를 입력해주세요" required="" value="${ciVO.ciAnimalProdTraceNum }">

@@ -79,28 +79,34 @@
     			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){    				
 	    			var orSerialSpecialNumberList = new Array(orSize);
 	    				
+					window.open('', 'viewer', 'width=1000, height=700');
+	    			
+	    			var delivForm =  document.createElement("form");
+	    			delivForm.method="POST";
+	    			
+	    			delivForm.action = '<c:url value="/security/create_deliv_invoice.do"/>';
+	    			delivForm.target = "viewer";
+	    			
+	    			
 	    			for(var i=0; i<orSize; i++){
-	    				orSerialSpecialNumberList[i]=$("input[name=orSerialSpecialNumberList]:checked")[i].value;
+	    				var orSerialSpecialNumberInput = document.createElement("input");
+	    				orSerialSpecialNumberInput.name="orSerialSpecialNumberList";
+	    				orSerialSpecialNumberInput.value=$("input[name=orSerialSpecialNumberList]:checked")[i].value;
+	    				delivForm.append(orSerialSpecialNumberInput);
+	    				console.log(orSerialSpecialNumberInput+" "+$("input[name=orSerialSpecialNumberList]:checked")[i].value);
+	    				
 	    			}
+					
+	    			$("#excelDownloadIframe").append(delivForm);
 	    			
-	    			
-	    			$.ajax({
-	    				type       : 'POST',
-	    				async	   : false,
-	    				data       : {
-	    					"orSerialSpecialNumberList":orSerialSpecialNumberList
-	    				},
-	    				url        : '/security/epost/deliv.do',
-	    				success    : function(data){		
-	    					window.open("/security/deliv_result.do?delivResult="+data, "송장 부여 결과" , "width=800px, height=700px, top=50px, left=50px");
-	    					
-	    				}
-	    			});
+	    			delivForm.submit();
+	    			$("#excelDownloadIframe").html("");
     			}
     			
     			
     		});
     		
+
     		$("#orSeiralSpecialNumberAllSelect").click(function(){
     			
     			if($(this).is(":checked")){
@@ -348,6 +354,26 @@
 												</select>
 				                            </div>
 				                            <div class="btn-group">
+				                                <select class="form-control" name="specialRegionFlag">
+													<option value="0"
+														<c:if test="${OrderSearchVO.specialRegionFlag == 0 }">
+															selected="selected"
+														</c:if>
+													> 모든 지역 </option>
+													<option value="1"
+														<c:if test="${OrderSearchVO.specialRegionFlag == 1 }">
+															selected="selected"
+														</c:if>
+													> 확인된 특수지역 </option>
+													<option value="2"
+														<c:if test="${OrderSearchVO.specialRegionFlag == 2 }">
+															selected="selected"
+														</c:if>
+													> 특수지역 </option>
+												</select>
+				                            </div>
+				                            
+				                            <div class="btn-group">
 				                                <select class="form-control" name=totalQtyAlarm>
 													<option value="12"
 														<c:if test="${OrderSearchVO.totalQtyAlarm == 12 }">
@@ -413,195 +439,9 @@
 		                        </div>
 	                        </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-		                        	<div class="card">
-		                        		<div class="card-body">
-		                        			<button type="button" class="btn btn-primary" data-toggle="popover" title="포함하는 조건" 
-		                        			data-content="해당 조검을 포함하는 송장을 검색합니다">포함 검색</button>
-				                        	<div class="btn-group">
-				                            	<select class="form-control" name="storeSection">
-								                    <option value="0">전체 판매처</option>
-								                    <c:forEach var="sslist" items="${ssList }">						                    	
-									                    <option value="${sslist.ssPk }"> ${sslist.ssName }</option>
-								                    </c:forEach>
-								                    <option value="-1">개인주문</option>
-							                    </select>                                 
-				                            </div>
-				                            <div class="btn-group">
-				                            	<select class="form-control" name="searchType">
-				                            		<option value="orderNames" 
-								                    	<c:if test="${osVO.searchType == 'orderNames' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자 / 수령자 통합</option>
-								                    <option value="buyerName" 
-								                    	<c:if test="${osVO.searchType == 'buyerName' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자</option>
-								                    <option value="receiverName"
-								                    	<c:if test="${osVO.searchType == 'receiverName' }">
-															 selected="selected"
-														</c:if>
-								                    >수령인</option>
-								                    <option value="buyerNum"
-								                    	<c:if test="${osVO.searchType == 'buyerNum' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자 번호</option>
-								                    <option value="receiverNum"
-								                    	<c:if test="${osVO.searchType == 'receiverNum' }">
-															 selected="selected"
-														</c:if>
-								                    >수령인 번호</option>
-								                    <option value="orderNum"
-								                    	<c:if test="${osVO.searchType == 'orderNum' }">
-															 selected="selected"
-														</c:if>
-								                    >주문번호</option>
-								                    <option value="receiverAddress"
-								                    	<c:if test="${osVO.searchType == 'receiverAddress' }">
-															 selected="selected"
-														</c:if>
-								                    >주소</option>
-								                    <option value="orderProductNum"
-								                    	<c:if test="${osVO.searchType == 'orderProductNum' }">
-															 selected="selected"
-														</c:if>
-								                    >상품주문번호</option>
-								                    <option value="matchingProduct"
-								                    	<c:if test="${osVO.searchType == 'matchingProduct' }">
-															 selected="selected"
-														</c:if>
-								                    >매칭 상품명</option>
-								                    <option value="matchingOption"
-								                    	<c:if test="${osVO.searchType == 'matchingOption' }">
-															 selected="selected"
-														</c:if>
-								                    >옵션 옵션명</option>
-								                    <option value="storeProduct"
-								                    	<c:if test="${osVO.searchType == 'storeProduct' }">
-															 selected="selected"
-														</c:if>
-								                    >판매처 상품명(옵션명)</option>
-								                    <option value="invoiceNum"
-								                    	<c:if test="${osVO.searchType == 'invoiceNum' }">
-															 selected="selected"
-														</c:if>
-								                    >송장번호</option>
-								                    <option value="deliveryMessage"
-								                    	<c:if test="${osVO.searchType == 'deliveryMessage' }">
-															 selected="selected"
-														</c:if>
-								                    >요청사항</option>
-							                    </select>
-				                            </div>
-				                            <div class="btn-group">
-				                            	<input class="form-control" id="searchKeyword" name="searchKeyword" type="text"  placeholder="검색 내용을 입력해주세요" value="${osVO.searchKeyword }">
-				                                <button class="btn btn-primary" type="submit"> 검색 </button>
-				                            </div>
-				                           
-	                                            <label class="custom-control custom-checkbox custom-control-inline" style="float:right;">
-	                                                <input type="checkbox" class="custom-control-input" id="showExSearchBar"><span class="custom-control-label"> 검색 확장 </span>
-	                                            </label>
-	                                        
-		                        		</div>
-		                        	
-		                        	</div>
-		                        </div>
-		                        
-		                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="exSearchBar" style="display: none;">
-		                        	<div class="card">
-		                        		<div class="card-body">
-		                        			<button type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="포함하는 조건" 
-		                        			data-content="해당 조검을 포함하는 송장을 검색합니다">제외 검색</button>
-				                        	<div class="btn-group">
-				                            	<select class="form-control" name="storeSection">
-								                    <option value="0">전체 판매처</option>
-								                    <c:forEach var="sslist" items="${ssList }">						                    	
-									                    <option value="${sslist.ssPk }"> ${sslist.ssName }</option>
-								                    </c:forEach>
-								                    <option value="-1">개인주문</option>
-							                    </select>                                 
-				                            </div>
-				                            <div class="btn-group">
-				                            	<select class="form-control" name="searchType">
-				                            		<option value="orderNames" 
-								                    	<c:if test="${osVO.searchType == 'orderNames' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자 / 수령자 통합</option>
-								                    <option value="buyerName" 
-								                    	<c:if test="${osVO.searchType == 'buyerName' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자</option>
-								                    <option value="receiverName"
-								                    	<c:if test="${osVO.searchType == 'receiverName' }">
-															 selected="selected"
-														</c:if>
-								                    >수령인</option>
-								                    <option value="buyerNum"
-								                    	<c:if test="${osVO.searchType == 'buyerNum' }">
-															 selected="selected"
-														</c:if>
-								                    >구매자 번호</option>
-								                    <option value="receiverNum"
-								                    	<c:if test="${osVO.searchType == 'receiverNum' }">
-															 selected="selected"
-														</c:if>
-								                    >수령인 번호</option>
-								                    <option value="orderNum"
-								                    	<c:if test="${osVO.searchType == 'orderNum' }">
-															 selected="selected"
-														</c:if>
-								                    >주문번호</option>
-								                    <option value="receiverAddress"
-								                    	<c:if test="${osVO.searchType == 'receiverAddress' }">
-															 selected="selected"
-														</c:if>
-								                    >주소</option>
-								                    <option value="orderProductNum"
-								                    	<c:if test="${osVO.searchType == 'orderProductNum' }">
-															 selected="selected"
-														</c:if>
-								                    >상품주문번호</option>
-								                    <option value="matchingProduct"
-								                    	<c:if test="${osVO.searchType == 'matchingProduct' }">
-															 selected="selected"
-														</c:if>
-								                    >매칭 상품명</option>
-								                    <option value="matchingOption"
-								                    	<c:if test="${osVO.searchType == 'matchingOption' }">
-															 selected="selected"
-														</c:if>
-								                    >옵션 옵션명</option>
-								                    <option value="storeProduct"
-								                    	<c:if test="${osVO.searchType == 'storeProduct' }">
-															 selected="selected"
-														</c:if>
-								                    >판매처 상품명(옵션명)</option>
-								                    <option value="invoiceNum"
-								                    	<c:if test="${osVO.searchType == 'invoiceNum' }">
-															 selected="selected"
-														</c:if>
-								                    >송장번호</option>
-								                    <option value="deliveryMessage"
-								                    	<c:if test="${osVO.searchType == 'deliveryMessage' }">
-															 selected="selected"
-														</c:if>
-								                    >요청사항</option>
-							                    </select>
-				                            </div>
-				                            <div class="btn-group">
-				                            	<input class="form-control" id="" name="searchKeyword" type="text"  placeholder="검색 내용을 입력해주세요" value="${osVO.searchKeyword }">
-				                                <button class="btn btn-primary" type="submit"> 검색 </button>
-				                            </div>
-		                        		</div>
-		                        	
-		                        	</div>
-		                        </div>
                         
+		                        
+		                        
                     </div>
                     <div class="row">
                     	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -679,7 +519,11 @@
 							                                        		<c:forEach var="opmlist" items="${pmlist.optionMatchingVOList }">
 								                                        		<c:forEach var="proOplist" items="${opmlist.productOptionList }">
 								                                        			<c:if test="${!empty proOplist.optionName }">								                                        			
-									                                        			<span style="font-size: 12px;">${proOplist.productName } [ ${proOplist.optionName } ] ${proOplist.cfFk } 개</span><br>
+									                                        			<span style="font-size: 12px;
+									                                        				<c:if test="${fn:contains(proOplist.productName, '세트') or fn:contains(proOplist.productName, '업소')}">
+									                                        				color:red;
+									                                        				</c:if>
+									                                        			">${proOplist.productName } [ ${proOplist.optionName } ] ${proOplist.cfFk } 개</span><br>
 									                                        			<c:set var="totalProductQty" value="${totalProductQty + proOplist.cfFk }"/>
 								                                        			</c:if>
 								                                        		</c:forEach>

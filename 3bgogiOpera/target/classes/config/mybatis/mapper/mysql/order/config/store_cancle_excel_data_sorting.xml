@@ -5,7 +5,7 @@
 <mapper namespace="order.config.store_cancle_excel_data_sorting">
 	
 	<insert id="insertStoreCancleExcelDataSorting" parameterType="StoreSectionVO">
-		INSERT INTO store_cancled_excel_data_sorting(ss_fk)
+		INSERT INTO store_cancle_excel_data_sorting(ss_fk)
 		VALUES(#{ssPk})
 	</insert>
 	

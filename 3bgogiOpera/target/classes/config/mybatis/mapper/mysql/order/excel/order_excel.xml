@@ -293,13 +293,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_fk)
 		SELECT #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice},  #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1}
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1}, #{orFk}
 		FROM dual
 		WHERE NOT EXISTS(
 			SELECT 
@@ -322,13 +322,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price, or_total_cost,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
 		VALUES( #{orSerialSpecialNumber}, #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice}, #{orTotalCost}, #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag} )
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag}, #{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
 	</insert>
 	
 	<!-- 상품 추가할 때 -->
@@ -338,13 +338,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price, or_total_cost,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
 		VALUES( #{orSerialSpecialNumber}, #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice}, #{orTotalCost}, #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag} )
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag},#{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
 	</insert>
 	
 	<update id="updateDevideOrderData" parameterType="com.gogi.proj.orders.vo.OrdersVO">
@@ -360,8 +360,7 @@
 			or_total_cost = #{orTotalCost},
 			or_payment_commision = #{orPaymentCommision},
 			or_another_payment_commision = #{orAnotherPaymentCommision},
-			or_devide_flag = #{orDevideFlag},
-			or_inv_flag = 0
+			or_devide_flag = #{orDevideFlag}
 		WHERE
 			or_pk = #{orPk}
 	</update>
@@ -398,7 +397,8 @@
 		SELECT
 			COUNT(od.or_pk) AS or_pk,
 		    od.or_regdate,
-		    ss.ss_name
+		    ss.ss_name,
+		    od.ss_fk
 		FROM
 			orders od
 			INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
@@ -408,7 +408,8 @@
 			]]>
 		GROUP BY
 			od.or_regdate,
-			ss.ss_name
+			ss.ss_name,
+			od.ss_fk
 	</select>
 	
 	<!-- 입력일로 주문서를 조회하여 일괄 삭제하기 -->
@@ -417,12 +418,18 @@
 			orders
 		WHERE 
 			or_pk IN(
-				SELECT
-					or_pk
-				FROM
-					orders
-				WHERE
-					or_regdate = #{or_regdate}
+				SELECT 
+					inne.or_pk
+				FROM(
+					SELECT
+						or_pk
+					FROM
+						orders
+					WHERE
+						ss_fk = #{ssFk}
+						AND or_regdate = #{or_regdate}
+				
+				) inne
 			)
 	</delete>
 	
@@ -916,6 +923,7 @@
 				/* LEFT JOIN cost_detail cd ON cs.cd_fk = cd.cd_pk */
 			WHERE 
 				od.or_cancled_flag = 0
+				AND od.or_excel_div_flag = 0
                 AND od.or_serial_special_number	IN 
 				<foreach collection="orSerialSpecialNumberList" item="specialNumber" index="index" separator="," open="(" close=")">
 	                    #{specialNumber}
@@ -1000,8 +1008,10 @@
 				<foreach collection="orSerialSpecialNumberList" item="specialNumber" index="index" separator="," open="(" close=")">
 	                    #{specialNumber}
 	            </foreach>
-	            AND eo.eos_seq = 11
+	            
+				AND eo.eos_begit_flag  = 1
 				AND od.or_cancled_flag = 0
+				AND od.or_excel_div_flag = 0
 			GROUP BY
 				od.or_pk,
 				od.or_serial_special_number,

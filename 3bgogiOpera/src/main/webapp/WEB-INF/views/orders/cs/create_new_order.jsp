@@ -9,7 +9,7 @@
 <!-- Required meta tags -->
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>발송 변경</title>
+<title>수기 주문서 작성</title>
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
 <link href="${pageContext.request.contextPath}/resources/vendor/fonts/circular-std/style.css" rel="stylesheet">
@@ -105,6 +105,8 @@
 	    			event.preventDefault();
 	    			return false;
     			}
+    			
+    			
     		});
     		
     		$(document).on("click", ".deleteCreateOrderProduct", function(){
@@ -151,7 +153,7 @@
 								<input type="hidden" name="orPaymentType" value="계좌이체">
 								<input type="hidden" name="orInflowRoute" value="전화">
 								<input type="hidden" name="smsSendFlag" id="smsSendFlag" value="0">
-								
+								<input type="hidden" id="productCounting" value="0">
 								<div class="row">
 									<div class="col-md-4 mb-1">
 										<div class="form-group row">
@@ -285,12 +287,15 @@
 								<span class="text-muted"> 상품 </span> <button class="btn btn-success btn-sm" id="addProductBtn" type="button"> 상품 추가 </button>
 							</h4>
 						</div>
-						
-						<div class="card-body">
+						<div class="card-body" style="padding-bottom: 0px;">
 							<ul class="list-group mb-3" id="createOrderProductList">
 								
-								
 							</ul>
+						</div>
+						<div class="card-body" style="padding-top: 0px;">
+							<hr style="margin-top: 0px;">
+							<span class="text-success"> 상품 총 금액 </span>
+							<span id="orderTotalPrice" class="text-success" ></span>
 						</div>
 					</div>
 				</div>

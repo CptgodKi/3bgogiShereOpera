@@ -2,6 +2,17 @@
     pageEncoding="UTF-8"%>
     <%@ include file="../inc/top.jsp" %>
     <%@ include file="../inc/top_nav.jsp" %> 
+    <script type="text/javascript">
+    	$(function(){
+    		$(".deleteOrderByRegdateBtn").click(function(){
+    			
+    			if(confirm("해당 일자의 주문서를 일괄 삭제하시겠습니까?")){
+    				location.href="<c:url value='/orders/delete_order_regdate.do?ssFk="+$(this).data("ss-fk")+"&orRegdate="+$(this).data("or-regdate")+"'/>";
+    			}
+    			
+    		});
+    	});
+    </script>
         <!-- page content -->
         <!-- ============================================================== -->
         <!-- wrapper  -->
@@ -68,7 +79,16 @@
 													</c:if>
 												</select> 
                                             </div>
-                                            <div class="col-9 col-lg-10">
+                                            <div class="col-3 col-lg-2 col-form-label text-right">
+                                            	<label class="custom-control custom-radio custom-control-inline">
+		                                        	<input type="radio" id="" checked="checked" name="sendingDeadlineFlag" value="1" class="custom-control-input"><span class="custom-control-label"> 발송기준 </span>
+		                                        </label>
+		                                        <label class="custom-control custom-radio custom-control-inline">
+		                                        	<input type="radio" id="" name="sendingDeadlineFlag" value="0" class="custom-control-input"><span class="custom-control-label"> 오늘기준 </span>
+		                                        </label>
+
+                                            </div>
+                                            <div class="col-6 col-lg-8">
                                                 <input id="smartstore" type="file" name="excelfile" class="form-control">
                                             </div>
                                         </div>
@@ -106,10 +126,12 @@
 	                                        	<c:forEach var="isoList" items="${insertStoreOrderList }">
 	                                        		<tr>
 		                                                <th scope="row">${isoList.ssName }</th>
-		                                                <td>${isoList.orPk } 건 </td>
+		                                                <td>${isoList.orPk } 건</td>
 		                                                <td>${isoList.orRegdate }</td>
 		                                                <td>
-		                                                	<button type="button" class="btn btn-danger"> 삭제 </button>
+		                                                	<button type="button" class="btn btn-danger deleteOrderByRegdateBtn"
+		                                                		data-ss-fk="${isoList.ssFk }" data-or-regdate="<fmt:formatDate value="${isoList.orRegdate }" pattern="yyyy-MM-dd HH:mm:ss" />"
+		                                                	> 삭제 </button>
 		                                                </td>
 		                                            </tr>
 	                                        	</c:forEach>

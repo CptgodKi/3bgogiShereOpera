@@ -79,7 +79,6 @@ public class JsonToMapUtil {
     		}else {
     			
     			try {
-    				System.out.println("key values="+resultMap.getKey());
 					Field field = object.getClass().getDeclaredField(resultMap.getKey());
 					field.setAccessible(true);
 					

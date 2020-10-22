@@ -10,11 +10,9 @@
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
+                    
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav flex-column">
-                            <li class="nav-divider">
-                               	 선택 메뉴
-                            </li>
                             <li class="nav-item ">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fa fa-fw fa-user-circle"></i>개인 <span class="badge badge-success">6</span></a>
                                 <div id="submenu-1" class="collapse submenu" style="">
@@ -25,29 +23,10 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="<c:url value='/project/projects.do'/>">업무</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="javascript:void(0);">업무 진행도 </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="javascript:void(0);"> 업무 파일 </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-1" aria-controls="submenu-1-1"> 로그 </a>
-                                            <div id="submenu-1-1" class="collapse submenu" style="">
-                                                <ul class="nav flex-column">
-                                                    <li class="nav-item">
-                                                        <a class="nav-link" href="javascript void:(0)"> 업무 </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link" href="javascript void:(0)"> 메모 </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
                                     </ul>
                                 </div>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#team" aria-controls="team"><i class="fas fa-fw fa-sitemap"></i> 팀  </a>
                                 <div id="team" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
@@ -59,7 +38,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
+                            </li> -->
                             
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#stock_manage" aria-controls="stock_manage"><i class="fas fa-archive"></i> 재고 관리  </a>
@@ -89,11 +68,10 @@
 						                            	<a class="nav-link" href="#"> 부분 원육 입고  </a>
 						                            </li>
 						                            <li class="nav-item">
-						                            	<a class="nav-link" href="#"> 도체 원육 입고  </a>
+						                            	<a class="nav-link" href="<c:url value='/stock/carcass/carcass_cut/list.do'/>"> 등록된 부분 원육 목록  </a>
 						                            </li>
-						                            
 						                            <li class="nav-item">
-						                            	<a class="nav-link" href="#"> 원육 입고 내역  </a>
+						                            	<a class="nav-link" href="<c:url value='/stock/carcass/insert.do'/>"> 도체 등록   </a>
 						                            </li>
 						                            <li class="nav-item">
 						                            	<a class="nav-link" href="<c:url value='/stock/carcass/list.do'/>"> 등록된 도체 목록  </a>
@@ -106,8 +84,12 @@
                                 </div>
                             </li>
                             <li class="nav-divider">
-                               	 관리자
+                               	 관리 메뉴
                             </li>
+                            
+                            <%-- <li class="nav-item">
+                            	<a class="nav-link" href="<c:url value='/analytics/reserv_product_qty.do'/>"><i class="fas fa-calendar-alt"></i> 예약 상품 확인 </a>
+                            </li> --%>
                             
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#sending" aria-controls="sending"><i class="fas fa-fw fa-shipping-fast"></i> 발송 및 출고  </a>
@@ -119,15 +101,9 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="<c:url value='/delivery/store_order_sending.do'/>"> 판매처 송장부여 </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="<c:url value='/security/create_deliv_invoice.do'/>"> 송장 생성 테스트 </a>
-                                        </li>
                                     </ul>
                                 </div>
                             </li>
-                            
-                            
-                            
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#customer_service" aria-controls="sending"><i class="fas fa-address-book"></i> C / S  </a>
                                 <div id="customer_service" class="collapse submenu" style="">
@@ -141,15 +117,19 @@
                                         <li class="nav-item">
                                             <a class="nav-link" target="_blank" href="<c:url value='/aligo_msg/view.do'/>"> Aligo 문자  </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="<c:url value='/config/block_sending_list/insert.do'/>"> 문자발송금지명단  </a>
+                                        </li>
+                                        
                                     </ul>
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-6" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> 주문서 </a>
+                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-6" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> 주문 </a>
                                 <div id="submenu-6" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
                                     	<li class="nav-item">
-                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#store_order" aria-controls="store_order"> 판매처 주문 입력 </a>
+                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#store_order" aria-controls="store_order"> 주문 입력 </a>
                                             <div id="store_order" class="collapse submenu" style="">
                                                 <ul class="nav flex-column">
                                                    <li class="nav-item">
@@ -183,7 +163,7 @@
                                             </div>
                                         </li>
                                         
-                                    	<li class="nav-item">
+                                    	<%-- <li class="nav-item">
                                             <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#excel_order" aria-controls="excel_order"> 특이 주문 입력 </a>
                                             <div id="excel_order" class="collapse submenu" style="">
                                                 <ul class="nav flex-column">
@@ -195,7 +175,7 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                        </li>
+                                        </li> --%>
                                         <li class="nav-item">
                                             <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#irregular_order" aria-controls="irregular_order"> 고객 필터링 </a>
                                             <div id="irregular_order" class="collapse submenu" style="">
@@ -216,18 +196,18 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-7" aria-controls="submenu-7"><i class="fas fa-fw fa-inbox"></i> 데이터 관리 <span class="badge badge-secondary">New</span></a>
+                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-7" aria-controls="submenu-7"><i class="fas fa-fw fa-inbox"></i> 상품 및 원재료 <span class="badge badge-secondary">New</span></a>
                                 <div id="submenu-7" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-11" aria-controls="submenu-11"> 데이터 입력 </a>
+                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-11" aria-controls="submenu-11"> 상품 및 원재료 입력 </a>
                                             <div id="submenu-11" class="collapse submenu" style="">
                                                 <ul class="nav flex-column">
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="<c:url value='/products/insert/cost_detail.do'/>"> 원가 상세사항 입력 </a>
+                                                        <a class="nav-link" href="<c:url value='/products/insert/cost_detail.do'/>"> 원재료 상세사항 입력 </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="<c:url value='/products/insert/costs.do'/>"> 다중 원가 입력 </a>
+                                                        <a class="nav-link" href="<c:url value='/products/insert/costs.do'/>"> 다중 원재료 입력 </a>
                                                     </li>
                                                     <li class="nav-item">
                                                         <a class="nav-link" href="<c:url value='/products/insert/product.do'/>"> 상품 등록 </a>
@@ -236,46 +216,39 @@
                                             </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#dataList" aria-controls="dataList"> 데이터 목록 </a>
+                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#dataList" aria-controls="dataList"> 상품 및 원재료 목록 </a>
                                             <div id="dataList" class="collapse submenu" style="">
                                                 <ul class="nav flex-column">
                                                 	<li class="nav-item">
-                                                        <a class="nav-link" href="<c:url value='/products/list/cost_detail.do'/>"> 원가 목록 </a>
+                                                        <a class="nav-link" href="<c:url value='/products/list/cost_detail.do'/>"> 원재료 목록 </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="<c:url value='/products/list/costs.do'/>"> 다중 원가 목록 </a>
+                                                        <a class="nav-link" href="<c:url value='/products/list/costs.do'/>"> 다중 원재료 목록 </a>
                                                     </li>
                                                     <li class="nav-item">
                                                         <a class="nav-link" href="<c:url value='/products/list/product_list.do'/>"> 상품 목록 </a>
                                                     </li>
                                                     <li class="nav-item">
-			                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#classification_code" aria-controls="classification_code"> 분류 코드 </a>
-			                                            <div id="classification_code" class="collapse submenu" style="">
-			                                                <ul class="nav flex-column">
-			                                                    <li class="nav-item">
-			                                                        <a class="nav-link" href="<c:url value='/products/insert/cost_detail.do'/>"> 원가 분류 코드  </a>
-			                                                    </li>
-			                                                    <li class="nav-item">
-			                                                        <a class="nav-link" href="javascript:void(0);"> 상품 분류 코드 </a>
-			                                                    </li>
-			                                                    <li class="nav-item">
-			                                                        <a class="nav-link" href="javascript:void(0);"> 자재 분류 코드 </a>
-			                                                    </li>
-			                                                </ul>
-			                                            </div>
-			                                        </li>
-                                                </ul>
-                                            </div>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#analy" aria-controls="analy"> 통계 </a>
-                                            <div id="analy" class="collapse submenu" style="">
-                                                <ul class="nav flex-column">
-                                                    <li class="nav-item">
-                                                        <a class="nav-link" href="<c:url value='/analytics/analy_search_list.do'/>"> 통계 선택 조회 </a>
+                                                        <a class="nav-link" href="<c:url value='/stock/check_barcode_dupli.do'/>"> 바코드 확인 </a>
                                                     </li>
                                                 </ul>
                                             </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#analy" aria-controls="analy"><i class="fas fa-chart-pie"></i> 조회 </a>
+                                <div id="analy" class="collapse submenu" style="">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                        	<a class="nav-link" href="<c:url value='/analytics/analy_search_list.do'/>"> 선택 조회 </a>
+                                        </li>
+                                        <li class="nav-item">
+                                        	<a class="nav-link" href="<c:url value='/analytics/total_sales.do'/>"> 매출 </a>
+                                        </li>
+                                        <li class="nav-item">
+                                        	<a class="nav-link" href="<c:url value='/config/event_msg.do'/>"> 문자 대상 추출 </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -298,19 +271,6 @@
                                             <a class="nav-link" href="<c:url value='/config/store/list.do'/>"> 판매처 설정 </a>
                                         </li>
                                         <li class="nav-item">
-				                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#offline_store" aria-controls="offline_store"> 매장 </a>
-				                            <div id="offline_store" class="collapse submenu" style="">
-					                            <ul class="nav flex-column">
-						                            <li class="nav-item">
-						                            	<a class="nav-link" href="<c:url value='/products/insert/cost_detail.do'/>"> 주문 등록  </a>
-						                            </li>
-					                            </ul>
-				                            </div>
-			                            </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="<c:url value='/security/test/mdb.do'/>"> 우편번호 설정 </a>
-                                        </li>
-                                        <li class="nav-item">
 				                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#freebie" aria-controls="freebie"> 사은품 정책 </a>
 				                            <div id="freebie" class="collapse submenu" style="">
 					                            <ul class="nav flex-column">
@@ -323,6 +283,23 @@
 					                            </ul>
 				                            </div>
 			                            </li>
+			                            
+			                            <li class="nav-item">
+			                                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#classification_code" aria-controls="classification_code"> 분류 코드 </a>
+			                                            <div id="classification_code" class="collapse submenu" style="">
+			                                                <ul class="nav flex-column">
+			                                                    <li class="nav-item">
+			                                                        <a class="nav-link" href="<c:url value='/code/cost_code.do'/>"> 원재료 분류 코드  </a>
+			                                                    </li>
+			                                                    <li class="nav-item">
+			                                                        <a class="nav-link" href="<c:url value='/code/cf_code.do'/>"> 상품 분류 코드 </a>
+			                                                    </li>
+			                                                    <li class="nav-item">
+			                                                        <a class="nav-link" href="<c:url value='/code/excel_order_seq.do'/>"> 주문서 분류 코드 </a>
+			                                                    </li>
+			                                                </ul>
+			                                            </div>
+			                                        </li>
                                     </ul>
                                 </div>
                             </li>

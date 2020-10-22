@@ -2,6 +2,8 @@ package com.gogi.proj.paging;
 
 import java.util.List;
 
+import com.gogi.proj.configurations.vo.BlockSendingListVO;
+
 public class OrderSearchVO {
 
 	/*주문서 조회에 필요한
@@ -23,6 +25,11 @@ public class OrderSearchVO {
 	private String insertingCount;
 	
 	
+	private int searchAddType;				//추가 검색 합계, 제외 여부
+	private String searchAddKind;			//추가 검색 종류
+	private String searchAddKeyword;		//추가 검색명
+	
+	
 	private int outputPosiv;				//출고여부
 	private int refundFlag;					//환불 여부
 	private int cancledFlag;				//취소 여부
@@ -37,6 +44,7 @@ public class OrderSearchVO {
 	private String groupList;
 	private String totalList;
 	
+	private List<BlockSendingListVO> bslList;
 	
 	//추가사항
 	private int ssPk; //스토어 고유값 넣어주기
@@ -54,7 +62,39 @@ public class OrderSearchVO {
 	private String exSearchType; //제외 검색어 타입
 	private String exSerachKeyword; //제외 검색어
 	private List<String> exSearchKeywordList; //제외 검색어 리스트값
-	
+
+	public List<BlockSendingListVO> getBslList() {
+		return bslList;
+	}
+
+	public void setBslList(List<BlockSendingListVO> bslList) {
+		this.bslList = bslList;
+	}
+
+	public int getSearchAddType() {
+		return searchAddType;
+	}
+
+	public void setSearchAddType(int searchAddType) {
+		this.searchAddType = searchAddType;
+	}
+
+	public String getSearchAddKind() {
+		return searchAddKind;
+	}
+
+	public void setSearchAddKind(String searchAddKind) {
+		this.searchAddKind = searchAddKind;
+	}
+
+	public String getSearchAddKeyword() {
+		return searchAddKeyword;
+	}
+
+	public void setSearchAddKeyword(String searchAddKeyword) {
+		this.searchAddKeyword = searchAddKeyword;
+	}
+
 	public int getTotalQtyAlarm() {
 		return totalQtyAlarm;
 	}
@@ -407,6 +447,27 @@ public class OrderSearchVO {
 		lastRecordIndex = getCurrentPage() * getRecordCountPerPage();
 		return lastRecordIndex;
 	}
+
+	@Override
+	public String toString() {
+		return "OrderSearchVO [dateType=" + dateType + ", datePeriod=" + datePeriod + ", dateStart=" + dateStart
+				+ ", dateEnd=" + dateEnd + ", searchType=" + searchType + ", searchKeyword=" + searchKeyword
+				+ ", reservationType=" + reservationType + ", deliveryInvoiceFlag=" + deliveryInvoiceFlag
+				+ ", orSerialSpecialNumberList=" + orSerialSpecialNumberList + ", minNum=" + minNum + ", maxNum="
+				+ maxNum + ", insertingCount=" + insertingCount + ", outputPosiv=" + outputPosiv + ", refundFlag="
+				+ refundFlag + ", cancledFlag=" + cancledFlag + ", taxFlag=" + taxFlag + ", specialRegionFlag="
+				+ specialRegionFlag + ", deliveryPrice=" + deliveryPrice + ", productMatching=" + productMatching
+				+ ", specialReq=" + specialReq + ", delivMsgFlag=" + delivMsgFlag + ", totalQtyAlarm=" + totalQtyAlarm
+				+ ", groupList=" + groupList + ", totalList=" + totalList + ", ssPk=" + ssPk + ", ssPkList=" + ssPkList
+				+ ", ssList=" + ssList + ", matchingFlag=" + matchingFlag + ", searchKeywordList=" + searchKeywordList
+				+ ", searchKeywordNumList=" + searchKeywordNumList + ", exSearchType=" + exSearchType
+				+ ", exSerachKeyword=" + exSerachKeyword + ", exSearchKeywordList=" + exSearchKeywordList
+				+ ", currentPage=" + currentPage + ", recordCountPerPage=" + recordCountPerPage + ", blockSize="
+				+ blockSize + ", totalRecord=" + totalRecord + ", totalPage=" + totalPage + ", firstPage=" + firstPage
+				+ ", lastPage=" + lastPage + ", firstRecordIndex=" + firstRecordIndex + ", lastRecordIndex="
+				+ lastRecordIndex + "]";
+	}
+	
 	
     
 }

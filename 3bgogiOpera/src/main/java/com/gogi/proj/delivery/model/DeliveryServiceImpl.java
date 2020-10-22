@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.delivery.vo.SendingRequestVO;
+import com.gogi.proj.log.model.LogService;
+import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
 
@@ -20,6 +23,9 @@ public class DeliveryServiceImpl implements DeliveryService{
 	@Autowired
 	private DeliveryDAO deliDao;
 
+	@Autowired
+	private LogService logService;
+	
 	@Override
 	public List<OrdersVO> selectDelivTargetByOrDeliveryInvoiceNumber(OrdersVO orVO) {
 		// TODO Auto-generated method stub
@@ -28,11 +34,15 @@ public class DeliveryServiceImpl implements DeliveryService{
 
 	@Override
 	@Transactional
-	public int updateOrderSendingDay(List<String> orPkList) {
+	public int updateOrderSendingDay(List<String> orPkList, String ip, String adminId) {
 		// TODO Auto-generated method stub
 		int result = 0;
-		OrdersVO orVO;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date today = new Date();
+		String dates = sdf.format(today);
 		
+		OrdersVO orVO;
+		OrderHistoryVO ohVO = null;
 		Timestamp now = new Timestamp(new Date().getTime());
 		
 		for(int i=0; i<orPkList.size(); i++) {
@@ -41,6 +51,18 @@ public class DeliveryServiceImpl implements DeliveryService{
 			orVO.setOrPk(Integer.parseInt(orPkList.get(i)));
 			
 			result += deliDao.updateOrderSendingDay(orVO);
+			
+			ohVO = new OrderHistoryVO();
+			 
+			ohVO.setOrFk(orVO.getOrPk());
+			ohVO.setOhIp(ip);
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhEndPoint("출고 - 발송처리");
+			ohVO.setOhRegdate(dates);
+			ohVO.setOhDetail("분류가 되어 발송처리");
+			
+			logService.insertOrderHistory(ohVO);
+			
 		}
 		
 		return result;
@@ -48,10 +70,14 @@ public class DeliveryServiceImpl implements DeliveryService{
 
 	@Override
 	@Transactional
-	public int updateDeliveryOutPutOrder(List<Integer> orPkList) {
+	public int updateDeliveryOutPutOrder(List<Integer> orPkList, String ip, String adminId) {
 		// TODO Auto-generated method stub
-		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date today = new Date();
+		String dates = sdf.format(today);
 		OrdersVO orVO = new OrdersVO();
+		OrderHistoryVO ohVO = null;
+		
 		Timestamp sendingTime = new Timestamp(new Date().getTime());
 		
 		int result = 0;
@@ -60,6 +86,18 @@ public class DeliveryServiceImpl implements DeliveryService{
 			orVO.setOrPk(orPkList.get(i));
 			orVO.setOrOutputDate(sendingTime);
 			result += deliDao.updateDeliveryOutPutOrder(orVO);
+			
+			ohVO = new OrderHistoryVO();
+			 
+			ohVO.setOrFk(orVO.getOrPk());
+			ohVO.setOhIp(ip);
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhEndPoint("출고 - 발송처리");
+			ohVO.setOhRegdate(dates);
+			ohVO.setOhDetail("판매처로의 발송처리");
+			
+			logService.insertOrderHistory(ohVO);
+			
 		}
 		
 		return result;
@@ -67,10 +105,25 @@ public class DeliveryServiceImpl implements DeliveryService{
 
 	@Override
 	@Transactional
-	public int updateDeliveryOutPutCancled(OrderSearchVO osVO) {
+	public int updateDeliveryOutPutCancled(OrderSearchVO osVO, String ip, String adminId) {
 		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String today = sdf.format(new Date());
 		
 		int result = deliDao.updateDeliveryOutPutCancled(osVO);
+		
+		List<OrderHistoryVO> ohList = deliDao.selectDeliveryOutPutCancledTarget(osVO);
+		
+		for(OrderHistoryVO ohVO : ohList) {
+			ohVO.setOhIp(ip);
+			ohVO.setOhAdmin(adminId);
+			ohVO.setOhEndPoint("발송 취소");
+			ohVO.setOhRegdate(today);
+			ohVO.setOhDetail("판매처 송장부여에서 일괄 발송 취소");
+			
+			logService.insertOrderHistory(ohVO);
+		}
+		
 		return result;
 	}
 
@@ -91,6 +144,65 @@ public class DeliveryServiceImpl implements DeliveryService{
 	public List<Map<String, Object>> selectSendingExcel(StoreSectionVO ssVO) {
 		// TODO Auto-generated method stub
 		return deliDao.selectSendingExcel(ssVO);
+	}
+
+	@Override
+	public int insertSendingRequest(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		
+		int dupli = deliDao.dupliSendingReq(srVO);
+		
+		if(dupli > 0) {
+			return 0;
+			
+		}else {
+			return deliDao.insertSendingRequest(srVO);
+			
+		}
+		
+	}
+
+	@Override
+	public int checkSendingRequest(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return deliDao.checkSendingRequest(srVO);
+	}
+
+	@Override
+	@Transactional
+	public int sendingRequestFinished(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+
+			int result = deliDao.sendingOrders(srVO);
+			
+			if(result > 0) {
+				
+				return 0;
+			}else {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				srVO.setSrRegdate(sdf.format(new Date()));
+				
+				return deliDao.sendingRequestFinished(srVO);
+			}
+		
+	}
+
+	@Override
+	public List<SendingRequestVO> selectSendingRequestNotChecked() {
+		// TODO Auto-generated method stub
+		return deliDao.selectSendingRequestNotChecked();
+	}
+
+	@Override
+	public List<SendingRequestVO> selectSendingRequestNotSending() {
+		// TODO Auto-generated method stub
+		return deliDao.selectSendingRequestNotSending();
+	}
+
+	@Override
+	public List<SendingRequestVO> selectAllSedingRequest() {
+		// TODO Auto-generated method stub
+		return deliDao.selectAllSedingRequest();
 	}
 	
 }

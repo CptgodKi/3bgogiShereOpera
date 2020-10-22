@@ -26,7 +26,8 @@
     			var regNumber = /(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/;
     			
 		    	var adminId	= $("input[name=adminId]").val();
-	    		var adminPass = $("input[name=adminPass]").val();	
+	    		var adminPass = $("input[name=adminPass]").val();
+	    		var adminPassCheck = $("input[name=adminPassCheck]").val();	
 	    		var adminName = $("input[name=adminName]").val();
 	    		var adminPhone = $("input[name=adminPhone]").val();
 	    		var adminAddress = $("input[name=adminAddress]").val();
@@ -38,6 +39,13 @@
 	    			
 	    		}else if(adminPass.length < 6){
 	    			alert("비밀번호는 6자리 이상이어야 합니다.");
+	    			$("input[name=adminPass]").focus();
+	    			return false;
+	    			
+	    		}else if(adminPass != adminPassCheck){
+	    			alert("비밀번호가 서로 다릅니다");
+	    			$("input[name=adminPass]").val("");
+	    			$("input[name=adminPass]").val("");
 	    			$("input[name=adminPass]").focus();
 	    			return false;
 	    			
@@ -93,10 +101,13 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <input class="form-control form-control-lg" type="text" name="adminId" placeholder="ID" autocomplete="off">
+                    <input class="form-control form-control-lg" type="text" name="adminId" placeholder="아이디" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <input class="form-control form-control-lg" type="password" name="adminPass"placeholder="PASSWORD" autocomplete="off">
+                    <input class="form-control form-control-lg" type="password" name="adminPass"placeholder="비밀번호" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="password" name="adminPassCheck"placeholder="비밀번호 확인" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <input class="form-control form-control-lg" type="text" name="adminName" placeholder="이름">

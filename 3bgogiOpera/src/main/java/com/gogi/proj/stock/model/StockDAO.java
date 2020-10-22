@@ -11,6 +11,7 @@ import com.gogi.proj.product.cost.vo.CostIoOrderVO;
 import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.options.vo.OptionsVO;
 import com.gogi.proj.product.products.vo.ProductOptionVO;
+import com.gogi.proj.stock.vo.CarcassInputListVO;
 import com.gogi.proj.stock.vo.PrintDataSetVO;
 import com.gogi.proj.stock.vo.ProductInputListVO;
 
@@ -343,4 +344,17 @@ public interface StockDAO {
 	 * @메소드설명 : 상품 입고 처리 승인이 되지 않은 항목 개수 조회
 	 */
 	public int productInputDontPerm();
+	
+	
+	/**
+	 * 
+	 * @MethodName : checkOptionBarcodeDupli
+	 * @date : 2020. 10. 19.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 바코드 중복 번호 검색하기
+	 */
+	public List<ProductOptionVO> checkOptionBarcodeDupli(OrderSearchVO osVO);
+	
 }

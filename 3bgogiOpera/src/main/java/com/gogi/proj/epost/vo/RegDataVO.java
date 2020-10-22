@@ -574,7 +574,7 @@ public class RegDataVO {
 	}
 	
 	public String epostDeliteToString() {
-		return ("custNo=" + custNo + "&apprNo=" + apprNo + "&reqType=" + reqType + "&reqNo=" + reqNo 
+		return ("custNo=" + custNo + "&apprNo=" + apprNo + "&reqType=1" + "&reqNo=" + reqNo 
 				+ "&resNo=" + resNo + "&regiNo=" + regiNo + "&reqYmd=" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "&delYn="+"Y").replace("-", "");
 	}
 	

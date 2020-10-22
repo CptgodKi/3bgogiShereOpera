@@ -63,8 +63,9 @@
     		});
     		
     		$("#freebieInsertForm").submit(function(){
-    			var fbMinPrice = $("#fbMinPrice").val();
-    			var fbMaxPrice = $("#fbMaxPrice").val();
+    			var fbMinPrice = number($("#fbMinPrice").val());
+    			var fbMaxPrice = number($("#fbMaxPrice").val());
+    			
     			var fbMinTotalQty = $("#fbMinTotalQty").val();
     			var fbMaxTotalQty = $("#fbMaxTotalQty").val();
     			

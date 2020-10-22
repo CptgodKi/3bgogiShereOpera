@@ -65,7 +65,7 @@ public class FreebieServiceImple implements FreebieService{
 		
 		for(int i=0; i < orList.size(); i++) {
 			
-			
+			orList.get(i).setOrSerialSpecialNumber(orList.get(i).getOrSerialSpecialNumber().split(",")[0]);
 			//주문 개수 대로 들어감
 			if(fbVO.getFbAddType() == 0) {
 				qty = orList.get(i).getOrPk();
@@ -122,7 +122,7 @@ public class FreebieServiceImple implements FreebieService{
 			if(qty > 0) {	
 				fcVO = new FreebieCheckVO();
 				fcVO.setFbFk(fbVO.getFbPk());
-				fcVO.setFcOrderTarget(orList.get(i).getOrSerialSpecialNumber());
+				fcVO.setFcOrderTarget(orList.get(i).getSsName());
 				fcVO.setFcType(fbVO.getFbType());
 				
 				int dupliResult = fbDao.selectFreebieDupliCheck(fcVO);

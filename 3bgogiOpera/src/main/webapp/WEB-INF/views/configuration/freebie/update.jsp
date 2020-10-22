@@ -514,9 +514,9 @@
 	                        </div>
 	                    </div>
 	                    <div class="row">
-	                    		<div class="offset-4 col-2 col-sm-3">	                    		
-			                    	<button class="btn btn-primary btn-block"> 사은품 등록하기 </button>
-	                    		</div>
+	                    	<div class="offset-4 col-2 col-sm-3">	                    		
+			                 	<button class="btn btn-primary btn-block"> 사은품 수정하기 </button>
+	                    	</div>
 	                    </div>
                    </form>
            		</div>

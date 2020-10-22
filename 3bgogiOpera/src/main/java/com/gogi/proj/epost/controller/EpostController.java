@@ -1,6 +1,7 @@
 package com.gogi.proj.epost.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,10 +13,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,6 +47,7 @@ import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.product.cost.vo.CostIoVO;
 import com.gogi.proj.product.cost_io.model.CostIoService;
+import com.gogi.proj.security.AdminVO;
 import com.gogi.proj.stock.model.StockService;
 import com.gogi.proj.stock.vo.PrintDataSetVO;
 import com.gogi.proj.util.PageUtility;
@@ -307,10 +313,61 @@ public class EpostController {
 		return "delivery/deliv_result";
 	}
 	
-	@RequestMapping(value="/create_deliv_invoice.do", method=RequestMethod.GET)
-	public String createDelivInvoice(Model model) {
+	
+	/**
+	 * 
+	 * @MethodName : createDelivInvoice
+	 * @date : 2020. 9. 9.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 송장 자체 출력 페이지
+	 */
+	@RequestMapping(value="/create_deliv_invoice.do", method=RequestMethod.POST)
+	public String createDelivInvoice(HttpServletRequest request, @ModelAttribute OrderSearchVO osVO, Model model) {
 		
-		List<OrdersVO> orList = epostService.selectSelfprintTest();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		List<OrdersVO> orList = new ArrayList<>();
+		List<OrdersVO> errorOr = new ArrayList<>();
+		
+		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
+			osVO.setSearchKeyword(osVO.getOrSerialSpecialNumberList().get(i));
+			OrdersVO orVO = epostService.deliveryPrintTarget(osVO, request.getRemoteAddr(), adminVo.getUsername());
+			
+			if(orVO.getRegiNo() != null) {
+				orList.add(orVO);
+			}else {
+				errorOr.add(orVO);
+			}
+		}
+		
+		
+		model.addAttribute("orList",orList);
+		model.addAttribute("errorOr",errorOr);
+		
+		return "delivery/create_deliv_invoice";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : reprintingDelivInvoice
+	 * @date : 2020. 9. 25.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 등록된 송장 재출력하기
+	 */
+	@RequestMapping(value="/reprinting_deliv_invoice.do", method=RequestMethod.GET)
+	public String reprintingDelivInvoice(@ModelAttribute OrderSearchVO osVO, Model model) {
+		List<OrdersVO> orList = new ArrayList<>();
+		
+		orList.add(epostService.deliveryInvoiceNumberReprinting(osVO));
 		
 		model.addAttribute("orList",orList);
 		
@@ -412,13 +469,57 @@ public class EpostController {
 	}
 	
 	
+	/**
+	 * 
+	 * @MethodName : selectDelivResultDate
+	 * @date : 2020. 9. 29.
+	 * @author : Jeon KiChan
+	 * @param model
+	 * @return
+	 * @메소드설명 : 송장발송 결과를 위한 날짜 선택창
+	 */
+	@RequestMapping(value="/epost/deliv_date.do", method=RequestMethod.GET)
+	public String selectDelivResultDate(Model model) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String today = sdf.format(new Date());
+		OrderSearchVO osVO = new OrderSearchVO();
+		
+		osVO.setDateStart(today);
+		
+		model.addAttribute("osVO",osVO);
+		
+		return "delivery/deliv_date";
+	}
 	
-	@RequestMapping(value="/epost/deliv_print.do", method=RequestMethod.POST, produces="application/text; charset=utf8")
-	@ResponseBody
-	public String epostDelivSendingBySelfPrint(@ModelAttribute OrderSearchVO osVO) {
+	/**
+	 * 
+	 * @MethodName : delivResult
+	 * @date : 2020. 9. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 발송기한을 기준으로 우체국에 송장조회하여 잘보내졌는지 확인
+	 */
+	@RequestMapping(value="/epost/deliv_sending_result.do", method=RequestMethod.GET)
+	public String delivResult(@ModelAttribute OrderSearchVO osVO, Model model) {
 		
+		List<OrdersVO> deliveryInfoList = null;
 		
-
-		return null;
+		try {
+			deliveryInfoList = epostService.selectDeliveryInvoiceNumberByDate(osVO);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		model.addAttribute("deliveryInfoList",deliveryInfoList);
+		model.addAttribute("osVO", osVO);
+		
+		return "delivery/deliv_sending_result";
 	}
 }

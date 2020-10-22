@@ -9,7 +9,7 @@ import com.gogi.proj.paging.OrderSearchVO;
 
 public interface MatchingService {
 
-	public int[] matchingsProductAndOrders();
+	public int[] matchingsProductAndOrders(String ip, String adminId);
 	
 	public int insertProductMatching(ProductMatchingVO pmVO);
 	

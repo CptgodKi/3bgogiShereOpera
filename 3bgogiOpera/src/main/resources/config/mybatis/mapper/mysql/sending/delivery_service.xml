@@ -12,8 +12,11 @@
 		    inne.or_amount, 
             inne.op_name AS or_product,
             inne.option_barcode_number1 AS or_user_column1,
+            inne.option_barcode_number2 AS or_user_column2,
             inne.or_sending_day,
-            inne.or_cancled_flag
+            inne.or_cancled_flag,
+            inne.or_sending_deadline,
+            inne.or_excel_div_flag
 		FROM
 			(
 		        SELECT
@@ -22,8 +25,11 @@
 					CONCAT_WS( ' : ', pro.product_name, op.option_name) AS op_name,
 					(od.or_amount * om.om_option_amount) as or_amount,
                     option_barcode_number1,
+                    option_barcode_number2,
                     od.or_sending_day,
-                    od.or_cancled_flag
+                    od.or_cancled_flag,
+                    od.or_sending_deadline,
+                    od.or_excel_div_flag
 				FROM
 					orders od
 					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
@@ -37,11 +43,14 @@
 					od.or_pk,
 					od.or_serial_special_number,
 					option_barcode_number1,
+					option_barcode_number2,
 					od.or_amount,
 					om.om_option_amount,
 		            op_name,
 		            od.or_sending_day,
-		            od.or_cancled_flag
+		            od.or_cancled_flag,
+		            or_sending_deadline,
+		            od.or_excel_div_flag
 				) inne
 			GROUP BY
             inne.or_pk,
@@ -49,8 +58,11 @@
             inne.op_name,
             inne.or_amount,
             inne.option_barcode_number1,
+            inne.option_barcode_number2,
             inne.or_sending_day,
-            inne.or_cancled_flag
+            inne.or_cancled_flag,
+            inne.or_sending_deadline,
+            inne.or_excel_div_flag
 	</select>
 	
 	<!-- 발송처리하기 -->
@@ -95,9 +107,23 @@
 					        INNER JOIN store_section ss		ON od.ss_fk = ss.ss_pk
 						WHERE
 							od.or_output_date = #{dateEnd}
+							<![CDATA[
+								AND od.or_sending_day >= #{dateStart}
+								AND od.or_sending_day < DATE_FORMAT(DATE_ADD(#{dateStart}, INTERVAL 1 DAY), '%Y-%m-%d')
+							]]>
 					) INNE
 				)
 	</update>
+	
+	<select id="selectDeliveryOutPutCancledTarget" parameterType="OrderSearchVO" resultType="OrderHistoryVO">
+						SELECT
+							od.or_pk AS or_fk
+						FROM 
+							orders od
+					        INNER JOIN store_section ss		ON od.ss_fk = ss.ss_pk
+						WHERE
+							od.or_output_date = #{dateEnd}
+	</select>
 	
 	<!-- 스토어 송장 업로드 파일 다운로드 -->
 	<select id="selectSendingStoreExcelList" resultType="OrdersVO">
@@ -113,6 +139,7 @@
 		    AND or_delivery_invoice_number != ''
 		    AND or_output_date IS NOT NULL
 		    AND or_output_flag = 0
+		    AND or_excel_div_flag = 0
 		GROUP BY
 			or_product_order_number,
 		    or_delivery_type,
@@ -146,7 +173,7 @@
 				]]>
 				AND (od.or_delivery_invoice_number IS NOT NULL OR od.or_delivery_invoice_number != '')
 				AND od.or_cancled_flag = 0
-		        
+		        AND or_excel_div_flag = 0
 			GROUP BY
 				ss.ss_name,
 				ss.ss_pk,
@@ -188,8 +215,10 @@
 									
 								)
 							]]>
+							AND od.ss_fk = #{ssPk}
 							AND (od.or_delivery_invoice_number IS NOT NULL OR od.or_delivery_invoice_number != '')
 							AND od.or_cancled_flag = 0
+							AND or_excel_div_flag = 0
 							AND od.or_sending_day IS NOT NULL
 					) INNE
 				)
@@ -205,6 +234,8 @@
 			or_output_date = #{ssRegdate}
 			AND ss_fk = #{ssPk}
 			AND or_cancled_flag = 0
+			AND or_excel_div_flag = 0
+			AND or_sending_day IS NOT NULL
 		GROUP BY
 			${ssSendingGroupForm}
 	</select>

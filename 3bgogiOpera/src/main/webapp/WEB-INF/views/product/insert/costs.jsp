@@ -68,14 +68,14 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 데이터 관리 </h2>
+                            <h2 class="pageheader-title"> 상품 및 원재료 </h2>
                             <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 입력 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 다중 원가 입력</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 상품 및 원재료 입력 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 다중 원재료 입력 </li>
                                     </ol>
                                 </nav>
                             </div>
@@ -91,11 +91,11 @@
                         <!-- ============================================================== -->
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
-                                <h5 class="card-header"> 다중 원가 입력</h5>
+                                <h5 class="card-header"> 다중 다중 원재료 입력</h5>
                                 <div class="card-body">
                                     <form name="insertCostDetailForm" id="insertCostDetailForm" method="post" action="<c:url value='/products/insert/costs.do'/>">
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 다중 원가명 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 다중 원재료 원가명 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <input type="text" placeholder="다중 원가명을 입력해주세요." class="form-control" id="costName" name="costName">
                                             </div>
@@ -107,7 +107,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 다중 원가 설명란 </label>
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 다중 원재료 설명란 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
                                                 <textarea class="form-control" id="cdRemark" name="cdRemark" rows="3" style="resize: none;" placeholder="적지 않아도 무관."></textarea>
                                             </div>

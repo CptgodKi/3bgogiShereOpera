@@ -7,6 +7,8 @@ import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.delivery.vo.SendingRequestVO;
+import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
 
@@ -14,6 +16,7 @@ import com.gogi.proj.paging.OrderSearchVO;
 public class DeliveryDAOMybatis extends SqlSessionDaoSupport implements DeliveryDAO{
 
 	private String namespace = "delivery";
+	private String sendingReq = "delivery.sending_request";
 
 	@Override
 	public List<OrdersVO> selectDelivTargetByOrDeliveryInvoiceNumber(OrdersVO orVO) {
@@ -55,5 +58,65 @@ public class DeliveryDAOMybatis extends SqlSessionDaoSupport implements Delivery
 	public List<Map<String, Object>> selectSendingExcel(StoreSectionVO ssVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectSendingExcel", ssVO);
+	}
+
+	@Override
+	public List<OrderHistoryVO> selectDeliveryOutPutCancledTarget(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectDeliveryOutPutCancledTarget", osVO);
+	}
+
+	@Override
+	public int insertSendingRequest(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(sendingReq+".insertSendingRequest", srVO);
+	}
+
+	@Override
+	public int checkSendingRequest(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(sendingReq+".checkSendingRequest", srVO);
+	}
+
+	@Override
+	public int sendingRequestFinished(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(sendingReq+".sendingRequestFinished", srVO);
+	}
+
+	@Override
+	public List<SendingRequestVO> selectSendingRequestNotChecked() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(sendingReq+".selectSendingRequestNotChecked");
+	}
+
+	@Override
+	public List<SendingRequestVO> selectSendingRequestNotSending() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(sendingReq+".selectSendingRequestNotSending");
+	}
+
+	@Override
+	public List<SendingRequestVO> selectAllSedingRequest() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(sendingReq+".selectAllSedingRequest");
+	}
+
+	@Override
+	public int sendingOrders(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(sendingReq+".sendingOrders", srVO);
+	}
+
+	@Override
+	public int updateSendingDone(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(sendingReq+".updateSendingDone", orVO);
+	}
+
+	@Override
+	public int dupliSendingReq(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(sendingReq+".dupliSendingReq", srVO);
 	}
 }

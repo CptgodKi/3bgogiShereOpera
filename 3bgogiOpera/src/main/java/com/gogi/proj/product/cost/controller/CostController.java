@@ -338,5 +338,35 @@ public class CostController {
 	}
 	
 	
+	/**
+	 * 
+	 * @MethodName : chooseCostIo
+	 * @date : 2020. 10. 22.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 라벨지에 표기될 부분육 선택
+	 */
+	@RequestMapping(value="/choose_cost_io.do", method=RequestMethod.GET)
+	public String chooseCostIo(@ModelAttribute CostIoVO ciVO, Model model) {
+		
+		String msg = "";
+		String url = "/products/update/cost_detail.do?cdPk="+ciVO.getCdFk();
+		
+		
+		int result = costIoService.chooseCostIo(ciVO);
+		
+		if(result > 0) {
+			msg = "부분육 출고 선택 완료";
+		}else {
+			msg = "출고갑 선택 실패";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+	}
 	
 }

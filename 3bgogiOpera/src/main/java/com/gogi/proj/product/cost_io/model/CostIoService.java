@@ -74,4 +74,26 @@ public interface CostIoService {
 	 * @메소드설명 : 메인 페이지에 들어갈 최근 입고된 상품 조회
 	 */
 	public List<CostDetailVO> selectCostInputList(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCostDetailCode
+	 * @date : 2020. 10. 16.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 원재료 입고에 필요한 원재료 코드
+	 */
+	public List<CostDetailVO> selectCostDetailCode();
+	
+	
+	/**
+	 * 
+	 * @MethodName : chooseCostIo
+	 * @date : 2020. 10. 22.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 라벨지에 표기될 입고 원육 선택하기
+	 */
+	public int chooseCostIo(CostIoVO ciVO);
 }

@@ -269,6 +269,7 @@
 				LEFT JOIN cost_detail cd ON cs.cd_fk = cd.cd_pk
 			WHERE 
 	            od.or_cancled_flag = 0
+	            AND od.or_excel_div_flag = 0
                 AND od.or_inv_flag = 0
                 <![CDATA[
 	                AND DATE_FORMAT(od.or_regdate, '%Y-%m-%d') >= #{dateStart}
@@ -399,8 +400,8 @@
 			SUM(output_posiv) AS outputPosiv,
             SUM(not_output_today) AS notOutputToday,
 			SUM(reserv) AS outputReserve,
-	        SUM(output_not_posiv) AS notInv
-	        
+	        SUM(output_not_posiv) AS notInv,
+            SUM(special_region) AS specialRegion
 		FROM
 			(
 			<![CDATA[
@@ -409,29 +410,35 @@
 					/* 재고 할당이 끝나 나갈 수 있는 주문건 */
 					CASE
 						WHEN
-							INNE.serial_count = INNE.total_flag AND INNE.or_sending_deadline <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND INNE.serial_count != INNE.sending_count
+							INNE.serial_count = INNE.total_flag AND INNE.or_sending_deadline <= #{dateEnd} AND INNE.serial_count != INNE.sending_count
 		                    THEN COUNT(INNE.or_serial_special_number)
 						END AS output_posiv,
                         
 					/* 발송되지 않은 주문건*/
 					CASE
 						WHEN
-							INNE.serial_count = INNE.total_flag AND INNE.or_sending_deadline <= DATE_FORMAT(NOW(), '%Y-%m-%d') AND INNE.sending_count = 0
+							INNE.serial_count = INNE.total_flag AND INNE.or_sending_deadline <= #{dateEnd} AND INNE.sending_count = 0
 		                    THEN COUNT(INNE.or_serial_special_number)
 						END AS not_output_today,
                         
 					/*재고 할당이 되지 않아 나갈 수 없는 주문건*/
 					CASE
 						WHEN
-							INNE.serial_count != INNE.total_flag AND INNE.or_sending_deadline <= DATE_FORMAT(NOW(), '%Y-%m-%d')
+							INNE.serial_count != INNE.total_flag AND INNE.or_sending_deadline <= #{dateEnd}
 		                    THEN COUNT(INNE.or_serial_special_number)
 						END AS output_not_posiv,
 					/*예약주문건*/
 					CASE
 						WHEN
-							or_sending_deadline > DATE_FORMAT(NOW(), '%Y-%m-%d')
+							or_sending_deadline > #{dateEnd}
 		                    THEN COUNT(INNE.or_serial_special_number)
-						END AS reserv
+						END AS reserv,
+					/*특수지역*/
+					CASE
+						WHEN
+							INNE.special_region > 0
+		                    THEN COUNT(INNE.or_serial_special_number)
+						END AS special_region
 			]]>
 			FROM(
 				SELECT 
@@ -441,14 +448,23 @@
 	                or_sending_deadline,
 					SUM(
 						IF(or_sending_day IS NULL, 0, 1)
-                    ) AS sending_count
+                    ) AS sending_count,
+                     SUM(
+						IF(or_special_region_flag = 1,
+							IF(or_special_region_check_flag = 1, 
+								0, 
+                            1)
+                        , 
+                        0)
+                    ) AS special_region
 				FROM 
 					orders
 				WHERE
 					<![CDATA[
-						or_regdate >= #{dateStart}
+						or_sending_deadline >= #{dateStart}
 					]]>
 					AND or_cancled_flag = 0
+					AND or_excel_div_flag = 0
 				GROUP BY
 					or_serial_special_number,
 	                or_sending_deadline
@@ -457,7 +473,8 @@
 				INNE.serial_count,
 	            INNE.total_flag,
 	            INNE.or_sending_deadline,
-                INNE.sending_count
+                INNE.sending_count,
+                INNE.special_region
 			) output
 	</select>
 	
@@ -477,6 +494,8 @@
 				    AND or_cancled_flag = 0
 				    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
 				    AND or_sending_day IS NULL
+				    AND or_delivery_invoice_number IS NULL
+				    AND or_excel_div_flag = 0
 				]]>
 			GROUP BY
 				or_serial_special_number
@@ -500,6 +519,8 @@
 					or_regdate >= #{dateStart}
 				    AND or_cancled_flag = 0
 				    AND or_sending_deadline > DATE_FORMAT( NOW() , '%Y-%m-%d')
+				    AND or_delivery_invoice_number IS NULL
+				    AND or_excel_div_flag = 0
 			    ]]>
 			GROUP BY
 				or_serial_special_number
@@ -523,6 +544,8 @@
 				    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
 				]]>
 				AND or_cancled_flag = 0
+				AND or_excel_div_flag = 0
+				AND or_delivery_invoice_number IS NULL
 			GROUP BY
 				or_serial_special_number
 			)INNE
@@ -579,13 +602,14 @@
 								orders
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
 								or_regdate > #{dateStart}
+								AND or_excel_div_flag = 0
 								<if test="searchType == 'outputPosiv'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
 									    AND or_inv_flag = 1
 									    AND or_output_date IS NULL
 									    AND or_output_flag = 0
-									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
+									    AND or_sending_deadline >= #{dateStart}
 									    AND or_sending_day IS NULL
 									]]>
 								</if>
@@ -606,6 +630,13 @@
 								<if test="searchType == 'notInv'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
+									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
+									]]>
+								</if><if test="searchType == 'specialRegion'">
+									<![CDATA[
+									    AND or_cancled_flag = 0
+									    AND or_special_region_flag = 1
+									    AND or_special_region_check_flag = 0
 									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
 									]]>
 								</if>
@@ -727,6 +758,7 @@
                 
 			WHERE 
                 od.or_delivery_invoice_number IS NULL
+                AND od.or_excel_div_flag = 0
                 AND od.or_serial_special_number	IN 
                 <foreach collection="orSerialSpecialNumberList" item="specialNumber" index="index" separator="," open="(" close=")">
 	                    #{specialNumber}
@@ -898,9 +930,23 @@
 		WHERE
 			op.option_stock_flag = 1
 			AND op.option_stock_max_alarm != 0
-			AND CONCAT(pro.product_name,' ',op.option_name) LIKE CONCAT('%',#{searchKeyword},'%') OR op.option_barcode_number1 = #{searchKeyword}
+			AND ( CONCAT(pro.product_name,' ',op.option_name) LIKE CONCAT('%',#{searchKeyword},'%') OR op.option_barcode_number1 = #{searchKeyword}
+			OR op.option_barcode_number2 = #{searchKeyword} )
 	</select>
 	
+	<select id="checkOptionBarcodeDupli" parameterType="OrderSearchVO" resultType="ProductOptionVO">
+		SELECT
+			pro.product_name,
+		    op.option_pk,
+		    op.option_name,
+		    op.option_barcode_number1,
+		    op.option_barcode_number2
+		FROM
+			products pro
+		    INNER JOIN options op ON pro.product_pk = op.product_fk
+		WHERE
+			op.option_barcode_number2 = #{searchKeyword} OR op.option_barcode_number1 = #{searchKeyword}
+	</select>
 </mapper>
 
 

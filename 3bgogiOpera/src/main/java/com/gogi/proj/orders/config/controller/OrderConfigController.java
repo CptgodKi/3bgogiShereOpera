@@ -127,9 +127,7 @@ public class OrderConfigController {
 		List<ExceptAddressKeywordVO> exceptAddrList = orderConfigService.selectExceptAddressKeyword();
 		
 		int exceptAddResult = orderConfigService.searchEceptAddrAndUpdateCheckFlag(exceptAddrList);
-		
-		logger.info("특수 지역으로 수정 결과 => "+exceptAddResult);
-		
+
 		List<ExceptAddressKeywordVO> eakList = orderConfigService.selectExceptAddressKeyword();
 		List<OrdersVO> orList = null;
 		

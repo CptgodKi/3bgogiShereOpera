@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gogi.proj.configurations.vo.BlockSendingListVO;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.config.model.StoreExcelDataSortingDAO;
+import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.paging.OrderSearchVO;
 
 @Service
 public class ConfigurationServiceImpl implements ConfigurationService{
@@ -74,6 +77,66 @@ public class ConfigurationServiceImpl implements ConfigurationService{
 	public int updateStoreMerge(StoreSectionVO ssVO) {
 		// TODO Auto-generated method stub
 		return configurationDao.updateStoreMerge(ssVO);
+	}
+
+	@Override
+	public int insertBlockSendingList(BlockSendingListVO bslVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.insertBlockSendingList(bslVO);
+	}
+
+	@Override
+	public List<BlockSendingListVO> selectBlockSendingList(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectBlockSendingList(osVO);
+	}
+
+	@Override
+	public int deleteBlockSendingList(BlockSendingListVO bslVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.deleteBlockSendingList(bslVO);
+	}
+
+	@Override
+	public int selectBlockSendingListCount(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectBlockSendingListCount(osVO);
+	}
+
+	@Override
+	public int selectBlockSendingListDupli(BlockSendingListVO bslVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectBlockSendingListDupli(bslVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectEventMsgTarget(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectEventMsgTarget(osVO);
+	}
+
+	@Override
+	public List<BlockSendingListVO> selectAllBlockSendingList() {
+		// TODO Auto-generated method stub
+		return configurationDao.selectAllBlockSendingList();
+	}
+
+	@Override
+	public int selectEventMsgTargetCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectEventMsgTargetCounting(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectAllEventMsgTarget(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectAllEventMsgTarget(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectEventMsgProductKeyword(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return configurationDao.selectEventMsgProductKeyword(osVO);
 	}
 	
 }

@@ -6,8 +6,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.product.products.vo.ProductOptionVO;
 
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService{
@@ -67,6 +69,30 @@ public class AnalyticsServiceImpl implements AnalyticsService{
 	public List<Map<String, Object>> selectAnalyDataList(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return analyDAO.selectAnalyDataList(osVO);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectReservProductQty(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectReservProductQty(osVO);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectReservProductQtyInMonth(DatesVO datesVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectReservProductQtyInMonth(datesVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectTotalSalesByDates(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectTotalSalesByDates(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectCancledSalesByDates(osVO);
 	}
 
 }

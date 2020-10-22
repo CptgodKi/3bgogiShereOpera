@@ -1,12 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ include file="../../inc/top.jsp" %>
-    <%@ include file="../../inc/top_nav.jsp" %>
-    <script type="text/javascript">
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!doctype html>
+<html lang="kr">
+<head>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>옵션</title>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
+<link
+	href="${pageContext.request.contextPath}/resources/vendor/fonts/circular-std/style.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/libs/css/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/vendor/fonts/fontawesome/css/fontawesome-all.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/multi-select/css/multi-select.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/css/bootstrap-select.css">
+
+	
+<script
+	src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.3.1.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/js/bootstrap-select.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+
+<script type="text/javascript">
+
     	$(function(){
     		var optionCostsMatchingCount = 1;
-    		
-			$("#anotherOptionPk").selectpicker('refresh');
     		
     		$("#anotherOptionPk").change(function(){
     			if($(this).val()==0){
@@ -55,7 +83,7 @@
 	    				var costsConnectData = "";
 	    				
 	    				costsConnectData+='<div class="form-group row costsDiv">'
-					                        +'<label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 연결 선택 </label>'
+					                        +'<label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 연결 선택 </label>'
 					                        +'<div class="col-12 col-sm-8 col-lg-6 row">'
 					                            +'<div class="col-md-5 mb-3">'
 					                           	 	+'<label for="country">옵션 명</label>'
@@ -133,38 +161,23 @@
 			
     	});
     </script>
-    
-        <!-- page content -->
-        <!-- ============================================================== -->
-        <!-- wrapper  -->
-        <!-- ============================================================== -->
-        <div class="dashboard-wrapper">
-            <div class="container-fluid  dashboard-content">
-                <!-- ============================================================== -->
-                <!-- pageheader -->
-                <!-- ============================================================== -->
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <div class="page-header">
-                            <h2 class="pageheader-title"> 옵션 등록 </h2>
-                            <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
-                            <div class="page-breadcrumb">
-                                <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">데이터 관리</a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">데이터 목록</a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">상품 리스트</a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">상품</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">옵션 등록</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- ============================================================== -->
-                <!-- end pageheader -->
-                <!-- ============================================================== -->
+<style type="text/css">
+html, body {
+	
+}
+
+body {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: center;
+	align-items: center;
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid  dashboard-content">
                     <div class="row">
                         <!-- ============================================================== -->
                         <!-- valifation types -->
@@ -414,12 +427,12 @@
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"></label>
                                             <div class="col-12 col-sm-8 col-lg-6" style="text-align: center;">
-                                                <button type="button" class="btn btn-space btn-secondary" id="addCostsMatchingDivButton"> 원가 연결 창 추가하기 </button>
+                                                <button type="button" class="btn btn-space btn-secondary" id="addCostsMatchingDivButton"> 원재료 연결 창 추가하기 </button>
                                             </div>
                                         </div>
                                         <div class="costsConnectDiv">                                        
 	                                        <div class="form-group row costsDiv">
-	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원가 연결 선택 </label>
+	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 원재료 연결 선택 </label>
 	                                            <div class="col-12 col-sm-8 col-lg-6 row">
 		                                            <div class="col-md-5 mb-3">
 		                                           	 	<label for="country">옵션 명</label>
@@ -447,7 +460,7 @@
 		                                             </div>
 		                                             <div class="col-md-1 mb-1 deleteConnenctDiv">
 			                                             <label for="zip"></label>
-			                                             <button type="button" class="btn btn-space btn-warning" name="deleteConnenctButton"> 원가삭제 </button>
+			                                             <button type="button" class="btn btn-space btn-warning" name="deleteConnenctButton"> 원재료삭제 </button>
 		                                             </div>
 	                                            </div>
 	                                        </div>
@@ -467,5 +480,13 @@
                         <!-- ============================================================== -->
                     </div>
             </div>
-        <!-- /page content -->
-        <%@ include file="../../inc/bottom.jsp" %>
+</body>
+<script src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
+<script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#anotherOptionPk").selectpicker('refresh');
+	});
+</script>
+</html>

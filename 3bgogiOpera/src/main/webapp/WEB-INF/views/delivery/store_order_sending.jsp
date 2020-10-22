@@ -14,9 +14,9 @@
     		
     	});
     	
-    	function storeSending(){
+    	function storeSending(ssPk){
     		if(confirm("발송 처리를 하시겠습니까?")){
-    			location.href="<c:url value='/delivery/store_sending.do'/>";
+    			location.href="<c:url value='/delivery/store_sending.do?ssPk="+ssPk+"'/>";
     			
     		}else{
     			
@@ -25,8 +25,10 @@
     	}
     	
     	function storeSendingCancled(sendingTime){
+    		var dateStart = $("#dateStart").val();
+    		
     		if(confirm("발송 처리를 해제하시겠습니까?")){
-    			location.href="<c:url value='/delivery/store_sending_cancled.do?dateEnd="+sendingTime+"'/>";
+    			location.href="<c:url value='/delivery/store_sending_cancled.do?dateEnd="+sendingTime+"&dateStart="+dateStart+"'/>";
     			
     		}else{
     			
@@ -145,64 +147,67 @@
 				                            	<input type="text" class="btn btn-light" id="dateStart" name="dateStart" style="width: 8em;" value="${osVO.dateStart }"/>
 				                            </div>
 				                            <div class="btn-group" style="text-align: right;">
-				                                <button class="btn btn-primary" type="submit"> 조건 검색 </button>
+				                                <button class="btn btn-primary" type="submit"> 발송일 검색 </button>
 				                            </div>
 				                        </div>
 	                        		</form>
 		                        </div>
 	                        </div>
                         </div>
+                        
                         <iframe id="fileDown" style='visibility:hidden' src="" width="1" height="1"></iframe>
                     	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr class="sending-header text-center">
-                                                <th scope="col">판매처</th>
-                                                <th scope="col">상품 개수</th>
-                                                <th scope="col">송장 개수</th>
-                                                <th scope="col">발송 시간</th>
-                                                <th scope="col">판매처 발송파일</th>
-                                                <th scope="col"> - 임시 - </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        	<c:if test="${empty storeSendingResult }">
-                                        		<tr>
-	                                                <th scope="row" colspan="7" style="text-align: center;">발송값이 없습니다</th>
+                                	<div class="table-responsive">
+	                                    <table class="table table-bordered" style="word-break: keep-all;">
+	                                        <thead>
+	                                            <tr class="sending-header text-center">
+	                                                <th scope="col">판매처</th>
+	                                                <th scope="col">상품 개수</th>
+	                                                <th scope="col">송장 개수</th>
+	                                                <th scope="col">발송 시간</th>
+	                                                <th scope="col">판매처 발송파일</th>
+	                                                <th scope="col"> - 임시 - </th>
 	                                            </tr>
-                                        	</c:if>
-                                        	<c:if test="${!empty storeSendingResult }">
-                                        		<c:forEach var="sendinglist" items="${storeSendingResult }">
-                                        			<tr>
-		                                                <th scope="row">${sendinglist.ssName }</th>
-		                                                <td>${sendinglist.orAmount }</td>
-		                                                <td>${sendinglist.orSerialSpecialNumber }</td>
-		                                                <td>
-		                                                	<c:if test="${empty sendinglist.orOutputDate }">
-		                                                		<button class="btn btn-outline-success" onclick="storeSending()">발송하기</button>
-		                                                	</c:if>
-		                                                	<c:if test="${!empty sendinglist.orOutputDate }">
-		                                                		<button class="btn btn-outline-danger" onclick="storeSendingCancled('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>')">
-		                                                		<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>
-		                                                		발송취소
-		                                                		</button>
-		                                                	</c:if>
-		                                                </td>
-		                                                <td>
-		                                                	<c:if test="${!empty sendinglist.orOutputDate }">
-		                                                		<button class="btn btn-outline-success" onclick="storeExcelDownload('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">
-		                                                		다운로드
-		                                                		</button>
-		                                                	</c:if>
-		                                                </td>
-		                                                <td></td>
+	                                        </thead>
+	                                        <tbody>
+	                                        	<c:if test="${empty storeSendingResult }">
+	                                        		<tr>
+		                                                <th scope="row" colspan="7" style="text-align: center;">발송값이 없습니다</th>
 		                                            </tr>
-                                        		</c:forEach>
-                                        	</c:if>
-                                        </tbody>
-                                    </table>
+	                                        	</c:if>
+	                                        	<c:if test="${!empty storeSendingResult }">
+	                                        		<c:forEach var="sendinglist" items="${storeSendingResult }">
+	                                        			<tr>
+			                                                <th scope="row">${sendinglist.ssName }</th>
+			                                                <td>${sendinglist.orAmount }</td>
+			                                                <td>${sendinglist.orSerialSpecialNumber }</td>
+			                                                <td>
+			                                                	<c:if test="${empty sendinglist.orOutputDate }">
+			                                                		<button class="btn btn-outline-success" onclick="storeSending('${sendinglist.ssFk }')">발송하기</button>
+			                                                	</c:if>
+			                                                	<c:if test="${!empty sendinglist.orOutputDate }">
+			                                                		<button class="btn btn-outline-danger" onclick="storeSendingCancled('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>')">
+			                                                		<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>
+			                                                		발송취소
+			                                                		</button>
+			                                                	</c:if>
+			                                                </td>
+			                                                <td>
+			                                                	<c:if test="${!empty sendinglist.orOutputDate }">
+			                                                		<button class="btn btn-outline-success" onclick="storeExcelDownload('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">
+			                                                		다운로드
+			                                                		</button>
+			                                                	</c:if>
+			                                                </td>
+			                                                <td></td>
+			                                            </tr>
+	                                        		</c:forEach>
+	                                        	</c:if>
+	                                        </tbody>
+	                                    </table>
+                                	</div>
                                 </div>
                             </div>
                         </div>

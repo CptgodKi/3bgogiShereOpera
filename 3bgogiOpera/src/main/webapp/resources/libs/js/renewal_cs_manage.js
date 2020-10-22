@@ -38,19 +38,24 @@ jQuery(document).ready(function($) {
 		    	}
 		    	
 		    	$("#orderDetailShippingAddress").html('<i class="fas fa-home mr-2"></i>'+orAddress);
-		    	$("#orderDetailSettlementDay").text(' 결제일 : '+ allFormatDate(data[0].orSettlementDay));
-		    	$("#orderDetailCheckDay").text(' 발주확인일 : '+data[0].orCheckDay);
-		    	$("#orderDetailInflowRoute").text(' 유입경로 : '+data[0].orInflowRoute);
+		    	// $("#orderDetailSettlementDay").text(' 결제일 : '+ allFormatDate(data[0].orSettlementDay));
 		    	
-		    	if(data[0].orDeliveryPrice >= 3000){
-		    		if(data[0].orDeliveryDiscountPrice >= 100){
+		    	$("#orderDetailInflowRoute").text(' 유입경로 : '+(data[0].orInflowRoute == null ? " - " : data[0].orInflowRoute));
+		    	
+		    	
+		    	if(data[0].orDeliveryPrice > 0){
+		    		
+		    		if(data[0].orDeliveryDiscountPrice > 0){
 		    			$("#orderDetailDeliveryPrice").text(' 배송비 : '+data[0].orDeliveryPrice+" , 할인금액 : "+data[0].orDeliveryDiscountPrice);
+		    			
 		    		}else{
 		    			$("#orderDetailDeliveryPrice").text(' 배송비 : '+data[0].orDeliveryPrice+" , 할인금액 : 없음");
+		    			
 		    		}
 		    		
 		    	}else{
 		    		$("#orderDetailDeliveryPrice").text(' 배송비 : 우리측에서 부담');
+		    		
 		    		
 		    	}
 		    	
@@ -63,7 +68,6 @@ jQuery(document).ready(function($) {
 		    	var orderTotalCost = 0;
 		    	for(var i=0; i<data.length; i++){
 		    		orderTotalPrice+=data[i].orTotalPrice;
-		    		orderTotalCost+=data[i].orTotalCost;
 		    	}
 		    	
 		    	$("#orderDetailOrderQuantity").text(data.length+" 개");
@@ -94,7 +98,7 @@ jQuery(document).ready(function($) {
 												+orderList[i].orProduct;
 						
 
-						orderProductDetailList +='<span class="m-l-10 text-secondary"> '+orderList[i].orProductOption;
+						orderProductDetailList +='<span class="m-l-10 text-secondary"> '+orderList[i].orProductOption+' ( '+comma(orderList[i].orTotalPrice)+" 원 )";
 						if(orderList[i].orRequest != ''){
 							orderProductDetailList +=' [ 특별 요청 : '+orderList[i].orRequest+' ] </span>';
 						}else{
@@ -177,7 +181,13 @@ jQuery(document).ready(function($) {
 							+'<p>'+orderList[i].orProductOrderNumber+'</p>'
 						+'</div>';
 						
-						if(orderList[i].orCancledFlag == true){
+						if(orderList[i].orExcelDivFlag == true){
+							
+							orderProductDetailList+='<div class="campaign-metrics d-xl-inline-block">'
+							+'<h4 class="mb-0" style="color: red;"> 해당 주문 건은 대량 엑셀파일로 지정됐습니다 </h4>'
+						+'</div>';
+						
+						}else if(orderList[i].orCancledFlag == true){
 							
 							orderProductDetailList+='<div class="campaign-metrics d-xl-inline-block">'
 							+'<h4 class="mb-0" style="color: red;">현재 주문취소된 상품입니다 </h4>'
@@ -470,8 +480,10 @@ jQuery(document).ready(function($) {
 		var orSerialSpecialNumber = $(this).data("serial-special-number");
 		var orBuyerName = $(this).data("buyer-name"); 
 		var orBuyerContractNumber1 = $(this).data("buyer-contract-number1");
+		var orBuyerContractNumber2 = $(this).data("buyer-contract-number2");
 		var orReceiverName = $(this).data("receiver-name");
 		var orReceiverContractNumber1 = $(this).data("receiver-contract-number1");
+		var orReceiverContractNumber2 = $(this).data("receiver-contract-number2");
 		var orDeliveryMessage = $(this).data("delivery-message");
 		var orShippingAddress = $(this).data("shipping-address");
 		var orShippingAddressDetail = $(this).data("shipping-address-detail");
@@ -486,7 +498,9 @@ jQuery(document).ready(function($) {
 		$("#orShippingAddressDetail").val(orShippingAddressDetail);
 		$("#orShippingAddressNumber").val(orShippingAddressNumber);
 		$("#orReceiverContractNumber1").val(orReceiverContractNumber1);
+		$("#orReceiverContractNumber2").val(orReceiverContractNumber2);
 		$("#orBuyerContractNumber1").val(orBuyerContractNumber1);
+		$("#orBuyerContractNumber2").val(orBuyerContractNumber2);
 		$("#orDeliveryMessage").val(orDeliveryMessage);
 		$("#orSerialSpecialNumber").val(orSerialSpecialNumber);
 		$("#orRegdate").val(orRegdate);
@@ -614,6 +628,10 @@ jQuery(document).ready(function($) {
 			return false;
 		}
 		
+		if(orSize > 200){
+			alert("한 번에 200개 이상의 송장을 발송처리 할 수 없습니다");
+			return false;
+		}
 		if(confirm(orSize+" 개의 주문을 발송처리하시겠습니까?")){
 			
 			var csSearchForm =  document.createElement("form");
@@ -623,15 +641,51 @@ jQuery(document).ready(function($) {
 			$("#csSearchIframe").html("");
 			$("#csSearchIframe").append(csSearchForm);
 			
-			for(var i=0; i<orSize; i++){
+			
+			$("input[data-deliv='1']:checked").each(function(i, selected) {
+				
 				var orSerialSpecialNumberInput = document.createElement("input");
 				orSerialSpecialNumberInput.name="orVoList["+i+"].orSerialSpecialNumber";
 				
 				orSerialSpecialNumberInput.type="hidden";
 				orSerialSpecialNumberInput.value=$("input[data-deliv='1']:checked")[i].value;
+				
+				var orDeliveryNum = document.createElement("input");
+				orDeliveryNum.name="orVoList["+i+"].orDeliveryInvoiceNumber";
+				
+				orDeliveryNum.type="hidden";
+				orDeliveryNum.value=$(selected).data("deliv-num");
+			
+				
+				
 				$("#csSearchForm").append(orSerialSpecialNumberInput);
-			}
+				$("#csSearchForm").append(orDeliveryNum);
+				
+		     });
 
+			
+			/*for(var i=0; i<orSize; i++){
+				var orSerialSpecialNumberInput = document.createElement("input");
+				orSerialSpecialNumberInput.name="orVoList["+i+"].orSerialSpecialNumber";
+				
+				orSerialSpecialNumberInput.type="hidden";
+				orSerialSpecialNumberInput.value=$("input[data-deliv='1']:checked")[i].value;
+				
+				
+				var orDeliveryNum = document.createElement("input");
+				orDeliveryNum.name="orVoList["+i+"].orDeliveryInvoiceNumber";
+				
+				orDeliveryNum.type="hidden";
+				orDeliveryNum.value=$("input[data-deliv='1']:checked")[i].data("deliv-num");
+				
+				$("#csSearchForm").append(orSerialSpecialNumberInput);
+				$("#csSearchForm").append(orDeliveryNum);
+				
+				alert($("input[data-deliv='1']:checked")[i].data("deliv-num"));
+				
+				
+			}*/
+			
 			var csSearchFormData = jQuery("#csSearchForm").serialize();
 			
 			
@@ -657,8 +711,9 @@ jQuery(document).ready(function($) {
 			alert("선택된 주문서가 없습니다"); 
 			return false;
 		}
-			
-		$.ajax({
+		
+		if(confirm("해당 주문서를 매칭 상품 별로 나누시겠습니까?")){
+			$.ajax({
 				type       : 'GET',
 				data       : {
 					"orPk":orderOrPk
@@ -670,7 +725,9 @@ jQuery(document).ready(function($) {
 					
 				}
 				
-		});
+			});
+		}
+		
 
 		
 	});
@@ -708,7 +765,8 @@ jQuery(document).ready(function($) {
 				data       : csSearchFormData,
 				url        : '/orders/order_output_canled.do',
 				success    : function(data){		
-					alert(data);
+					alert("발송 취소 완료");
+					location.reload();
 					
 				}
 				
@@ -718,11 +776,11 @@ jQuery(document).ready(function($) {
 	});
 	
 	$("#changeSendingDeadlineBtn").click(function(){
-		var orSize = $("input[data-deliv-weiting='1']:checked").length;
+		var orSize = $("input[data-deliv-weiting='1']:checked, input[data-deliv='1']:checked").length;
 		var orSerialSpecialNumberList = new Array(orSize);
 			
 		for(var i=0; i<orSize; i++){
-			orSerialSpecialNumberList[i]=$("input[data-deliv-weiting='1']:checked")[i].value;
+			orSerialSpecialNumberList[i]=$("input[data-deliv-weiting='1']:checked, input[data-deliv='1']:checked")[i].value;
 			
 		}
 
@@ -733,6 +791,17 @@ jQuery(document).ready(function($) {
 		
 		
 		window.open('/orders/change/deadline.do?orSerialSpecialNumberList='+orSerialSpecialNumberList, "발송일 변경" , "width=430, height=500, top=200, left=1200, scrollbars=no");
+	});
+	
+	$("#orderHistoryBtn").click(function(){
+		
+		if(orderOrPk == 0){
+			alert("주문서를 선택해주세요");
+			return false;
+		}
+		
+		window.open('/log/order_history.do?orPk='+orderOrPk, "주문서 작업 기록" , "width=950, height=500, top=200, left=400, scrollbars=no");
+		
 	});
 
 	$("#aligoSmsBtn").click(function(){

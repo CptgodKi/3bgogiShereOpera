@@ -48,16 +48,19 @@
 		
 		// 비율 나누기
 		$("#radioDevideBtn").click(function(){
-		
 			$("#orderDevideType").val("0");
+			
 			selfDevideForm();
+			
 		});
 		
 		//임의 숫자 나누기
 		$("#selfDevideBtn").click(function(){
 			$("#orderDevideType").val("1");
+			
 			selfDevideForm();
 		});
+		
 		
 		function selfDevideForm(){
 			
@@ -65,7 +68,7 @@
 			var orQty = Number($("#orQty").val());
 			var radioDevideValue = Number($("#radioDevideValue").val());
 			var selfDevideOriginalValue = Number($("#selfDevideOriginalValue").val());
-			alert("orQty=>"+orQty);
+			
 			if(devideType == 0){
 				
 				if(orQty < radioDevideValue){
@@ -83,36 +86,47 @@
 					$(this).val("0");
 					$("#selfDevideOriginalValue").focus();
 					return false;
+					
+				}else{
+					$("#selfDevideValue").val(orQty - selfDevideOriginalValue);
+					
 				}
 			}
 			
-			var devideParams = jQuery("#devideOrderForm").serialize();
-			
-			$.ajax({
+			if(!confirm("해당 숫자로 나누시겠습니까?")){
 				
-			    type       : 'POST',
-			    url        : '<c:url value="/orders/config/self_devide_order.do"/>',
-			    async	   : false,
-			    data       : devideParams,
-			    success    : function(data){
-			    	if(data == true){
-			    		
-			    		
-			    		if($("#closing").val() == 'true'){
-			    			alert("주문서 나누기 완료. 재고할당이 있었을 경우 재할당 해주세요.");
-			    			opener.location.reload();
-			    		}else{
-			    			alert("나눈 후 상품 매칭, 재고할당을 해주세요");
-			    		}
-			    		
-			    		self.close();
-			    		
-			    	}else{
-			    		alert("주문서 나누기 실패");
-			    		
-			    	}
-			    }
-			});
+				return false;
+			}else{
+				var devideParams = jQuery("#devideOrderForm").serialize();
+				
+				
+				$.ajax({
+					
+				    type       : 'POST',
+				    url        : '<c:url value="/orders/config/self_devide_order.do"/>',
+				    async	   : false,
+				    data       : devideParams,
+				    success    : function(data){
+				    	if(data == true){
+				    		
+				    		if($("#closing").val() == 'true'){
+				    			alert("주문서 나누기 완료. 재고할당이 있었을 경우 재할당 해주세요.");
+				    			opener.location.reload();
+				    		}else{
+				    			alert("나눈 후 상품 매칭, 재고할당을 해주세요");
+				    		}
+				    		
+				    		self.close();
+				    		
+				    	}else{
+				    		alert("주문서 나누기 실패");
+
+				    	}
+				    }
+				});	
+				
+			}
+			
 			
 		}
 		

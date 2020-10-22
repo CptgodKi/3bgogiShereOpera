@@ -47,20 +47,20 @@ public interface OrdersService {
 	//주문서 삭제처리하기
 	public boolean deleteOrders(List<String> orSerialSpecialNumberList);
 	
-	public boolean devideOrders(int [] orPkList);
+	public boolean devideOrders(int [] orPkList, String ip, String adminId);
 	
 	//단일 주문서 삭제 처리하기
 	public boolean deleteOrdersOne(OrdersVO orVO);
 	
 	//주문서 나누기
-	public boolean selfDevideOrders(int orPk, int orderDevideType, int radioDevideValue, int selfDevideOriginalValue, int selfDevideValue) throws CloneNotSupportedException;
+	public boolean selfDevideOrders(int orPk, int orderDevideType, int radioDevideValue, int selfDevideOriginalValue, int selfDevideValue, String ip, String adminId) throws CloneNotSupportedException;
 	
 	//고유번호로 합포할 주문서 목록 가져오기
 	public List<OrdersVO> selectCombineInfoBySerialSpecialNumber(List<String> orSerialSpecialNumber);
 	
-	public boolean updateCombineOrders(List<String> orSerialSpecialNumber, OrdersVO combineOrderData);
+	public boolean updateCombineOrders(List<String> orSerialSpecialNumber, OrdersVO combineOrderData, String accessIp, String adminId);
 	
-	public int changeProductAndOptionByOrPk(OrdersVO orVO);
+	public int changeProductAndOptionByOrPk(OrdersVO orVO, String ip, String adminId);
 	
 	public int addProductAndOptionIntoOrders(List<String> orSerialSpecialNumberList, OrdersVO insertOrdersVO);
 	/*cs 끝*/
@@ -90,10 +90,10 @@ public interface OrdersService {
 	public int deleteOrdersByDate(OrdersVO ordersVO);
 	
 	//발송 취소하기
-	public int outputCancledBySerialNumber(OrdersVOList orVOList);
+	public int outputCancledBySerialNumber(OrdersVOList orVOList, String ip, String adminId);
 	
 	//발송일 변경
-	public int changeSendingDeadline(OrderSearchVO osVO);
+	public int changeSendingDeadline(OrderSearchVO osVO, String ip, String adminId);
 	
 	
 	/**
@@ -105,7 +105,7 @@ public interface OrdersService {
 	 * @return
 	 * @메소드설명 : 발송 처리하기 임의로 orSerialSpecialNumber에 string값 날짜를 집어넣어 업데이트함
 	 */
-	public int updateOutputDateBySerialNumber(OrdersVOList orVOList);
+	public int updateOutputDateBySerialNumber(OrdersVOList orVOList, String ip, String adminId);
 	
 	
 	/**
@@ -227,4 +227,51 @@ public interface OrdersService {
 	 * @메소드설명 : 복수 매칭된 주문서 각각의 상품으로 나눠주기
 	 */
 	public String multiMatchingDevide(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : updateExcelDivOrders
+	 * @date : 2020. 9. 28.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 대량 엑셀파일로 주문서를 넣은 후 취소 및 확인 작업
+	 */
+	public int [] updateExcelDivOrders(OrdersVO orVO, String fileName);
+	
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfo
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 새로운 검색 방법
+	 */
+	public List<OrdersVO> newSearchCustomerOrderInfo(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfoCounting
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 새로운 검색 방법
+	 */
+	public int newSearchCustomerOrderInfoCounting(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : newSearchCustomerOrderInfoToExcelFile
+	 * @date : 2020. 10. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : cs 검색 결과 엑셀 파일 다운로드
+	 */
+	public List<OrdersVO> newSearchCustomerOrderInfoToExcelFile(OrderSearchVO osVO);
 }
