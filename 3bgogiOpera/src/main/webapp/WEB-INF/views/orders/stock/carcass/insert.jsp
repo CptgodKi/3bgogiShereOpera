@@ -66,20 +66,26 @@
     			innerHTML+='<div class="form-group row">'
 	            	+'<label class="col-12 col-sm-3 col-form-label text-sm-right"> 추가된 부분육  </label>'
 	            	+'<div class="col-12 col-sm-8 col-lg-6">'  	
-	                	+'<div class="input-group">'
-	                        +'<div class="input-group-prepend">'
-								+'<input class="form-control" type="text"  name="ccValues" readonly="readonly" value="'+ccCodeType+' [ '+costDetailName+' ] '+ciLevel+' 등급">'
-								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].cdFk" value="'+costDetail+'">'
-								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciAnimalProdTraceNum" value="'+ciAnimalProdTraceNum+'">'
-								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciCountryOfOrigin" value="국내산">'
-								+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciLevel" value="'+ciLevel+'">'
+	                	+'<div class="row">'
+	                       	 +'<div class="col-12 col-sm-6 col-lg-6">' 
+		                       	+'<div class="input-group">'
+									+'<input class="form-control" type="text"  name="ccValues" readonly="readonly" value="'+ccCodeType+' [ '+costDetailName+' ] '+ciLevel+' 등급">'
+									+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].cdFk" value="'+costDetail+'">'
+									+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciAnimalProdTraceNum" value="'+ciAnimalProdTraceNum+'">'
+									+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciCountryOfOrigin" value="국내산">'
+									+'<input class="form-control" type="hidden"  name="costIoList['+costIoCounting+'].ciLevel" value="'+ciLevel+'">'
+								+'</div>'	
 	                        +'</div>'
-	                        +'<input class="form-control" type="text"  name="costIoList['+costIoCounting+'].ciWeight" placeHolder="무게를 입력해주세요">'
-	                        +'<input class="form-control" type="text"  name="costIoList['+costIoCounting+'].ciMarblingLevel" placeHolder="마블링 등급">'
-	                        +'<div class="input-group-append">'
-	                            +'<button type="button" class="btn btn-danger deleteCarcassBtn"> 삭제 </button>'
+	                        
+	                        +'<div class="col-12 col-sm-6 col-lg-6">'
+	                        	+'<div class="input-group">'
+		                        +'<input class="form-control" type="number"  name="costIoList['+costIoCounting+'].ciWeight" placeHolder="무게를 입력해주세요">'
+		                        +'<input class="form-control" type="text"  name="costIoList['+costIoCounting+'].ciMarblingLevel" placeHolder="마블링 등급">'
+		                        +'<div class="input-group-append">'
+		                            +'<button type="button" class="btn btn-danger deleteCarcassBtn"> 삭제 </button>'
+		                        +'</div>'
+		                        +'</div>'
 	                        +'</div>'
-	                    +'</div>'
 	            	+'</div>'
 	            +'</div>';
 	            
@@ -88,8 +94,57 @@
 	            costIoCounting++;
     		});
     		
+    		$("#insertCarcassForm").submit(function(){
+    			var cilProduct = $("#cilProduct").val();
+    			var cilAnimalProdTraceNum = $("#cilAnimalProdTraceNum").val();
+    			var cilFile = $("#cilFile").val();
+    			var cilTransFile = $("#cilTransFile").val();
+    			var cilWeight = $("#cilWeight").val();
+    			var carcassLevel = $("#carcassLevel").val();
+    			
+    			if(cilProduct == ''){
+    				alert("품목명을 입력해주세요");
+    				$("#cilProduct").focus();
+    				return false;
+    				
+    			}else if(cilAnimalProdTraceNum == ''){
+    				alert("이력번호를 입력해주세요");
+    				$("#cilAnimalProdTraceNum").focus();
+    				return false;
+    				
+    			}else if(cilFile == ''){
+    				alert("물품사진을 입력해주세요");
+    				$("#cilFile").focus();
+    				return false;
+    				
+    			}else if(cilTransFile == ''){
+    				alert("명세서를 입력해주세요");
+    				$("#cilTransFile").focus();
+    				return false;
+    				
+    			}else if(cilWeight == ''){
+    				alert("도체 무게를 입력해주세요");
+    				$("#cilWeight").focus();
+    				return false;
+    				
+    			}else if(carcassLevel == ''){
+    				alert("등급을 입력해주세요");
+    				$("#carcassLevel").focus();
+    				return false;
+    				
+    			}
+    			
+    			if($("input[name=ccValues]").length == 0){
+    				alert("입력된 부분육이 존재하지 않습니다");
+    				return false;
+    				
+    			}
+    			
+    		});
+    		
     		$(document).on("click", ".deleteCarcassBtn", function(){
-    			$(this).parent().parent().parent().parent().remove();
+    			$(this).parent().parent().parent().parent().parent().parent().remove();
+    			
     			
     		});
 	

@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -55,6 +56,19 @@ public class xlsxWriter {
 	        CellStyle style = workbook.createCellStyle();
 	        // 워크시트 생성
 	        HSSFSheet sheet = workbook.createSheet();
+	        sheet.setMargin(sheet.BottomMargin, 0);
+	        sheet.setMargin(sheet.FooterMargin, 0);
+	        sheet.setMargin(sheet.HeaderMargin, 0);
+	        sheet.setMargin(sheet.LeftMargin, 0);
+	        sheet.setMargin(sheet.RightMargin, 0);
+	        sheet.setMargin(sheet.TopMargin, 0);
+	        
+	        HSSFPrintSetup print = sheet.getPrintSetup();
+	        print.setScale((short)170);
+	        print.setPaperSize(HSSFPrintSetup.A4_PAPERSIZE);
+	        print.setFitHeight((short)1);
+	        print.setFitWidth((short)1);
+	        
 	        // 행 생성
 	        HSSFRow row = sheet.createRow(0);
 	        row.setHeight((short)500);
@@ -87,6 +101,8 @@ public class xlsxWriter {
         		cs.setCellsStyles(style, sheet, workbook, cell);
         		sheet.addMergedRegion(new CellRangeAddress(rowCounting, rowCounting, 0, 2));
         		
+        		sheet.autoSizeColumn(rowIdx);
+        		sheet.setColumnWidth(rowIdx, (sheet.getColumnWidth(rowIdx))+(short)1024);
 	        	rowCounting++;
 	        	
 	        	if(rowIdx < eoSeq.size() + 1) {

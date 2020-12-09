@@ -31,6 +31,7 @@ public class FileuploadUtil {
 	public static final int UPLOAD_IMAGE=4; //자료실 이미지
 	public static final int STOCK_STATEMENT_IMG = 5;
 	public static final int CARCASS_FILE = 6; // 도체 파일 업로드
+	public static final int TAX_FILE = 7; // 세금계산거 파일 업로드
 	
 	@Resource(name="fileUploadProperties")
 	private Properties fileProperties;
@@ -201,6 +202,9 @@ public class FileuploadUtil {
 			}else if(uploadGb == CARCASS_FILE) {
 				upPath=fileProperties.getProperty("file.upload.carcass_file.path.test");
 				upPath=existFileDirectoryByDateAndReturnPath(upPath);
+			}else if(uploadGb == TAX_FILE) {
+				upPath=fileProperties.getProperty("file.upload.tax_file.path.test");
+				upPath=existFileDirectoryByDateAndReturnPath(upPath);
 			}
 			
 		}else {
@@ -208,7 +212,8 @@ public class FileuploadUtil {
 			if(uploadGb==UPLOAD_FILE) {
 				upPath=fileProperties.getProperty("file.upload.upload_file.path");
 			}else if(uploadGb==ORDER_EXCEL) {
-				upPath=fileProperties.getProperty("file.upload.order_excel.path");				
+				upPath=fileProperties.getProperty("file.upload.order_excel.path");
+				
 			}else if(uploadGb==IMAGE_UPLOAD) {
 				upPath=fileProperties.getProperty("imageFile.upload.path");				
 			}else if(uploadGb==UPLOAD_IMAGE) {
@@ -217,6 +222,9 @@ public class FileuploadUtil {
 				upPath=fileProperties.getProperty("file.upload.stock_statement_img.path");
 			}else if(uploadGb == CARCASS_FILE) {
 				upPath=fileProperties.getProperty("file.upload.carcass_file.path");
+				upPath=existFileDirectoryByDateAndReturnPath(upPath);
+			}else if(uploadGb == TAX_FILE) {
+				upPath=fileProperties.getProperty("file.upload.tax_file.path");
 				upPath=existFileDirectoryByDateAndReturnPath(upPath);
 			}
 			

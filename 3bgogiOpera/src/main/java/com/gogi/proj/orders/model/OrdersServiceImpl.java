@@ -859,6 +859,12 @@ public class OrdersServiceImpl implements OrdersService{
 		// TODO Auto-generated method stub
 		return ordersDAO.newSearchCustomerOrderInfoToExcelFile(osVO);
 	}
+
+	@Override
+	public List<OrdersVO> selectCreateInvoiceNum() {
+		// TODO Auto-generated method stub
+		return ordersDAO.selectCreateInvoiceNum();
+	}
 	
 	/*cs 부분 끝*/
 }

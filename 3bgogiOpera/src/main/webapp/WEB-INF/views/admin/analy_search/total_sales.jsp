@@ -123,8 +123,10 @@
                                         			<td>
                                         				<fmt:formatNumber value="${delivDiscPriceCount }" pattern="#,###"/> 원
                                         			</td>
+                                        			
+                                        			<c:set var="totalSales" value="${(totalPriceCount + delivPriceCount - delivDiscPriceCount)}"/>
                                         			<td>
-                                        				<fmt:formatNumber value="${totalPriceCount }" pattern="#,###"/> 원
+                                        				<fmt:formatNumber value="${totalSales}" pattern="#,###"/> 원
                                         			</td>
                                         			
                                         		</tr>             	
@@ -175,6 +177,7 @@
 		                                            	</td>
 		                                            </tr>
                                         		</c:forEach>
+                                        		
                                         		<tr>
                                         			<td> 총 합 </td>
                                         			<td>
@@ -186,8 +189,11 @@
                                         			<td>
                                         				<fmt:formatNumber value="${delivDiscPriceCount }" pattern="#,###"/> 원
                                         			</td>
+                                        			
+                                        			<c:set var="totalSales" value="${(totalPriceCount + delivPriceCount - delivDiscPriceCount)}"/>
+                                        			
                                         			<td>
-                                        				<fmt:formatNumber value="${totalPriceCount }" pattern="#,###"/> 원
+                                        				<fmt:formatNumber value="${totalSales}" pattern="#,###"/> 원
                                         			</td>
                                         			
                                         		</tr>             	

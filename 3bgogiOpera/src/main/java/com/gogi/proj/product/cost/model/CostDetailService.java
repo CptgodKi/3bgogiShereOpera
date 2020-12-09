@@ -137,4 +137,27 @@ public interface CostDetailService {
 	 * @메소드설명 : 등록된 도체 개수 페이징
 	 */
 	public int selectCarcassInputListCount(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectCarcassCostManage
+	 * @date : 2020. 10. 26.
+	 * @author : Jeon KiChan
+	 * @param OrderSearchVO osVO
+	 * @return
+	 * @메소드설명 : 원육 입출고 데이터 가져오기
+	 */
+	public List<CostDetailVO> selectCarcassCostManage(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : selsectCarcassCostCategoryCounting
+	 * @date : 2020. 10. 27.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 원윱 입출고 카테고리 가져오기
+	 */
+	public List<CostDetailVO> selsectCarcassCostCategoryCounting(OrderSearchVO osVO);
 }

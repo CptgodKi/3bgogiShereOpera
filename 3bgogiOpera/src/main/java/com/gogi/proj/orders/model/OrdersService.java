@@ -274,4 +274,14 @@ public interface OrdersService {
 	 * @메소드설명 : cs 검색 결과 엑셀 파일 다운로드
 	 */
 	public List<OrdersVO> newSearchCustomerOrderInfoToExcelFile(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : selectCreateInvoiceNum
+	 * @date : 2020. 11. 4.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 송장 생성 차수 가져오기
+	 */
+	public List<OrdersVO> selectCreateInvoiceNum();
 }

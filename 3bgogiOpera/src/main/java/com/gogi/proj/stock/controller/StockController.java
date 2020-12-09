@@ -771,4 +771,72 @@ public class StockController {
 		return stockService.checkOptionBarcodeDupli(osVO);
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : carcarssManageGet
+	 * @date : 2020. 10. 27.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 원육 입출고 관리페이지
+	 */
+	@RequestMapping(value="/carcass_manage.do", method=RequestMethod.GET)
+	public String carcarssManageGet(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		osVO.setBlockSize(10);
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
+			
+		}
+		
+		List<CostDetailVO> cdList = cdService.selectCarcassCostManage(osVO);
+		List<CostDetailVO> categoryList = cdService.selsectCarcassCostCategoryCounting(osVO);
+		
+		model.addAttribute("osVO", osVO);
+		model.addAttribute("cdList", cdList);
+		model.addAttribute("categoryList", categoryList);
+		
+		return "orders/stock/carcass/manage/list";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : carcarssManageGetAjax
+	 * @date : 2020. 10. 27.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 원육 입출고 가져오기
+	 */
+	@RequestMapping(value="/carcass_manage_ajax.do", method=RequestMethod.POST)
+	@ResponseBody
+	public OrderSearchVO carcarssManageGetAjax(@ModelAttribute OrderSearchVO osVO){
+		
+		List<CostDetailVO> cdList = cdService.selectCarcassCostManage(osVO);
+		
+		osVO.setCdList(cdList);
+		
+		return osVO;
+	}
+	
+	/**
+	 * 
+	 * @MethodName : chooseCostIoAjax
+	 * @date : 2020. 10. 27.
+	 * @author : Jeon KiChan
+	 * @param ciVO
+	 * @return
+	 * @메소드설명 : 출고처리될 원육 선택
+	 */
+	@RequestMapping(value="/choose_cost_io_ajax.do", method=RequestMethod.GET)
+	@ResponseBody
+	public int chooseCostIoAjax(@ModelAttribute CostIoVO ciVO) {
+		int result = ciService.chooseCostIo(ciVO);
+
+		return result;
+	}
 }

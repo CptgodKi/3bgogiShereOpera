@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.delivery.vo.SendingRequestVO;
+import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -118,5 +119,17 @@ public class DeliveryDAOMybatis extends SqlSessionDaoSupport implements Delivery
 	public int dupliSendingReq(SendingRequestVO srVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(sendingReq+".dupliSendingReq", srVO);
+	}
+
+	@Override
+	public int deleteSendingReq(RegDataVO regVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().delete(sendingReq+".deleteSendingReq", regVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectSendingResults", ssVO);
 	}
 }

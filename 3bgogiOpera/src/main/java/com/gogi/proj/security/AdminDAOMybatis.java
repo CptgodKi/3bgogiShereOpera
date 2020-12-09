@@ -11,6 +11,7 @@ import com.gogi.proj.admin.attendance.vo.AdminAttendanceVO;
 public class AdminDAOMybatis extends SqlSessionDaoSupport{
 	
 	private String namespace = "admin";
+	private String jobCode = "admin.job_code";
 	
 	public AdminVO fineAdminByUsername(String username) {
 		return getSqlSession().selectOne(namespace+".fineAdminByUsername",username);
@@ -64,5 +65,20 @@ public class AdminDAOMybatis extends SqlSessionDaoSupport{
 	public String selectAdminPassByAdminPk(int adminPk) {
 		
 		return getSqlSession().selectOne(namespace+".selectAdminPassByAdminPk", adminPk);
+	}
+	
+	public int updateAdminInfo(AdminVO adminVO) {
+		
+		return getSqlSession().update(namespace+".updateAdminInfo", adminVO);
+	}
+	
+	public int changeAdminPassword(AdminVO adminVO) {
+		
+		return getSqlSession().update(namespace+".changeAdminPassword", adminVO);
+	}
+	
+	public List<JobCodeVO> selectJobCode(){
+		
+		return getSqlSession().selectList(jobCode+".selectJobCode");
 	}
 }

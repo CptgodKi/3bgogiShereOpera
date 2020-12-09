@@ -2,6 +2,9 @@ package com.gogi.proj.epost.model;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -13,7 +16,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.annotation.Resource;
+
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONObject;
 import org.json.XML;
 import org.json.simple.parser.ParseException;
@@ -23,6 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gogi.proj.delivery.config.model.DeliveryConfigService;
+import com.gogi.proj.delivery.config.vo.EarlyDelivCommonImposVO;
+import com.gogi.proj.delivery.model.DeliveryDAO;
+import com.gogi.proj.delivery.model.DeliveryService;
 import com.gogi.proj.epost.api.EpostSendingUtil;
 import com.gogi.proj.epost.controller.EpostController;
 import com.gogi.proj.epost.vo.RegDataVO;
@@ -42,6 +56,12 @@ public class EpostServiceImpl implements EpostService {
 	
 	@Autowired
 	private LogService logService;
+	
+	@Autowired
+	private DeliveryDAO deliDao;
+	
+	@Autowired
+	private DeliveryConfigService dcService;
 
 	private static final Logger logger = LoggerFactory.getLogger(EpostServiceImpl.class);
 	
@@ -53,6 +73,8 @@ public class EpostServiceImpl implements EpostService {
 	
 	private static EpostSendingUtil esu = new EpostSendingUtil();
 	
+	@Resource(name="fileUploadProperties")
+	private Properties fileProperties;
 	
 	@Override
 	public List<RegDataVO> selectEpostSendingData(OrderSearchVO osVO) {
@@ -95,18 +117,22 @@ public class EpostServiceImpl implements EpostService {
 		
 		StringBuilder results = new StringBuilder("");
 		
-		RegDataVO regVO;
+		RegDataVO regVO = null;
 		String regData = "";
 		String encryptStr = "";
 		
 		for(int i=0; i < orSerialSpecialNumberList.size(); i++) {
 			regVO = epostDao.selectEpostInfoByOrserialspecialnumber(orSerialSpecialNumberList.get(i));
-			
+			System.out.println(regVO.epostDeliteToString());
+			System.out.println(regVO.getReqno());
+			System.out.println(regVO.getReqNo());
 			//직접 입력된 송장일 경우 송장 정보가 없음
 			if(regVO == null) {
+				deliDao.deleteSendingReq(regVO);
 				epostDao.deleteDelivInfo(orSerialSpecialNumberList.get(i));
 				logger.info("송장 삭제, regVO 정보가 존재하지 않아 직접 입력된 것으로 판단, 데이터베이스 상으로 삭제처리");
 			}else {				
+				deliDao.deleteSendingReq(regVO);
 					try {
 						regData = regVO.epostDeliteToString();
 						
@@ -157,7 +183,7 @@ public class EpostServiceImpl implements EpostService {
 
 	@Transactional
 	@Override
-	public OrdersVO deliveryPrintTarget(OrderSearchVO osVO, String ip, String adminId) {
+	public OrdersVO deliveryPrintTarget(OrderSearchVO osVO, String ip, String adminId, String createInvoiceNumDateCounting, int delivCount) {
 		
 		OrdersVO orderList = epostDao.deliveryPrintTarget(osVO);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -189,6 +215,8 @@ public class EpostServiceImpl implements EpostService {
 					
 					resOr.setOrProductList(orProductList);*/
 					
+					resOr.setOrInvoiceNumDate(createInvoiceNumDateCounting);
+					resOr.setOrDelivCount(delivCount+"");
 					int result = epostDao.grantDeliveryInvoiceNumber(resOr);
 					
 					for(int i = 0; i < resOr.getProductOptionList().size(); i++) {
@@ -288,6 +316,257 @@ public class EpostServiceImpl implements EpostService {
 		}
 		
 		return orList;
+	}
+
+	@Override
+	@Transactional
+	public List<OrdersVO> freshSolutionDelivExcel(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		List<OrdersVO> orderList = epostDao.freshSolutionDelivExcel(osVO);
+		
+		for(int i = 0; i < orderList.size(); i++) {
+			epostDao.updateFreshSolutionTarget(orderList.get(i));
+			
+		}
+		
+		return orderList;
+	}
+
+	@Override
+	@Transactional
+	public int updateFreshSolutionInvoiceNumber(List<OrdersVO> orList) {
+		// TODO Auto-generated method stub
+		int result = 0;
+		
+		for(int i = 0; i < orList.size(); i++) {
+			result += epostDao.updateFreshSolutionInvoiceNumber(orList.get(i));
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int deleteDelivInfoByPk(OrdersVO osVO) {
+		// TODO Auto-generated method stub
+		return epostDao.deleteDelivInfoByPk(osVO);
+	}
+
+	@Transactional
+	@Override
+	public File freshSolutionInfo(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		
+		List<OrdersVO> delivTarget = new ArrayList<>();
+		List<OrdersVO> delivImpos = new ArrayList<>();
+		osVO.setEdtFk(3);
+		List<EarlyDelivCommonImposVO> imposList = dcService.selectEarlyDelivCommonImposList(osVO);
+		
+		List<OrdersVO> selectedOrder = null;
+		
+		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
+			osVO.setSearchKeyword(osVO.getOrSerialSpecialNumberList().get(i));
+			
+			selectedOrder = this.freshSolutionDelivExcel(osVO);
+			
+			if(selectedOrder.size() != 0) {
+				for(int j = 0; j < selectedOrder.size(); j++) {
+					
+					boolean match = false;
+					
+					for(int imposCount = 0; imposCount < imposList.size(); imposCount++) {						
+						if(selectedOrder.get(j).getOrShippingAddressDetail().matches(".*"+imposList.get(imposCount).getEdciKeyword()+".*")) {
+							selectedOrder.get(j).setOrUserColumn5(imposList.get(imposCount).getEdciKeyword());
+							match = true;
+							break;	
+						}
+							
+					}
+					
+					if(match == true) {
+						delivImpos.add(selectedOrder.get(j));
+						this.deleteDelivInfoByPk(selectedOrder.get(j));
+					}else {
+						delivTarget.add(selectedOrder.get(j));
+					}
+					
+					match = false;
+					
+				}
+			}
+			
+		}
+		
+		
+		List<String> list = new ArrayList<String>();
+		
+		list.add("거래처 주문코드");
+		list.add("배송요청일");
+		list.add("주문자");
+		list.add("수령인");
+		list.add("우편번호");
+		list.add("수령인 주소");
+		list.add("수령인 상세주소");
+		list.add("수령인 전화번호");
+		list.add("수령인 핸드폰");
+		list.add("비고");
+		list.add("비고2(배송메시지)");
+		list.add("요청유형");
+		list.add("배송문자유형");
+		list.add("상품코드");
+		list.add("상품유형");
+		list.add("상품명");
+		list.add("상품옵션");
+		list.add("수량");
+		
+		
+		// 워크북 생성
+		SXSSFWorkbook workbook = new SXSSFWorkbook();
+
+		// 워크시트 생성
+		SXSSFSheet sheet = (SXSSFSheet) workbook.createSheet("발송명단");
+		SXSSFSheet errorSheet = (SXSSFSheet) workbook.createSheet("에러명단");
+		// 행 생성
+		SXSSFRow row = (SXSSFRow) sheet.createRow(0);
+		SXSSFRow errorRow = (SXSSFRow) errorSheet.createRow(0);
+		row.setHeight((short) 500);
+		// 쎌 생성
+		SXSSFCell cell;
+		SXSSFCell errorCell;
+		
+		int HeaderCounting = 0;
+		// 헤더 정보 구성
+		for (HeaderCounting = 0; HeaderCounting < list.size(); HeaderCounting++) {
+			cell = (SXSSFCell) row.createCell(HeaderCounting);
+			cell.setCellValue(list.get(HeaderCounting));
+
+		}
+		
+		errorCell = (SXSSFCell) errorRow.createCell(0);
+		errorCell.setCellValue("구매자명");
+		
+		errorCell = (SXSSFCell) errorRow.createCell(1);
+		errorCell.setCellValue("수령자명");
+		
+		errorCell = (SXSSFCell) errorRow.createCell(2);
+		errorCell.setCellValue("주소");
+		
+		errorCell = (SXSSFCell) errorRow.createCell(3);
+		errorCell.setCellValue("필터링 키워드");
+		
+		int errorCellCounting = 1;
+		
+		if(delivImpos.size() != 0 ) {
+			
+			for(int i=0; i < delivImpos.size(); i++) {
+				errorRow = (SXSSFRow) errorSheet.createRow(errorCellCounting);
+				
+				cell = (SXSSFCell) errorRow.createCell(0);
+				cell.setCellValue(delivImpos.get(i).getOrBuyerName());
+				
+				cell = (SXSSFCell) errorRow.createCell(1);
+				cell.setCellValue(delivImpos.get(i).getOrReceiverName());
+				
+				cell = (SXSSFCell) errorRow.createCell(2);
+				cell.setCellValue(delivImpos.get(i).getOrShippingAddress()+" "+delivImpos.get(i).getOrShippingAddressDetail());
+				
+				cell = (SXSSFCell) errorRow.createCell(3);
+				cell.setCellValue(delivImpos.get(i).getOrUserColumn5());
+				
+				errorCellCounting++;
+			}
+		}
+		
+		int cellCounting = 1;
+		
+		for (int i = 0; i < delivTarget.size(); i++) {
+			
+			row = (SXSSFRow) sheet.createRow(cellCounting);
+			
+			cell = (SXSSFCell) row.createCell(0);
+			cell.setCellValue(delivTarget.get(i).getOrSerialSpecialNumber());
+
+			cell = (SXSSFCell) row.createCell(1);
+			cell.setCellValue(delivTarget.get(i).getOrSendingDeadline());
+			
+			cell = (SXSSFCell) row.createCell(2);
+			cell.setCellValue(delivTarget.get(i).getOrBuyerName());
+			
+			cell = (SXSSFCell) row.createCell(3);
+			cell.setCellValue(delivTarget.get(i).getOrReceiverName());
+			
+			cell = (SXSSFCell) row.createCell(4);
+			cell.setCellValue(delivTarget.get(i).getOrShippingAddressNumber());
+			
+			cell = (SXSSFCell) row.createCell(5);
+			cell.setCellValue(delivTarget.get(i).getOrShippingAddress());
+			
+			cell = (SXSSFCell) row.createCell(6);
+			cell.setCellValue(delivTarget.get(i).getOrShippingAddressDetail());
+			
+			cell = (SXSSFCell) row.createCell(7);
+			cell.setCellValue(delivTarget.get(i).getOrReceiverContractNumber2() == null ? "" : delivTarget.get(i).getOrReceiverContractNumber2() );
+			
+			cell = (SXSSFCell) row.createCell(8);
+			cell.setCellValue(delivTarget.get(i).getOrReceiverContractNumber1());
+			
+			cell = (SXSSFCell) row.createCell(9);
+			cell.setCellValue(delivTarget.get(i).getOrDeliveryMessage());
+			
+			cell = (SXSSFCell) row.createCell(10);
+			cell.setCellValue(delivTarget.get(i).getOrDelivEnter());
+			
+			cell = (SXSSFCell) row.createCell(11);
+			cell.setCellValue("배송대행");
+			
+			cell = (SXSSFCell) row.createCell(12);
+			cell.setCellValue("7시전송");
+			
+			cell = (SXSSFCell) row.createCell(13);
+			cell.setCellValue(delivTarget.get(i).getOrPk());
+			
+			cell = (SXSSFCell) row.createCell(14);
+			cell.setCellValue(delivTarget.get(i).getOrUserColumn1());
+			
+			cell = (SXSSFCell) row.createCell(15);
+			cell.setCellValue(delivTarget.get(i).getOrProduct());
+			
+			
+			cell = (SXSSFCell) row.createCell(16);
+			cell.setCellValue("");
+			
+			cell = (SXSSFCell) row.createCell(17);
+			cell.setCellValue(delivTarget.get(i).getOrAmount());
+			
+			cellCounting++;
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String fileName = "fresh_solution_upload_file["+sdf.format(new Date())+"].xlsx";
+		
+		File file = new File(fileProperties.getProperty("file.upload.order_IO_excel.path.test"), fileName);
+		
+		FileOutputStream fos = null;
+		
+		try {
+            fos = new FileOutputStream(file);
+            workbook.write(fos);
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+            	
+                if(fos!=null) fos.close();
+                
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+		
+		return file;
 	}
 
 }

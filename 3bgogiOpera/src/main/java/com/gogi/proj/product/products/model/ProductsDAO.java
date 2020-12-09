@@ -20,4 +20,15 @@ public interface ProductsDAO {
 	public List<ProductsVO> selectProductOptionsByCodeAndName(ProductsVO productsVO);
 	
 	public List<ProductOptionVO> selectProductOptionList();
+	
+	/**
+	 * 
+	 * @MethodName : updateProducts
+	 * @date : 2020. 11. 4.
+	 * @author : Jeon KiChan
+	 * @param proVO
+	 * @return
+	 * @메소드설명 : 상품 수정
+	 */
+	public int updateProducts(ProductsVO proVO);
 }

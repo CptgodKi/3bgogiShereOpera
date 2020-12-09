@@ -54,6 +54,11 @@
 										<div class="alert alert-success" role="alert">묶음 정리 주문서 :
 											${mergedSuccessedResult} 개</div>
 									</c:if>
+									<c:if test="${!empty updateResult }">
+										<div class="alert alert-success" role="alert"> 프레시솔루션 업로드 : 
+											${updateResult} 개</div>
+											
+									</c:if>
 								</div>
 							</div>
                         </div>

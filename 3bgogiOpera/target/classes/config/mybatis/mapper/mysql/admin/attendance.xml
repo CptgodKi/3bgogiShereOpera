@@ -187,10 +187,10 @@
 		RIGHT JOIN 	dummy_calendar dc 		ON DATE_FORMAT(dc.dc_date, '%Y-%m-%d') 	= DATE_FORMAT(inne.aa_work_start, '%Y-%m-%d') 
 		LEFT JOIN	admin_daysoff ad		ON IF(
 				ad.ad_type = 2,
-		        ad.ad_weeks = WEEKDAY(dc.dc_date),
+		        ad.ad_weeks = WEEKDAY(dc.dc_date) AND ad_flag = 1,
 		        <![CDATA[
 			        DATE_FORMAT(dc.dc_date, '%Y-%m-%d') >= DATE_FORMAT(ad.ad_start, '%Y-%m-%d') 
-			        AND DATE_FORMAT(dc.dc_date, '%Y-%m-%d') <=DATE_FORMAT(ad.ad_end, '%Y-%m-%d')
+			        AND DATE_FORMAT(dc.dc_date, '%Y-%m-%d') <=DATE_FORMAT(ad.ad_end, '%Y-%m-%d') AND ad_flag = 1
 		        ]]> 
 		       
 		    ) AND ad.admin_fk = #{adminPk}

@@ -134,6 +134,8 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 	    accessIpList.add("127.0.0.1");
 	    accessIpList.add("183.78.215.97");
 	    accessIpList.add("175.223.38.74");
+	    accessIpList.add("222.100.11.103");
+	    accessIpList.add("222.100.11.254");
 	    accessIpList.add("192.168.0.0~192.168.0.99");
 
 	    if(accessIpList != null && !accessIpList.isEmpty() ) {

@@ -817,9 +817,8 @@
 		                                                </select>
 		                                            </div>
 		                                        </div>
-		                                        
 		                                        <div class="form-group row">
-		                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 사용자정의4 </label>
+		                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 출입방법  </label>
 		                                            <div class="col-12 col-sm-8 col-lg-6">
 		                                                <select class="form-control form-control-sm" id="sedsUserColumn4" name="sedsUserColumn4">
 		                                                	<option value="-1"> 열을 선택해주세요 </option>

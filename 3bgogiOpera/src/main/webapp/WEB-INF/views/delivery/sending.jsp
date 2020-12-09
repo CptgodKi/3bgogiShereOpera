@@ -52,7 +52,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-										<button class="btn btn-secondary btn-xs btn-block" type="button" id="sendingReqBtn">강제출고</button>
+										<button class="btn btn-secondary btn-xs btn-block" type="button" id="sendingReqBtn">강제출고 요청</button>
 										
 									</td>
 								</tr>

@@ -256,10 +256,20 @@
 										<input type="text" class="form-control form-control-sm" id="orDeliveryPrice" name="orDeliveryPrice" value="3300">
 									</div>
 								</div>
+								
 								<div class="row mb-2">
 									<div class="col-md-12">
-										<label for="orUserColumn1"> 사용자 정의 1 </label> 
-										<input type="text" class="form-control form-control-sm" id="orUserColumn1" name="orUserColumn1" placeholder="">
+										<label for="orUserColumn1"> 냉동, 냉장 선택 </label> 
+										<select class="form-control form-control-sm" id="orUserColumn1" name="orUserColumn1">
+											<option value="냉장"> 냉장 </option>
+											<option value="냉동"> 냉동 </option>
+										</select>
+									</div>
+								</div>
+								<div class="row mb-2">
+									<div class="col-md-12">
+										<label for="orUserColumn3"> 현관출입방법 </label> 
+										<input type="text" class="form-control form-control-sm" id="orUserColumn4" name="orUserColumn4"  placeholder="">
 									</div>
 								</div>
 								<div class="row mb-2">

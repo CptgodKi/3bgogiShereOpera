@@ -17,6 +17,7 @@ public class OrdersVOList {
 	private String orShippingAddress;
 	private String orShippingAddressDetail;
 	private String orOrderNumber;
+	private String orDelivEnter;
 	private String ssName;
 	
 	private List<OrdersVO> orVoList;
@@ -47,6 +48,14 @@ public class OrdersVOList {
 		this.orOrderNumber = orOrderNumber;
 		this.ssName = ssName;
 		this.orVoList = orVoList;
+	}
+	
+	public String getOrDelivEnter() {
+		return orDelivEnter;
+	}
+
+	public void setOrDelivEnter(String orDelivEnter) {
+		this.orDelivEnter = orDelivEnter;
 	}
 
 	public String getOrSerialSpecialNumber() {

@@ -13,7 +13,7 @@
 	</appender>
 	
 	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="c:\\logs\\debug.log" />
+		<param name="File" value="c:\\logs\\opera\\debug.log" />
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -49,19 +49,19 @@
 		<appender-ref ref="console" />
 	</logger>
  
-	<!-- <logger name="com.ibatis">
+	<logger name="com.ibatis">
 		<level value="DEBUG"/>
-	</logger> -->
+	</logger>
 	
-	<!-- <logger name="java.sql">
+	<logger name="java.sql">
 	  <level value="DEBUG"/>
-	</logger> -->
+	</logger>
 	
 	
 	
 	<!-- Root Logger -->
 	<root>
-		<priority value="warn" />
+		<priority value="DEBUG" />
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />
 	</root>

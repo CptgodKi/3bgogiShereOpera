@@ -36,6 +36,31 @@
 		</collection>
 	</resultMap>
 	
+	
+	<resultMap id="CostDetailWithCostIoResultmap" type="CostDetailVO">
+		<id property="cdPk" column="cd_pk" javaType="int"/>
+		<result property="cdName" column="cd_name" javaType="String"/>
+		
+		<!-- 원가, 입출고 합산-->
+		<collection property="costIoVOList" ofType="CostIoVO">
+			<id property="ciPk" column="ci_pk" javaType="int"/>
+			<result property="cdFk" column="cd_fk" javaType="int"/>
+			<result property="cilFk" column="cil_fk" javaType="int"/>
+			<result property="ciPrice" column="ci_price" javaType="int"/>
+			<result property="ciWeight" column="ci_weight" javaType="int"/>
+			<result property="ciOutputWeight" column="ci_output_weight" javaType="int"/>
+			<result property="ciOutputQty" column="ci_output_qty" javaType="int"/>
+			<result property="ciOutputLastTime" column="ci_output_last_time" javaType="java.sql.Date"/>
+			<result property="ciOutputFlag" column="ci_output_flag" javaType="boolean"/>
+			<result property="ciAnimalProdTraceNum" column="ci_animal_prod_trace_num" javaType="String"/>
+			<result property="ciLevel" column="ci_level" javaType="String"/>
+			<result property="ciMarblingLevel" column="ci_marbling_level" javaType="String"/>
+			<result property="ciCountryOfOrigin" column="ci_country_of_origin" javaType="String"/>
+			<result property="ciItemsManufNum" column="ci_items_manuf_num" javaType="String"/>
+			<result property="ciRegdate" column="ci_regdate" javaType="java.sql.Timestamp"/>
+		</collection>
+	</resultMap>
+	
 	<insert id="insertCarcass" useGeneratedKeys="true" keyProperty="cilPk" parameterType="CarcassInputListVO">
 		INSERT INTO
 			carcass_input_list(
@@ -372,6 +397,116 @@
         ) inne
 	</select>
 	
+	<select id="selsectCarcassCostCategoryCounting" parameterType="OrderSearchVO" resultType="CostDetailVO">
+		SELECT
+		    cd.cd_pk,
+		    cc.cc_pk,
+		    CONCAT(cc.cc_code_type, ' ', cd.cd_name ) AS cd_name,
+		    COUNT(ci.ci_pk) AS cd_cost
+		FROM
+			cost_code cc
+		    INNER JOIN cost_detail cd	ON	cc.cc_pk = cd.cc_fk
+		    INNER JOIN cost_io ci		ON	cd.cd_pk = ci.cd_fk
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+	    	<if test="ccPk != 0">
+	    		AND cc.cc_pk = #{ccPk}
+	    	</if>    
+		</trim>
+		GROUP BY
+			cd.cd_pk,
+			cd_name
+		ORDER BY
+			cc.cc_code_type		DESC,
+			cd.cd_name			DESC
+	</select>
+	
+	
+	<select id="selectCarcassCostManage" parameterType="OrderSearchVO" resultMap="CostDetailWithCostIoResultmap">
+		SELECT
+		    cd.cd_pk,
+		    CONCAT(cc.cc_code_type, ' ', cd.cd_name ) AS cd_name,
+		    ci.ci_pk,
+		    ci.ci_weight,
+		    ci.ci_items_manuf_num,
+		    ci.ci_animal_prod_trace_num,
+		    ci.ci_level,
+		    ci.ci_marbling_level,
+		    ci.cil_fk,
+		    ci.ci_output_flag,
+		    ci.ci_regdate
+		FROM
+			cost_code cc
+		    INNER JOIN cost_detail cd	ON	cc.cc_pk = cd.cc_fk
+		    INNER JOIN cost_io ci		ON	cd.cd_pk = ci.cd_fk
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+	    	<if test="labelBtn != 0">
+	    		ci.ci_output_flag = 1
+	    	</if>    
+	    	<if test="cdPk != 0">
+	    		AND cd.cd_pk = #{cdPk}
+	    	</if>
+	    	<if test="ccPk != 0">
+	    		AND cc.cc_pk = #{ccPk}
+	    	</if>   
+		</trim>
+		ORDER BY
+			cc.cc_code_type		DESC,
+			cd.cd_name			DESC,
+		    ci.ci_output_flag	DESC,
+		    ci.ci_regdate
+		    	<if test="sortingBtn == 0">
+		    		DESC
+		    	</if>
+		    	<if test="sortingBtn != 0">
+		    		ASC
+		    	</if>
+		LIMIT #{firstRecordIndex}, #{recordCountPerPage} 
+	</select>
+	
+	<select id="selectCarcassCostManageCounting" parameterType="OrderSearchVO" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM(
+			SELECT
+			    cd.cd_pk,
+			    CONCAT(cc.cc_code_type, ' ', cd.cd_name ) AS cd_name,
+			    ci.ci_pk,
+			    ci.ci_weight,
+			    ci.ci_items_manuf_num,
+			    ci.ci_animal_prod_trace_num,
+			    ci.ci_level,
+			    ci.ci_marbling_level,
+			    ci.cil_fk,
+			    ci.ci_output_flag,
+			    ci.ci_regdate
+			FROM
+				cost_code cc
+			    INNER JOIN cost_detail cd	ON	cc.cc_pk = cd.cc_fk
+			    INNER JOIN cost_io ci		ON	cd.cd_pk = ci.cd_fk
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+		    	<if test="labelBtn != 0">
+		    		ci.ci_output_flag = 1
+		    	</if>    
+		    	<if test="cdPk != 0">
+		    		AND cd.cd_pk = #{cdPk}
+		    	</if>
+		    	<if test="ccPk != 0">
+		    		AND cc.cc_pk = #{ccPk}
+		    	</if>   
+			</trim>
+			ORDER BY
+				cc.cc_code_type		DESC,
+				cd.cd_name			DESC,
+			    ci.ci_output_flag	DESC,
+			    ci.ci_regdate
+			    	<if test="sortingBtn == 0">
+			    		DESC
+			    	</if>
+			    	<if test="sortingBtn != 0">
+			    		ASC
+			    	</if>
+			) INNE
+	</select>
 	
 </mapper>
 

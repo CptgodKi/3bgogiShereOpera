@@ -204,5 +204,11 @@ public class DeliveryServiceImpl implements DeliveryService{
 		// TODO Auto-generated method stub
 		return deliDao.selectAllSedingRequest();
 	}
+
+	@Override
+	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO) {
+		// TODO Auto-generated method stub
+		return deliDao.selectSendingResults(ssVO);
+	}
 	
 }

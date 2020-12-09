@@ -42,6 +42,9 @@ import com.gogi.proj.classification.code.vo.CostCodeVO;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreMergeVO;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.delivery.config.model.DeliveryConfigService;
+import com.gogi.proj.delivery.config.vo.EarlyDelivTypeVO;
+import com.gogi.proj.epost.model.EpostService;
 import com.gogi.proj.excel.ReadOrderExcel;
 import com.gogi.proj.excel.xlsxWriter;
 import com.gogi.proj.matching.model.MatchingService;
@@ -100,6 +103,12 @@ public class OrdersController {
 	
 	@Autowired
 	private OrderConfigService orderConfigService;
+	
+	@Autowired
+	private DeliveryConfigService dcService;
+	
+	@Autowired
+	private EpostService epostService;
 	
 	private final int PROCESS_ORDER_INSERT = 1;
 	private final int PROCESS_PRODUCT_MATCHING = 2;
@@ -271,9 +280,9 @@ public class OrdersController {
 	 * @메소드설명 : 발송대기중 주문서가 아닌 배송중에 있는 주문서를 넘길 때  insert page
 	 */
 	@RequestMapping(value="/smart_store_sending_order_insert.do", method=RequestMethod.POST)
-	public String insertSmartStoreSendingOrdersPagePost(HttpServletRequest request, @RequestParam int ssFk, Model model) {
+	public String insertSmartStoreSendingOrdersPagePost(HttpServletRequest request, Model model) {
 		String msg = "";
-		String url = "/orders/order_page.do";
+		String url = "/orders/smart_store_sending_order_insert.do";
 
 		String fileName = "";
 		
@@ -297,7 +306,7 @@ public class OrdersController {
 		
 		try {
 
-			orderList = readOrderExcel.readOrderExcelDataToXLSForSmartStoreSendingData(fileName, ssFk);
+			orderList = readOrderExcel.readOrderExcelDataToXLSForSmartStoreSendingData(fileName);
 			
 		}catch(NullPointerException nulle) {
 			msg = "데이터 값이 없습니다.";
@@ -311,9 +320,7 @@ public class OrdersController {
 		
 		int updateResult = 0;
 		
-		System.out.println("업데이트 값 개수 => "+orderList.size());
-		
-		updateResult = ordersService.updateOrderDeliveryInvoiceNumber(orderList);
+		updateResult = epostService.updateFreshSolutionInvoiceNumber(orderList);
 
 		model.addAttribute("updateResult", updateResult);
 		
@@ -335,7 +342,7 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/search/customer_orders.do", method=RequestMethod.GET)
 	public String searchCustomerOrders(@ModelAttribute OrderSearchVO osVO, Model model){
-		
+
 		if(osVO.getDateType() == null) {
 			osVO.setDateType("or_regdate");
 		}
@@ -385,11 +392,15 @@ public class OrdersController {
 		List<OrdersVO> orderList = ordersService.newSearchCustomerOrderInfo(osVO);
 		List<StoreSectionVO> ssList =configService.selectStoreSectionList();
 		List<OrdersVO> insertStoreOrderList = ordersService.selectOrdersCountingByInputDate();
-	
+		List<OrdersVO> invoiceNum = ordersService.selectCreateInvoiceNum();
+		List<EarlyDelivTypeVO> edtList = dcService.earlyDelivType();
+		
+		model.addAttribute("invoiceNum", invoiceNum);
 		model.addAttribute("insertStoreOrderList", insertStoreOrderList);
 		model.addAttribute("ssList", ssList);
 		model.addAttribute("orderList",orderList);
 		model.addAttribute("osVO", osVO);
+		model.addAttribute("edtList", edtList);
 		
 		return "orders/cs/search_cs";
 	}

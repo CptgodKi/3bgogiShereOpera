@@ -63,12 +63,13 @@ jQuery(document).ready(function($) {
 	});
 	
 	$("#sendingReqBtn").click(function(){	
+		
 		invoiceNum = $("#invoiceValue").val();
-		/*if(invoiceNum == ''){
+		
+		if(invoiceNum == ''){
 			alert("입력된 송장이 없습니다");
 			return false;
-		}*/
-		
+		}
 		
 		$("#reasonBtn").click();
 
@@ -210,14 +211,13 @@ jQuery(document).ready(function($) {
 				var barcodeNum = $(this).attr("data-barcodenum");
 				var barcodeNum2 = $(this).attr("data-barcodenum2");
 				if(!barcodeNum || !barcodeNum2){
-					console.log(" 바코드 번호 ");
 					
 				}else{		
 					if( (barcodeNum == orDeliveryInvoiceNumber || barcodeNum2 == orDeliveryInvoiceNumber) && $(this).data("cancled") != "Y"){
 						console.log(" 바코드 같음 1  => ");
 						
-						if( $(this).data("finished") == "N" && $(this).data("barcodenum") != "N"){
-							console.log(" 같아서 증가 ");
+						if( $(this).data("finished") == "N" &&  ( $(this).data("barcodenum") || $(this).data("barcodenum2")) != "N"){
+
 							
 							searchCounting++;
 							//$(this).text( (Number($(this).data("quantity") )+Number(1))+"개" );
@@ -238,6 +238,8 @@ jQuery(document).ready(function($) {
 								productOneFinished.play();
 								
 								$(this).attr("data-barcodenum","N");
+								$(this).attr("data-barcodenum2","N");
+								
 								$(this).attr("data-finished","Y");
 								
 								$("#finishedOrder").append($(this).parent().clone());
@@ -283,9 +285,9 @@ jQuery(document).ready(function($) {
 							$("#orDeliveryInvoiceNumber").focus();
 						}
 						
-					}else if( barcodeNum == orDeliveryInvoiceNumber && $(this).data("cancled") == "Y"){
+					}else if( (barcodeNum == orDeliveryInvoiceNumber || barcodeNum2 == orDeliveryInvoiceNumber) && $(this).data("cancled") == "Y"){
 						forSearch++;
-					}else if(barcodeNum != orDeliveryInvoiceNumber && $(this).data("cancled") == "N"){
+					}else if((barcodeNum == orDeliveryInvoiceNumber || barcodeNum2 == orDeliveryInvoiceNumber) && $(this).data("cancled") == "N"){
 
 						noneProdCounting++;
 					}else{
@@ -295,8 +297,6 @@ jQuery(document).ready(function($) {
 					
 				}
 				
-				
-	
 			});
 
 			if((forSearch == totalLength && searchCounting == 0) || noneProdCounting == totalLength){
@@ -369,7 +369,7 @@ jQuery(document).ready(function($) {
 				productList+="</td>"
 				+"</tr>";
 				
-				var orPkInput = document.createElement("input");
+				orPkInput = document.createElement("input");
 				orPkInput.name="orPk";
 				orPkInput.type="hidden";
 				orPkInput.value=this.orPk;
@@ -400,7 +400,7 @@ jQuery(document).ready(function($) {
 				productList+="' data-amount='"+this.orAmount+"' data-finished='N' data-cancled='N' data-quantity='0'>0개</td>"
 				+"</tr>";
 				
-				var orPkInput = document.createElement("input");
+				orPkInput = document.createElement("input");
 				orPkInput.name="orPk";
 				orPkInput.type="hidden";
 				orPkInput.value=this.orPk;

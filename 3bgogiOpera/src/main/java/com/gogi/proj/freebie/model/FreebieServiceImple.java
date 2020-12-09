@@ -68,7 +68,7 @@ public class FreebieServiceImple implements FreebieService{
 			orList.get(i).setOrSerialSpecialNumber(orList.get(i).getOrSerialSpecialNumber().split(",")[0]);
 			//주문 개수 대로 들어감
 			if(fbVO.getFbAddType() == 0) {
-				qty = orList.get(i).getOrPk();
+				qty = orList.get(i).getOrAmount();
 				
 				orList.get(i).setOrAmount(qty);
 			
@@ -80,7 +80,7 @@ public class FreebieServiceImple implements FreebieService{
 				
 			//주문수량 X 개수로 들어감
 			}else if((fbVO.getFbAddType() == 2)) {
-				qty = orList.get(i).getOrPk() * fbVO.getFbAddQty();
+				qty = orList.get(i).getOrAmount() * fbVO.getFbAddQty();
 				
 				orList.get(i).setOrAmount(qty);
 				

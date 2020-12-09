@@ -44,7 +44,7 @@
 					AND od.or_sending_deadline < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 				]]>
 			</if>
-				<if test="searchKeyword != null or !searchKeyword.equals('')">
+				<if test="searchKeyword != null and !searchKeyword.equals('')">
 					<if test="searchType == 'storeProduct'">
 						AND
 						(
@@ -78,7 +78,7 @@
 						)
 					</if>
 				</if>
-				<if test="exSerachKeyword != null or !exSerachKeyword.equals('')">
+				<if test="exSerachKeyword != null and !exSerachKeyword.equals('')">
 					<if test="exSearchType == 'storeProduct'">
 						AND
 						(
@@ -172,7 +172,7 @@
 						AND od.or_sending_deadline < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 					]]>
 				</if>
-				<if test="searchKeyword != null or !searchKeyword.equals('')">
+				<if test="searchKeyword != null and !searchKeyword.equals('')">
 					<if test="searchType == 'storeProduct'">
 						AND
 						(
@@ -206,7 +206,7 @@
 						)
 					</if>
 				</if>
-				<if test="exSerachKeyword != null or !exSerachKeyword.equals('')">
+				<if test="exSerachKeyword != null and !exSerachKeyword.equals('')">
 					<if test="exSearchType == 'storeProduct'">
 						AND
 						(
@@ -299,7 +299,7 @@
 					AND od.or_sending_deadline < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 				]]>
 			</if>
-			<if test="searchKeyword != null or searchKeyword.equals('')">
+			<if test="searchKeyword != null and searchKeyword.equals('')">
 				<if test="searchType == 'storeProduct'">
 					AND
 					(
@@ -333,7 +333,7 @@
 					)
 				</if>
 			</if>
-				<if test="exSerachKeyword != null or !exSerachKeyword.equals('')">
+				<if test="exSerachKeyword != null and !exSerachKeyword.equals('')">
 					<if test="exSearchType == 'storeProduct'">
 						AND
 						(
@@ -425,7 +425,7 @@
 					AND od.or_sending_deadline < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 				]]>
 			</if>
-			<if test="searchKeyword != null or !searchKeyword.equals('')">
+			<if test="searchKeyword != null and !searchKeyword.equals('')">
 				<if test="searchType == 'storeProduct'">
 					AND
 					(
@@ -459,7 +459,7 @@
 					)
 				</if>
 			</if>
-				<if test="exSerachKeyword != null or !exSerachKeyword.equals('')">
+				<if test="exSerachKeyword != null and !exSerachKeyword.equals('')">
 					<if test="exSearchType == 'storeProduct'">
 						AND
 						(

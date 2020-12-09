@@ -78,13 +78,17 @@
                                         <div class="metric-value d-inline-block">
                                             <h1 class="mb-1"> ${output_order } 건</h1>
                                         </div>
+                                        
                                         <!-- <div class="metric-label d-inline-block float-right text-danger font-weight-bold">
                                             <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i class="fa fa-fw fa-arrow-down"></i></span><span class="ml-1">4%</span>
                                         </div> -->
+                                        
+                                        
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                            
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                 <div class="overview-item overview-item--c1">
                                     <div class="overview__inner">
                                         <div class="overview-box clearfix">
@@ -102,7 +106,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                 <div class="overview-item overview-item--c2">
                                     <div class="overview__inner">
                                         <div class="overview-box clearfix">
@@ -120,7 +124,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
                                 <div class="overview-item overview-item--c3">
                                     <div class="overview__inner">
                                         <div class="overview-box clearfix">
@@ -137,7 +141,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">

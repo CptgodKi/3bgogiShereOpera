@@ -171,7 +171,19 @@ public class ReadOrderExcel {
 			            		//배송메세지
 			            	}else if(columnindex==7) {
 			            		if(cell != null) {
-			            			orderVO.setOrDeliveryMessage(cell.getStringCellValue());
+			            			String delivMsg = cell.getStringCellValue()+"";
+			            			int firstIndex = delivMsg.lastIndexOf("[");
+			            			int lastIndex = delivMsg.lastIndexOf("]");
+			            			
+			            			// [   ] 형식으로 된 출입방법이 적혀 있을 있을 경우
+			            			if(lastIndex != -1 && delivMsg.length() != 0) {
+			            				lastIndex = lastIndex+1;
+			            				
+			            				orderVO.setOrDeliveryMessage(delivMsg.substring(lastIndex, delivMsg.length()));
+			            				orderVO.setOrUserColumn4(delivMsg.substring(firstIndex, lastIndex));
+			            			}else {
+			            				orderVO.setOrDeliveryMessage(delivMsg);
+			            			}
 			            			
 			            		}else {
 			            			orderVO.setOrDeliveryMessage("");
@@ -514,16 +526,11 @@ public class ReadOrderExcel {
 	}
 	
 	
-public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fileName, int ssFk) throws POIXMLException{
+public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fileName) throws POIXMLException{
 		
 		List<OrdersVO> orderList = new ArrayList<OrdersVO>();
 		
-		SmartstoreCommission sc = new SmartstoreCommission();
-		
 		Calendar cal = Calendar.getInstance();
-		
-		Timestamp ts = new Timestamp(cal.getTimeInMillis());
-		
 		try {
 
 			FileInputStream fis= new FileInputStream("C:\\Users\\3bgogi\\Desktop\\server_file\\order_excel\\"+fileName);
@@ -551,19 +558,14 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 			        for(columnindex=0;columnindex<48;columnindex++){
 
 			            XSSFCell cell=row.getCell(columnindex);
-			            	//스마트스토어 기준
-			            	//구매자명
 			            if(cell==null) {
 			            	continue;
 			            }else {
-			            	orderVO.setSsFk(ssFk);
 			            	//주문번호
-			            	if(columnindex==0) {
+			            	if(columnindex==1) {
+			            		orderVO.setOrDeliveryInvoiceNumber(cell.getStringCellValue().replaceAll("-", ""));
 			            		
-			            		String value= cellTypeReturn(cell);
-			            		orderVO.setOrOrderNumber(value);
-			            		
-			            	}else if(columnindex==8) {
+			            	}else if(columnindex==13) {
 			            		String value = "";
 			            		 switch (cell.getCellType()){
 		                            case HSSFCell.CELL_TYPE_FORMULA:
@@ -583,17 +585,14 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 		                                break;
 		                            }
 
-			            		orderVO.setOrBuyerId(value);
+			            		orderVO.setOrPk((int)Double.parseDouble(value));
 			            		
 			            	//수취인명
 			            	}
-			            	//발송예정일을 임의로 오늘 시간으로 넣어둠
-			            	orderVO.setOrSendingDeadline(new Date(Calendar.getInstance().getTimeInMillis()));
 			            }
 			            
 			        }//for
 			    }
-			    orderVO.setOrRegdate(ts);
 			    orderList.add(orderVO);
 			    
 			}//for
@@ -1219,17 +1218,17 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 						
 						if(row !=null){
 							boolean nullCount = false;
+							orderVO = originalOrVO.copy();
+							
 							for(columnindex=0;columnindex<58;columnindex++){
 								
 								XSSFCell cell=row.getCell(columnindex);
 								// 판매처별로 엑셀 열을 읽어서 씀
 								//구매자명
 								if(cell==null) {
-									nullCount = true;
 									continue;
 									
 								}else {
-									orderVO = originalOrVO.copy();
 									
 									if(columnindex==0) {
 										if(cell.getStringCellValue() == null) {
@@ -1359,7 +1358,7 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 					
 					if(row !=null){
 						boolean nullCount = false;
-						
+						orderVO = originalOrVO.copy();
 						
 						for(columnindex=0;columnindex<58;columnindex++){
 							
@@ -1367,11 +1366,10 @@ public List<OrdersVO> readOrderExcelDataToXLSForSmartStoreSendingData(String fil
 							// 판매처별로 엑셀 열을 읽어서 씀
 							//구매자명
 							if(cell==null) {
-								nullCount = true;
+								continue;
 
 							}else {
-								orderVO = originalOrVO.copy();
-								
+
 								if(columnindex==0) {
 									if(cell.getStringCellValue() == null) {
 										

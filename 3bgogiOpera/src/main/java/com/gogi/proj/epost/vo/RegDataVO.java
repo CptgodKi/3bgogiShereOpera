@@ -67,6 +67,10 @@ public class RegDataVO {
 	private String error_code;
 	private String message;
 	
+	private String canceledYn;
+	private String cancelRegiNo;
+	private String notCancelReason;
+	
 	public RegDataVO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -128,7 +132,32 @@ public class RegDataVO {
 		this.delivAreaCd = delivAreaCd;
 		this.ediPk = ediPk;
 	}
+
 	
+	public String getNotCancelReason() {
+		return notCancelReason;
+	}
+
+	public void setNotCancelReason(String notCancelReason) {
+		this.notCancelReason = notCancelReason;
+	}
+
+	public String getCanceledYn() {
+		return canceledYn;
+	}
+
+	public void setCanceledYn(String canceledYn) {
+		this.canceledYn = canceledYn;
+	}
+
+	public String getCancelRegiNo() {
+		return cancelRegiNo;
+	}
+
+	public void setCancelRegiNo(String cancelRegiNo) {
+		this.cancelRegiNo = cancelRegiNo;
+	}
+
 	public String getResno() {
 		return resno;
 	}
@@ -574,7 +603,7 @@ public class RegDataVO {
 	}
 	
 	public String epostDeliteToString() {
-		return ("custNo=" + custNo + "&apprNo=" + apprNo + "&reqType=1" + "&reqNo=" + reqNo 
+		return ("custNo=" + custNo + "&apprNo=" + apprNo + "&reqType=1" + "&reqNo=" + reqno 
 				+ "&resNo=" + resNo + "&regiNo=" + regiNo + "&reqYmd=" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "&delYn="+"Y").replace("-", "");
 	}
 	

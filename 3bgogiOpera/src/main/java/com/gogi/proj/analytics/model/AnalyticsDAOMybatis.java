@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.gogi.proj.analytics.vo.LocalAreaVO;
 import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -96,6 +97,30 @@ public class AnalyticsDAOMybatis extends SqlSessionDaoSupport implements Analyti
 	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectCancledSalesByDates", osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectLocalAreaAnalytics(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectLocalAreaAnalytics", osVO);
+	}
+
+	@Override
+	public List<LocalAreaVO> sleectLocalAreaTopProducts(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".sleectLocalAreaTopProducts", osVO);
+	}
+
+	@Override
+	public LocalAreaVO localAreaAnlayDetail(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(namespace+".localAreaAnlayDetail", osVO);
+	}
+
+	@Override
+	public List<LocalAreaVO> selectLocalAreaInflowRoute(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectLocalAreaInflowRoute", osVO);
 	}
 	
 }

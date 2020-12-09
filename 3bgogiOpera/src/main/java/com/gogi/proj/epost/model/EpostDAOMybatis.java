@@ -74,4 +74,28 @@ public class EpostDAOMybatis extends SqlSessionDaoSupport implements EpostDAO{
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(epostNameSpace+".selectDeliveryInvoiceNumberByDate", osVO);
 	}
+
+	@Override
+	public List<OrdersVO> freshSolutionDelivExcel(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(epostNameSpace+".freshSolutionDelivExcel", osVO);
+	}
+
+	@Override
+	public int updateFreshSolutionInvoiceNumber(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(epostNameSpace+".updateFreshSolutionInvoiceNumber", orVO);
+	}
+
+	@Override
+	public int updateFreshSolutionTarget(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(epostNameSpace+".updateFreshSolutionTarget", orVO);
+	}
+
+	@Override
+	public int deleteDelivInfoByPk(OrdersVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(epostNameSpace+".deleteDelivInfoByPk", osVO);
+	}
 }

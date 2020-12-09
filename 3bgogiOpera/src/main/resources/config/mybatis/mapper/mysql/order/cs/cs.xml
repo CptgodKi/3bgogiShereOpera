@@ -131,7 +131,6 @@
 		<result property="orReceiverContractNumber1" column="or_receiver_contract_number1" javaType="String"/>
 		<result property="orTotalPrice" column="or_total_price" javaType="int"/>
 		<result property="totalOrderCount" column="total_order_count" javaType="int"/>
-		
 		<result property="orAmount" column="or_amount" javaType="int"/>
 		<result property="orCancledQty" column="or_cancled_qty" javaType="int"/>
 		<result property="totalOrderCount" column="total_order_count" javaType="int"/>
@@ -1565,6 +1564,26 @@
 		WHERE
 			or_pk = #{orPk}
 	</update>
+	
+	<select id="selectCreateInvoiceNum" resultType="OrdersVO">
+		SELECT 
+			or_invoice_num_date,
+			or_delivery_company
+		FROM
+			orders
+		WHERE
+			<![CDATA[			
+				or_invoice_num_date >= DATE_FORMAT( NOW() , '%Y-%m-%d')
+			    AND or_invoice_num_date < DATE_FORMAT( DATE_ADD( NOW(), INTERVAL 1 DAY) , '%Y-%m-%d')
+			]]>
+		    AND or_invoice_num_date IS NOT NULL
+		GROUP BY
+			or_invoice_num_date,
+			or_delivery_company
+		ORDER BY
+			or_invoice_num_date ASC
+	</select>
+	
 </mapper>
 
 

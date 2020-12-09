@@ -360,7 +360,7 @@ public class CostController {
 		if(result > 0) {
 			msg = "부분육 출고 선택 완료";
 		}else {
-			msg = "출고갑 선택 실패";
+			msg = "출고값 선택 실패";
 		}
 		
 		model.addAttribute("msg", msg);

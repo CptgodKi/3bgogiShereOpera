@@ -2,6 +2,7 @@ package com.gogi.proj.security.filter;
 
 import java.io.IOException;
 
+import javax.el.PropertyNotFoundException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -62,24 +63,10 @@ public class ForAjaxAdminSessionFilter implements Filter{
 			}
 			
 		}else {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			
-			try {
-				
-				AdminVO adminVo = (AdminVO)auth.getPrincipal();
-				
-				UrlPathHelper urlPathHelper = new UrlPathHelper();
-				String pathUrl = urlPathHelper.getOriginatingRequestUri(req);
-				
-				logger.info(adminVo.getUsername()+" ["+adminVo.getAdminname()+"]"+" 접근 주소={}",pathUrl);
-			}catch(ClassCastException e) {
-				chain.doFilter(req, res);
-			}
-
-
 			
 			chain.doFilter(req, res);
 		}
+		
 		
 	}
 

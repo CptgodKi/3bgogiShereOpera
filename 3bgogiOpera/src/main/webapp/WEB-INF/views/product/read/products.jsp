@@ -9,7 +9,7 @@
 <!-- Required meta tags -->
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>주문서 나누기</title>
+<title> 상품 확인 </title>
 <!-- Bootstrap CSS -->
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
@@ -71,7 +71,6 @@ body {
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
                             <h2 class="pageheader-title"> 상품 확인 </h2>
-                            <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -96,8 +95,9 @@ body {
                             <div class="card">
                                 <h5 class="card-header"> 상품 상세 확인</h5>
                                 <div class="card-body">
-                                    <form id="insertProductForm" method="POST">
-                                    	<input type="hidden" value="${productsVo.productPk }" id="productPk"/>
+                                
+                                    <form id="insertProductForm" method="POST" action="<c:url value='/products/read/product.do'/>">
+                                    	<input type="hidden" value="${productsVo.productPk }" name="productPk" id="productPk"/>
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 상품 명</label>
                                             <div class="col-12 col-sm-8 col-lg-6">
@@ -110,7 +110,10 @@ body {
                                                 <select class="form-control" id="cfFk" name="cfFk">
                                                 	<c:forEach var="cflist" items="${cfList }">
 		                                                <option
-		                                                <c:if test='${cflist.cfPk eq productsVo.cfFk }'>selected="selected"</c:if>
+		                                                <c:if test='${cflist.cfPk == productsVo.cfFk }'>
+		                                                	selected="selected"
+		                                                </c:if>
+		                                                
 		                                                value="${cflist.cfPk }"> ${cflist.cfCode } - ${cflist.cfCodeType } </option>                                                	                                                		
                                                 	</c:forEach>
                                                 </select>
@@ -246,7 +249,7 @@ body {
                                         </c:if>
                                         <div class="form-group row text-right">
                                             <div class="col col-sm-11 col-lg-9 offset-sm-1 offset-lg-0">
-                                                <button type="button" class="btn btn-space btn-primary"> 수정 하기 </button>
+                                                <button type="submit" class="btn btn-space btn-primary"> 수정 하기 </button>
                                                 <button type="button" class="btn btn-space btn-secondary btn-warning addOptions"> 옵션 추가 하기 </button>
                                                 <a class="btn btn-space btn-secondary" href="<c:url value='/products/list/product_list.do'/>"> 상품 목록 </a>
                                             </div>

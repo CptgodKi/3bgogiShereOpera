@@ -246,6 +246,26 @@ public class DeliveryController{
 	
 	/**
 	 * 
+	 * @MethodName : sendingResultGet
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param ssVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 송장부여 페이지에서 발송된 주문 건 불러오기
+	 */
+	@RequestMapping(value="/sending/results.do", method=RequestMethod.GET)
+	public String sendingResultGet(@ModelAttribute StoreSectionVO ssVO, Model model) {
+		
+		List<OrdersVO> sendingList = deliService.selectSendingResults(ssVO);
+		
+		model.addAttribute("sendingList", sendingList);
+		
+		return "delivery/sending_results";
+	}
+	
+	/**
+	 * 
 	 * @MethodName : sendingExcelDownload
 	 * @date : 2020. 6. 4.
 	 * @author : Jeon KiChan
@@ -299,7 +319,7 @@ public class DeliveryController{
     	   
     	   while(iter.hasNext()) {
     		   String key = (String)iter.next();
-    		   String value= (String)list.get(i).get(key);
+    		   String value= (String)(list.get(i).get(key)+"");
     		   
     		   
 	    		cell = (SXSSFCell)row.createCell(rowCounting);

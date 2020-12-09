@@ -110,3 +110,45 @@
 	 
 	}
 	
+	function paginationRebuild(totalRecord, currentPage, recordCountPerPage ){
+		let blockSize = 10;
+		
+		let totalPage = parseInt(Math.ceil((totalRecord/recordCountPerPage)));
+		
+		
+		let firstPage = currentPage-((currentPage-1)%blockSize);
+		let lastPage = firstPage+(blockSize-1);
+		let firstRecordIndex = (currentPage - 1) * recordCountPerPage;
+		let lastRecordIndex = currentPage * recordCountPerPage;
+		
+		paginationHTML = "";
+		
+		paginationHTML +='<ul class="pagination" style="display: table; margin-left: auto; margin-right: auto;">';
+		
+			
+			if(firstPage > 1){
+				paginationHTML += '<li class="page-item" style="float:left; padding-top:5px;"><a class="page-link" href="javascript:void(0)" onclick="pageFunc('+( firstPage - 1 )+')">«</a></li>';
+			}
+			for(var i = firstPage; i <= lastPage; i++){
+				
+				paginationHTML+='<li class="page-item'
+					
+					if(currentPage == i ){
+						paginationHTML+=' active';
+					}
+				
+				paginationHTML+=' "  style="float:left; padding-top:5px;"><a class="page-link" href="javascript:void(0)" onclick="pageFunc('+i+')">'+i+'</a></li>';
+				
+			}
+			
+			if(lastPage < totalPage){
+				paginationHTML +='<li class="page-item" style="float:left; padding-top:5px;"><a class="page-link" href="javascript:void(0)" onclick="pageFunc('+( lastPage + 1 )+')">»</a></li>';
+				
+			}
+			
+		paginationHTML+='</ul>';
+		
+		$("#pageNavigation").html(paginationHTML);
+	
+	}
+	

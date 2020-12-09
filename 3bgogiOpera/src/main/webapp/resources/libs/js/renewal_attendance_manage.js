@@ -160,7 +160,8 @@ jQuery(document).ready(function($) {
 			            				
 			            			//출근 기록이 존재할 경우
 			            			}else{
-			            				$tdSche.eq(dateMatch).html(""+"출근시각 : "+formatDate_HH_MM(txt.aaWorkStart)+"<br>퇴근시각 : "+formatDate_HH_MM(txt.aaWorkEnd)+"<br>근무 시간 : "+txt.workTime+"<br> 휴게시간 : "+txt.aaBreakTime+"분<br><button name='insertTest' class='btn btn-primary btn-xs' value="+txt.aaPk+">수정하기</button>");
+			            				//$tdSche.eq(dateMatch).html(""+"출근시각 : "+formatDate_HH_MM(txt.aaWorkStart)+"<br>퇴근시각 : "+formatDate_HH_MM(txt.aaWorkEnd)+"<br>근무 시간 : "+txt.workTime+"<br> 휴게시간 : "+txt.aaBreakTime+"분<br><button name='insertTest' class='btn btn-primary btn-xs' value="+txt.aaPk+">수정하기</button>");
+			            				$tdSche.eq(dateMatch).html(""+"출근시각 : "+formatDate_HH_MM(txt.aaWorkStart)+"<br>퇴근시각 : "+formatDate_HH_MM(txt.aaWorkEnd)+"<br>근무 시간 : "+txt.workTime+"<br> 휴게시간 : "+txt.aaBreakTime+"분");
 			            				var endDate = new Date(txt.aaWorkEnd);
 			            				var StartDate = new Date(txt.aaWorkStart);
 			            				totalHours += endDate.getHours() - StartDate.getHours();

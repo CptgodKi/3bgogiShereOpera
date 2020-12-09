@@ -168,12 +168,12 @@ function projectTopRewrite(data){
 		
 		if(alarmCount == 0){
 			$("#alarmDiv").hide();
-			$(".indicator").hide();
+			$("#projectAlarm").hide();
 			
 			
 		}else{
 			alarmDivDisplay(projects);
-        	$(".indicator").show();
+        	$("#projectAlarm").show();
         	console.log(projects);
 		}
 		
@@ -193,13 +193,7 @@ function projectTopRewrite(data){
 
 </script>
 <body>
-    <!-- ============================================================== -->
-    <!-- main wrapper -->
-    <!-- ============================================================== -->
     <div class="dashboard-main-wrapper">
-        <!-- ============================================================== -->
-        <!-- navbar -->
-        <!-- ============================================================== -->
         <div class="dashboard-header">
             <nav class="navbar navbar-expand-lg bg-white fixed-top">
                 <a class="navbar-brand" href="<c:url value='/main/home.do'/>" style="color:#FFA2A2;">삼형제고기</a>
@@ -210,9 +204,8 @@ function projectTopRewrite(data){
                     <ul class="navbar-nav ml-auto navbar-right-top">
                         <li class="nav-item">
                         </li>
-                        
                         <li class="nav-item dropdown notification">
-                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fa-comments" id="alarmBellIcon"></i> <span class="indicator"></span></a>
+                            <a class="nav-link nav-icons" href="#" id="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fa-comments"></i> <span class="indicator" id="sendSeqAlarm"></span></a>
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
                                 <li>
                                     <div class="notification-title"> 강제 출고 요청  </div>
@@ -225,21 +218,14 @@ function projectTopRewrite(data){
                             </ul>
                         </li>
                         <li class="nav-item dropdown notification">
-                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell" id="alarmBellIcon"></i> <span class="indicator"></span></a>
+                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell" id="alarmBellIcon"></i> <span class="indicator" id="projectAlarm"></span></a>
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
                                 <li>
                                     <div class="notification-title"> 업무 알람 </div>
                                     <div class="notification-list">
                                         <div class="list-group topFixedProjectListDiv">
                                             <a href="#" class="list-group-item list-group-item-action active"   data-toggle="modal" data-target="#projectModal">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img">
-                                                    	<img src="${pageContext.request.contextPath}/resources/images/avatar-2.jpg" alt="" class="user-avatar-md rounded-circle">
-                                                    </div>
-                                                    <div class="notification-list-user-block">
-                                                    	<span class="notification-list-user-name"> </span>
-                                                    </div>
-                                                </div>
+                                                
                                             </a>
                                         </div>
                                     </div>
@@ -268,6 +254,3 @@ function projectTopRewrite(data){
                 </div>
             </nav>
         </div>
-        <!-- ============================================================== -->
-        <!-- end navbar -->
-        <!-- ============================================================== -->

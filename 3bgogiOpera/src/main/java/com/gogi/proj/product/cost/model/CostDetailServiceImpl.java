@@ -210,4 +210,24 @@ public class CostDetailServiceImpl implements CostDetailService{
 		return costDetailDAO.selectCarcassInputListCount(osVO);
 	}
 
+	@Override
+	public List<CostDetailVO> selectCarcassCostManage(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		int totalRecord = costDetailDAO.selectCarcassCostManageCounting(osVO);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		osVO.setTotalRecord(totalRecord);
+		
+		return costDetailDAO.selectCarcassCostManage(osVO);
+	}
+
+	@Override
+	public List<CostDetailVO> selsectCarcassCostCategoryCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return costDetailDAO.selsectCarcassCostCategoryCounting(osVO);
+	}
+
 }

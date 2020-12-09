@@ -51,7 +51,7 @@ public class ConfigurationUtil {
 	}
 	
 	public List<String> excelColumnCoutingAtoAZ() {
-		List<String> result = new ArrayList();
+		List<String> result = new ArrayList<String>();
 		int counting = 4;
 		
 		for(int num = 0; num < counting; num++) {

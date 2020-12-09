@@ -175,9 +175,12 @@
 				SUM(ori_od.or_amount) AS or_amount,
 			    SUM(ori_od.or_total_price) AS or_total_price,
 			    
-			   if( #{fbType}, 
-                   ori_od.or_order_number,
-                   ori_od.or_serial_special_number
+			   if(  #{fbType} = 0, 
+                   ori_od.or_serial_special_number,
+                   	IF(	 #{fbType} = 1,
+						ori_od.or_order_number,
+						ori_od.or_receiver_contract_number1
+                   	)
                 ) AS ss_name,
                 GROUP_CONCAT(DISTINCT ori_od.or_serial_special_number,',') AS or_serial_special_number,
 				ori_od.or_buyer_id,
@@ -188,8 +191,6 @@
 				ori_od.or_receiver_name,
 				ori_od.or_delivery_type,
 				ori_od.or_payment_position_type,
-				ori_od.or_settlement_day,
-				ori_od.or_check_day,
 				ori_od.or_sending_deadline,
 				ori_od.or_delivery_charge_type,
 				ori_od.or_delivery_number,
@@ -209,73 +210,217 @@
 				ori_od.or_output_flag,
 				ori_od.or_output_posib_flag,
 				ori_od.or_regdate,
-				ori_od.or_special_region_check_flag
+				ori_od.or_special_region_check_flag,
+				ori_od.or_user_column1
 			FROM
 				orders ori_od
 			    INNER JOIN ( SELECT
-						or_pk
+						od.or_pk
 					FROM
-						orders
+						orders od
+						INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+						INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+						INNER JOIN options op ON om.option_fk = op.option_pk
+						INNER JOIN products pro ON pro.product_pk = op.product_fk
 					WHERE
 						<![CDATA[
-						or_regdate >= #{fbMinDate}
-						AND or_regdate < DATE_FORMAT(DATE_ADD(#{fbMaxDate}, INTERVAL 1 DAY), '%Y-%m-%d') 
-						AND or_devide_flag = 0
-						AND or_output_flag = 0
-						AND (or_delivery_invoice_number IS NULL OR or_delivery_invoice_number = '' )
-						AND or_sending_day IS NULL
+						od.or_regdate >= #{fbMinDate}
+						AND od.or_regdate < DATE_FORMAT(DATE_ADD(#{fbMaxDate}, INTERVAL 1 DAY), '%Y-%m-%d') 
+						AND od.or_devide_flag = 0
+						AND od.or_output_flag = 0
+						AND (od.or_delivery_invoice_number IS NULL OR od.or_delivery_invoice_number = '' )
+						AND od.or_sending_day IS NULL
 						]]>
-						AND ss_fk IN
+						AND od.ss_fk IN
 						<foreach collection="ssArrayList" item="storeList" open="(" close=")" separator=",">
 							#{storeList}
 						</foreach>
 						
 						<if test="fbAnotherCheckFlag == 1">
-						<if test="fbAnotherCheckWordList.size != 0">
-							AND (
-							<foreach item="item" collection="fbAnotherCheckWordList" separator="and">
-							
-							    <if test="fbAnotherCheckList == 0">							
-									or_product
-								</if>
-								<if test="fbAnotherCheckList == 1">							
-									or_product_option
-								</if>
-								<if test="fbAnotherCheckList == 2">							
-									or_product_number
-								</if>
-								<if test="fbAnotherCheckList == 5">							
-									or_shipping_address
-								</if>
-								<if test="fbAnotherCheckList == 6">							
-									or_user_column1
-								</if>
-								<if test="fbAnotherCheckList == 7">							
-									or_user_column2
-								</if>
-								<if test="fbAnotherCheckList == 8">							
-									or_user_column3
-								</if>
-								
-								<if test="fbAnotherCheckType == 0">
-									NOT LIKE CONCAT('%',#{item},'%') 
-								</if>
+							<if test="fbAnotherCheckWordList.size != 0">
+								<if test="fbAnotherCheckType == 1 or fbAnotherCheckType == 2">
+								AND (
 								<if test="fbAnotherCheckType == 1">
-									LIKE CONCAT('%',#{item},'%') 
+									<foreach item="item" collection="fbAnotherCheckWordList" separator="or">
+								
+									    <if test="fbAnotherCheckList == 0">							
+											od.or_product
+										</if>
+										<if test="fbAnotherCheckList == 1">							
+											od.or_product_option
+										</if>
+										<if test="fbAnotherCheckList == 2">							
+											od.or_product_number
+										</if>
+										<if test="fbAnotherCheckList == 3">							
+											pro.product_name
+										</if>
+										<if test="fbAnotherCheckList == 4">							
+											op.option_name
+										</if>
+										<if test="fbAnotherCheckList == 5">							
+											od.or_shipping_address
+										</if>
+										<if test="fbAnotherCheckList == 6">							
+											od.or_user_column1
+										</if>
+										<if test="fbAnotherCheckList == 7">							
+											od.or_user_column2
+										</if>
+										<if test="fbAnotherCheckList == 8">							
+											od.or_user_column3
+										</if>
+										
+										LIKE CONCAT('%',#{item},'%') 
+										
+									</foreach>
 								</if>
 								<if test="fbAnotherCheckType == 2">
-									= #{item}
+									<foreach item="item" collection="fbAnotherCheckWordList" separator="or">
+									
+									    <if test="fbAnotherCheckList == 0">							
+											od.or_product
+										</if>
+										<if test="fbAnotherCheckList == 1">							
+											od.or_product_option
+										</if>
+										<if test="fbAnotherCheckList == 2">							
+											od.or_product_number
+										</if>
+										<if test="fbAnotherCheckList == 3">							
+											pro.product_name
+										</if>
+										<if test="fbAnotherCheckList == 4">							
+											op.option_name
+										</if>
+										<if test="fbAnotherCheckList == 5">							
+											od.or_shipping_address
+										</if>
+										<if test="fbAnotherCheckList == 6">							
+											od.or_user_column1
+										</if>
+										<if test="fbAnotherCheckList == 7">							
+											od.or_user_column2
+										</if>
+										<if test="fbAnotherCheckList == 8">							
+											od.or_user_column3
+										</if>
+											= #{item}
+									</foreach>
 								</if>
-								<if test="fbAnotherCheckType == 3">
-									!= #{item}
+								)
 								</if>
-								
-							</foreach>
-							)
-						</if>
+							</if>
 							
 						</if>
+					GROUP BY
+						od.or_pk
 				) inner_od ON ori_od.or_pk = inner_od.or_pk
+				
+				<if test="fbAnotherCheckWordList.size != 0">
+					<if test="fbAnotherCheckFlag == 1">
+						<if test="fbAnotherCheckType == 0 or fbAnotherCheckType == 3">
+						WHERE
+							ori_od.or_pk NOT IN  (
+								SELECT
+									od.or_pk
+								FROM
+									orders od
+									INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+									INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+									INNER JOIN options op ON om.option_fk = op.option_pk
+									INNER JOIN products pro ON pro.product_pk = op.product_fk
+								WHERE
+									<![CDATA[
+									od.or_regdate >= #{fbMinDate}
+									AND od.or_regdate < DATE_FORMAT(DATE_ADD(#{fbMaxDate}, INTERVAL 1 DAY), '%Y-%m-%d') 
+									AND od.or_devide_flag = 0
+									AND od.or_output_flag = 0
+									AND (od.or_delivery_invoice_number IS NULL OR od.or_delivery_invoice_number = '' )
+									AND od.or_sending_day IS NULL
+									]]>
+									AND od.ss_fk IN
+									<foreach collection="ssArrayList" item="storeList" open="(" close=")" separator=",">
+										#{storeList}
+									</foreach>	
+										AND (	
+										<if test="fbAnotherCheckType == 0">
+											<foreach item="item" collection="fbAnotherCheckWordList" separator="or">
+										
+											    <if test="fbAnotherCheckList == 0">							
+													od.or_product
+												</if>
+												<if test="fbAnotherCheckList == 1">							
+													od.or_product_option
+												</if>
+												<if test="fbAnotherCheckList == 2">							
+													od.or_product_number
+												</if>
+												<if test="fbAnotherCheckList == 3">							
+													pro.product_name
+												</if>
+												<if test="fbAnotherCheckList == 4">							
+													op.option_name
+												</if>
+												<if test="fbAnotherCheckList == 5">							
+													od.or_shipping_address
+												</if>
+												<if test="fbAnotherCheckList == 6">							
+													od.or_user_column1
+												</if>
+												<if test="fbAnotherCheckList == 7">							
+													od.or_user_column2
+												</if>
+												<if test="fbAnotherCheckList == 8">							
+													od.or_user_column3
+												</if>
+												
+												 LIKE CONCAT('%',#{item},'%') 
+												
+											</foreach>
+										</if>
+										<if test="fbAnotherCheckType == 3">
+											<foreach item="item" collection="fbAnotherCheckWordList" separator="or">
+											
+											    <if test="fbAnotherCheckList == 0">							
+													od.or_product
+												</if>
+												<if test="fbAnotherCheckList == 1">							
+													od.or_product_option
+												</if>
+												<if test="fbAnotherCheckList == 2">							
+													od.or_product_number
+												</if>
+												<if test="fbAnotherCheckList == 3">							
+													pro.product_name
+												</if>
+												<if test="fbAnotherCheckList == 4">							
+													op.option_name
+												</if>
+												<if test="fbAnotherCheckList == 5">							
+													od.or_shipping_address
+												</if>
+												<if test="fbAnotherCheckList == 6">							
+													od.or_user_column1
+												</if>
+												<if test="fbAnotherCheckList == 7">							
+													od.or_user_column2
+												</if>
+												<if test="fbAnotherCheckList == 8">							
+													od.or_user_column3
+												</if>
+													= #{item}
+												
+											</foreach>
+										</if>
+											)
+							GROUP BY
+								od.or_pk 
+						)
+						</if>
+					</if>		
+				</if>
+					
 			GROUP BY
 				ss_name,
 				ori_od.or_buyer_id,
@@ -286,8 +431,6 @@
 				ori_od.or_receiver_name,
 				ori_od.or_delivery_type,
 				ori_od.or_payment_position_type,
-				ori_od.or_settlement_day,
-				ori_od.or_check_day,
 				ori_od.or_sending_deadline,
 				ori_od.or_delivery_charge_type,
 				ori_od.or_delivery_number,
@@ -307,7 +450,8 @@
 				ori_od.or_output_flag,
 				ori_od.or_output_posib_flag,
 				ori_od.or_regdate,
-				ori_od.or_special_region_check_flag
+				ori_od.or_special_region_check_flag,
+				ori_od.or_user_column1
 			<trim prefix="HAVING" prefixOverrides="AND |OR ">
 				<if test="fbAddType != 3">
 					<![CDATA[

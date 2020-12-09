@@ -102,4 +102,16 @@ public interface DeliveryService {
 	 * @메소드설명 : 모든 출고요청 메세지 목록
 	 */
 	public List<SendingRequestVO> selectAllSedingRequest();
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectSendingResults
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param ssVO
+	 * @return
+	 * @메소드설명 : 송장부여페이지에서 발송 결과보기
+	 */
+	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO);
 }

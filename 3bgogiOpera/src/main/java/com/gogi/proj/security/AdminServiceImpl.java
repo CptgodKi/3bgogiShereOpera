@@ -117,4 +117,39 @@ public class AdminServiceImpl implements UserDetailsService{
 		}
 	}
 	
+	
+	public String updateAdminInfo(AdminVO adminVO) {
+		
+		String msg = "";
+		
+		boolean passCheck = checkAdminPassByAdminPk(adminVO.getAdminPass(), adminVO.getAdminPk());
+		
+		if(passCheck) {
+			
+			
+			int result = dao.updateAdminInfo(adminVO);
+			
+			if(result > 0) {
+				msg = "관리자 정보 변경 완료";
+			}else {
+				msg = "관리자 정보 변경 실패";
+			}
+		}else {
+			msg = "올바른 비밀번호가 아닙니다";
+		}
+		
+		return msg;
+	}
+	
+	public int changeAdminPassword(AdminVO adminVO) {
+		
+		adminVO.setAdminPass(passEncoder.encode(adminVO.getAdminPass()));
+		
+		return dao.changeAdminPassword(adminVO);
+	}
+	
+	public List<JobCodeVO> selectJobCode(){
+		
+		return dao.selectJobCode();
+	}
 }

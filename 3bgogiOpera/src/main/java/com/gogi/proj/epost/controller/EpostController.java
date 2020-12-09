@@ -1,6 +1,8 @@
 package com.gogi.proj.epost.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,10 @@ import java.util.Properties;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +41,9 @@ import com.gogi.proj.classification.code.vo.ClassificationVO;
 import com.gogi.proj.classification.code.vo.ExcelOrderSeqVO;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.delivery.config.model.DeliveryConfigService;
+import com.gogi.proj.delivery.config.vo.EarlyDelivCommonImposVO;
+import com.gogi.proj.delivery.config.vo.EarlyDelivTypeVO;
 import com.gogi.proj.epost.api.EpostSendingUtil;
 import com.gogi.proj.epost.api.SEED128;
 import com.gogi.proj.epost.model.EpostService;
@@ -91,6 +100,9 @@ public class EpostController {
 	
 	@Autowired
 	private OrderConfigService orderConfigService;
+	
+	@Autowired
+	private DeliveryConfigService dcService;
 
 	/*
 	 * @RequestMapping(value="/epost.do", method=RequestMethod.GET) public String
@@ -151,11 +163,14 @@ public class EpostController {
 		List<OrdersVO> insertStoreOrderList = ordersService.selectOrdersCountingByInputDate();
 		int packingIrreOrderCounting = orderConfigService.selectPackingIrreTargetOrderCounting();
 		
+		List<EarlyDelivTypeVO> edtList = dcService.earlyDelivType();
+		
 		model.addAttribute("OrderSearchVO", orderSearchVO);
 		model.addAttribute("orderList",orderList);
 		model.addAttribute("storeSectionList",storeSectionList);
 		model.addAttribute("insertStoreOrderList", insertStoreOrderList);
 		model.addAttribute("packingIrreOrderCounting", packingIrreOrderCounting);
+		model.addAttribute("edtList", edtList);
 		
 		return "delivery/not_sending_list";
 	}
@@ -333,13 +348,22 @@ public class EpostController {
 		
 		List<OrdersVO> orList = new ArrayList<>();
 		List<OrdersVO> errorOr = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date today= new Date();
 		
+		String formatDate = sdf.format(today);
+		int delivCount = 1;
+		
+		OrdersVO orVO = null;
 		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
 			osVO.setSearchKeyword(osVO.getOrSerialSpecialNumberList().get(i));
-			OrdersVO orVO = epostService.deliveryPrintTarget(osVO, request.getRemoteAddr(), adminVo.getUsername());
+			
+			orVO = epostService.deliveryPrintTarget(osVO, request.getRemoteAddr(), adminVo.getUsername(), formatDate, delivCount);
 			
 			if(orVO.getRegiNo() != null) {
 				orList.add(orVO);
+				delivCount++;
+				
 			}else {
 				errorOr.add(orVO);
 			}
@@ -363,11 +387,14 @@ public class EpostController {
 	 * @return
 	 * @메소드설명 : 등록된 송장 재출력하기
 	 */
-	@RequestMapping(value="/reprinting_deliv_invoice.do", method=RequestMethod.GET)
+	@RequestMapping(value="/reprinting_deliv_invoice.do", method=RequestMethod.POST)
 	public String reprintingDelivInvoice(@ModelAttribute OrderSearchVO osVO, Model model) {
 		List<OrdersVO> orList = new ArrayList<>();
 		
-		orList.add(epostService.deliveryInvoiceNumberReprinting(osVO));
+		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
+			osVO.setSearchKeyword(osVO.getOrSerialSpecialNumberList().get(i));
+			orList.add(epostService.deliveryInvoiceNumberReprinting(osVO));
+		}
 		
 		model.addAttribute("orList",orList);
 		
@@ -429,6 +456,7 @@ public class EpostController {
 		List<PrintDataSetVO> labelList = stockService.selectProductLabel(osVO);
 		
 		File file = xw.labelXlsWriter(idxTitle, labelList, null, fileProperties.getProperty("file.upload.order_IO_excel.path.test"), "라벨지 데이터셋 ");
+		
 		
 		Map<String, Object> fileMap = new HashMap<String, Object>();
 		fileMap.put("myfile", file);
@@ -521,5 +549,18 @@ public class EpostController {
 		model.addAttribute("osVO", osVO);
 		
 		return "delivery/deliv_sending_result";
+	}
+	
+	
+	@RequestMapping(value="/fresh_solution.do", method=RequestMethod.POST)
+	public ModelAndView freshSolutionExcelDelivFile(@ModelAttribute OrderSearchVO osVO) {
+		
+		File file = epostService.freshSolutionInfo(osVO);
+		
+		Map<String, Object> fileMap = new HashMap<String, Object>();
+		fileMap.put("myfile", file);
+		ModelAndView mav = new ModelAndView("downloadView", fileMap);
+		
+		return mav;
 	}
 }

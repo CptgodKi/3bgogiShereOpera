@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gogi.proj.analytics.vo.LocalAreaVO;
 import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -93,6 +94,30 @@ public class AnalyticsServiceImpl implements AnalyticsService{
 	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO) {
 		// TODO Auto-generated method stub
 		return analyDAO.selectCancledSalesByDates(osVO);
+	}
+
+	@Override
+	public List<OrdersVO> selectLocalAreaAnalytics(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectLocalAreaAnalytics(osVO);
+	}
+
+	@Override
+	public List<LocalAreaVO> sleectLocalAreaTopProducts(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.sleectLocalAreaTopProducts(osVO);
+	}
+
+	@Override
+	public LocalAreaVO localAreaAnlayDetail(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.localAreaAnlayDetail(osVO);
+	}
+
+	@Override
+	public List<LocalAreaVO> selectLocalAreaInflowRoute(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return analyDAO.selectLocalAreaInflowRoute(osVO);
 	}
 
 }

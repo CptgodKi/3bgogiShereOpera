@@ -130,7 +130,7 @@
 	                                <h5 class="card-header">  취소 주문서 목록 </h5>
 	                                <div class="card-body">
 	                                	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2">
-	                                		<button class="btn btn-success btn-xs  mb-2" type="button" id="deleteCancledOrder"> 주문 삭제 </button>
+	                                		<button class="btn btn-success btn-xs  mb-2" type="button" id="deleteCancledOrder"> 선택 주문 취소하기 </button>
 	                                	</div>
 	                                    <table class="table table-hover">
 	                                        <thead>

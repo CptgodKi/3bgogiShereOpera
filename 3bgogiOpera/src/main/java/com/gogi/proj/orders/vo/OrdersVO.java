@@ -88,6 +88,11 @@ public class OrdersVO implements Cloneable{
 	private boolean orRequestCombFlag; // 생고기일 경우 무게를 무시하고 한 번에 포장할 때
 	private boolean orExcelDivFlag; //엑셀파일 삽입 여부
 	private int orFk; //주문서 테이블 참조
+	private String orInvoiceNumDate;
+	private int edtFk;
+	private String orDelivCount;	//송장 카운트
+	private int orTotalExcelDiv;
+	private String orDelivEnter;	//배송출입
 	
 	//cs에서 묶음번호를 통해 값을 검색 할 수 있도록 함
 	//null값일 경우 상품주문번호를 통해 가져올 수 있도록
@@ -150,7 +155,7 @@ public class OrdersVO implements Cloneable{
 		
 		return copyOrder;
 	}
-	
+
 	public OrdersVO(int orPk, int pmFk, int ssFk, String orSerialSpecialNumber, String orBuyerId, String orBuyerName,
 			String orBuyerAnotherName, String orBuyerContractNumber1, String orBuyerContractNumber2,
 			String orReceiverName, String orProduct, String orProductType, String orProductOption, int orAmount,
@@ -169,12 +174,13 @@ public class OrdersVO implements Cloneable{
 			String orUserColumn3, String orUserColumn4, String orUserColumn5, String orUserColumn6,
 			String orUserColumn7, String orMerge, List<String> orMergeList, boolean orOutputFlag,
 			Timestamp orOutputDate, boolean orOutputPosibFlag, boolean orInvFlag, int orCancledQty,
-			boolean orRequestCombFlag, boolean orExcelDivFlag, int orFk, String hidingSpecialNumber,
-			boolean specialNumberType, int totalOrderCount, String ssName, boolean productMatchingChecking,
-			boolean optionMatchingChecking, List<ProductMatchingVO> productMatchingVOList, List<Integer> orAmountList,
-			List<String> orProductList, List<String> orProductOptionList, List<Integer> orTotalPriceList, String reqNo,
-			String resNo, String regiNo, String regiPoNm, String resDate, int price, String vTelNo, String arrCnpoNm,
-			String delivPoNm, String delivAreaCd, int ediPk, String cancelregino, String cancelDate, String canceledyn,
+			boolean orRequestCombFlag, boolean orExcelDivFlag, int orFk, String orInvoiceNumDate,
+			String hidingSpecialNumber, boolean specialNumberType, int totalOrderCount, String ssName,
+			boolean productMatchingChecking, boolean optionMatchingChecking,
+			List<ProductMatchingVO> productMatchingVOList, List<Integer> orAmountList, List<String> orProductList,
+			List<String> orProductOptionList, List<Integer> orTotalPriceList, String reqNo, String resNo, String regiNo,
+			String regiPoNm, String resDate, int price, String vTelNo, String arrCnpoNm, String delivPoNm,
+			String delivAreaCd, int ediPk, String cancelregino, String cancelDate, String canceledyn,
 			String notcancelReason, String resno2, String reqno2, String error_code, String message,
 			List<ProductOptionVO> productOptionList) {
 		super();
@@ -252,6 +258,7 @@ public class OrdersVO implements Cloneable{
 		this.orRequestCombFlag = orRequestCombFlag;
 		this.orExcelDivFlag = orExcelDivFlag;
 		this.orFk = orFk;
+		this.orInvoiceNumDate = orInvoiceNumDate;
 		this.hidingSpecialNumber = hidingSpecialNumber;
 		this.specialNumberType = specialNumberType;
 		this.totalOrderCount = totalOrderCount;
@@ -283,6 +290,46 @@ public class OrdersVO implements Cloneable{
 		this.error_code = error_code;
 		this.message = message;
 		this.productOptionList = productOptionList;
+	}
+	
+	public String getOrDelivEnter() {
+		return orDelivEnter;
+	}
+
+	public void setOrDelivEnter(String orDelivEnter) {
+		this.orDelivEnter = orDelivEnter;
+	}
+
+	public int getOrTotalExcelDiv() {
+		return orTotalExcelDiv;
+	}
+
+	public void setOrTotalExcelDiv(int orTotalExcelDiv) {
+		this.orTotalExcelDiv = orTotalExcelDiv;
+	}
+
+	public String getOrDelivCount() {
+		return orDelivCount;
+	}
+
+	public void setOrDelivCount(String orDelivCount) {
+		this.orDelivCount = orDelivCount;
+	}
+
+	public int getEdtFk() {
+		return edtFk;
+	}
+
+	public void setEdtFk(int edtFk) {
+		this.edtFk = edtFk;
+	}
+
+	public String getOrInvoiceNumDate() {
+		return orInvoiceNumDate;
+	}
+
+	public void setOrInvoiceNumDate(String orInvoiceNumDate) {
+		this.orInvoiceNumDate = orInvoiceNumDate;
 	}
 
 	public boolean isOrSpecialRegionCheckFlag() {

@@ -23,6 +23,8 @@ public class StoreSectionVO {
 	private String ssSendingBodyForm; // DB에서 가져올 목록  
 	private String ssSendingGroupForm; //DB 그룹화 
 	
+	private String ssSendingDay;
+	
 	private String [] ssSendingHeadFormList;
 	
 	public StoreSectionVO() {
@@ -33,7 +35,7 @@ public class StoreSectionVO {
 	public StoreSectionVO(int ssPk, String ssName, String ssStoreId, String ssStorePassword, String ssAuthKey,
 			String ssStoreUrl, String ssStoreNickname, int ssCommission, int ssSpecialNumberCount, Timestamp ssUpdate,
 			Timestamp ssRegdate, String ssMerge, String ssSendingHeadForm, String ssSendingBodyForm,
-			String ssSendingGroupForm, String[] ssSendingHeadFormList) {
+			String ssSendingGroupForm, String ssSendingDay, String[] ssSendingHeadFormList) {
 		super();
 		this.ssPk = ssPk;
 		this.ssName = ssName;
@@ -50,7 +52,16 @@ public class StoreSectionVO {
 		this.ssSendingHeadForm = ssSendingHeadForm;
 		this.ssSendingBodyForm = ssSendingBodyForm;
 		this.ssSendingGroupForm = ssSendingGroupForm;
+		this.ssSendingDay = ssSendingDay;
 		this.ssSendingHeadFormList = ssSendingHeadFormList;
+	}
+
+	public String getSsSendingDay() {
+		return ssSendingDay;
+	}
+
+	public void setSsSendingDay(String ssSendingDay) {
+		this.ssSendingDay = ssSendingDay;
 	}
 
 	public int getSsPk() {

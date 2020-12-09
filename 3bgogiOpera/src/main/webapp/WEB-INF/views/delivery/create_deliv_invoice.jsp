@@ -267,7 +267,7 @@
 		}
 		
 		$("#closeBtn").click(function(){
-			opener.location.reload();
+			
 			self.close();
 		});
 		function epostFontStyle(elements){

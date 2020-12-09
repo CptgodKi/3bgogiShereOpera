@@ -3,6 +3,7 @@ package com.gogi.proj.analytics.model;
 import java.util.List;
 import java.util.Map;
 
+import com.gogi.proj.analytics.vo.LocalAreaVO;
 import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -83,4 +84,52 @@ public interface AnalyticsDAO {
 	 * @메소드설명 : 취소 건 조회하기
 	 */
 	public List<OrdersVO> selectCancledSalesByDates(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectLocalAreaAnalytics
+	 * @date : 2020. 10. 28.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 지역별 기본 통계
+	 */
+	public List<OrdersVO> selectLocalAreaAnalytics(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : sleectLocalAreaTopProducts
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 특정 지역 카테고리 별 상품 판매 순위 
+	 */
+	public List<LocalAreaVO> sleectLocalAreaTopProducts(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : localAreaAnlayDetail
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 특징 지역 판매량 등등
+	 */
+	public LocalAreaVO localAreaAnlayDetail(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectLocalAreaInflowRoute
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 특징 지역 유입루트
+	 */
+	public List<LocalAreaVO> selectLocalAreaInflowRoute(OrderSearchVO osVO);
 }

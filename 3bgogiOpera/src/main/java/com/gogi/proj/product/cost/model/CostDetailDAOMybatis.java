@@ -135,4 +135,22 @@ public class CostDetailDAOMybatis extends SqlSessionDaoSupport implements CostDe
 		return getSqlSession().selectOne(carcass+".selectCarcassInputListCount", osVO);
 	}
 
+	@Override
+	public List<CostDetailVO> selectCarcassCostManage(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(carcass+".selectCarcassCostManage", osVO);
+	}
+
+	@Override
+	public int selectCarcassCostManageCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(carcass+".selectCarcassCostManageCounting", osVO);
+	}
+
+	@Override
+	public List<CostDetailVO> selsectCarcassCostCategoryCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(carcass+".selsectCarcassCostCategoryCounting", osVO);
+	}
+
 }

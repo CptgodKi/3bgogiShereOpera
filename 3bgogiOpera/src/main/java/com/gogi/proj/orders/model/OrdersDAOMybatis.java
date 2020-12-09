@@ -354,4 +354,10 @@ public class OrdersDAOMybatis extends SqlSessionDaoSupport implements OrdersDAO{
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(searchNameSpace+".newSearchCustomerOrderInfoToExcelFile", osVO);
 	}
+
+	@Override
+	public List<OrdersVO> selectCreateInvoiceNum() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(orderCsNameSpace+".selectCreateInvoiceNum");
+	}
 }

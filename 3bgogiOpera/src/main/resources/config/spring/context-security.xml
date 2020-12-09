@@ -38,6 +38,7 @@
 		<security:intercept-url pattern="/admin/attendance.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/project/*.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/admin/attendance/*.do" access="hasRole('ROLE_USER')"/>
+		<security:intercept-url pattern="/main/home.do" access="hasRole('ROLE_USER')"/>
 		<security:intercept-url pattern="/loginFail.do" access="permitAll"/>
 		<security:form-login 
 		login-page="/login.do"

@@ -281,7 +281,13 @@
     			event.preventDefault();
     			return false;
     		});
+    		
     	});
+    	
+    	function daysOffChange(updateType,adPk, adminPk){
+    		location.href="<c:url value='/admin/team/admin_daysoff_change.do?updateType="+updateType+"&adPk="+adPk+"&adminPk="+adminPk+"'/>";
+    		
+    	}
     </script>
     <style type="text/css">
     	
@@ -369,15 +375,18 @@
                                     <li class="nav-item">
                                         <a class="nav-link active" id="pills-campaign-tab" data-toggle="pill" href="#pills-campaign" role="tab" aria-controls="pills-campaign" aria-selected="true">출결기록</a>
                                     </li>
+                                    
                                     <li class="nav-item">
                                         <a class="nav-link" id="pills-packages-tab" data-toggle="pill" href="#pills-packages" role="tab" aria-controls="pills-packages" aria-selected="false">휴무</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">정보 변경</a>
+                                        <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">내 정보 확인</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-msg-tab" data-toggle="pill" href="#pills-msg" role="tab" aria-controls="pills-msg" aria-selected="false">로그</a>
-                                    </li>
+                                    <sec:authorize access="hasRole('ROLE_DEVELOPER')">
+	                                    <li class="nav-item">
+	                                        <a class="nav-link" id="admin-auth-tab" data-toggle="pill" href="#admin-auth" role="tab" aria-controls="admin-auth" aria-selected="false"> 중요정보변경 </a>
+	                                    </li>
+                                    </sec:authorize>
                                 </ul>
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-campaign" role="tabpanel" aria-labelledby="pills-campaign-tab">
@@ -521,11 +530,11 @@
 																			<sec:authorize access="hasRole('ROLE_DEVELOPER')">
 																				<td>
 																					<c:if test="${adlist.adFlag eq true}">
-																						<button type="button" class="btn btn-warning" value="${adlist.adPk }" name="deleteDaysoff">삭제</button>
+																						<button type="button" class="btn btn-warning" onclick="daysOffChange(0,'${adlist.adPk}', '${adminVO.adminPk }')" value="${adlist.adPk }" name="deleteDaysoff">삭제</button>
 																					</c:if>
 																					
 																					<c:if test="${adlist.adFlag ne true}">
-																						<button type="button" class="btn btn-primary" value="${adlist.adPk }" name="permisionDaysoff">허가</button>
+																						<button type="button" class="btn btn-primary" onclick="daysOffChange(1,'${adlist.adPk}', '${adminVO.adminPk }')" value="${adlist.adPk }" name="permisionDaysoff">허가</button>
 																					</c:if>
 																				</td>
 																			</sec:authorize>
@@ -574,14 +583,14 @@
 																					승인 대기중
 																				</c:if>
 																			</td>
+																			
 																			<sec:authorize access="hasRole('ROLE_DEVELOPER')">
 																				<td>
 																					<c:if test="${adlist.adFlag eq true}">
-																						<button type="button" class="btn btn-warning" value="${adlist.adPk }" name="deleteDaysoff">삭제</button>
+																						<button type="button" class="btn btn-warning" onclick="daysOffChange(0,'${adlist.adPk}', '${adminVO.adminPk }')" value="${adlist.adPk }" value="${adlist.adPk }" name="deleteDaysoff">삭제</button>
 																					</c:if>
-																					
 																					<c:if test="${adlist.adFlag ne true}">
-																						<button type="button" class="btn btn-primary" value="${adlist.adPk }" name="permisionDaysoff">허가</button>
+																						<button type="button" class="btn btn-primary" onclick="daysOffChange(1,'${adlist.adPk}', '${adminVO.adminPk }')" value="${adlist.adPk }" value="${adlist.adPk }" name="permisionDaysoff">허가</button>
 																					</c:if>
 																				</td>
 																			</sec:authorize>
@@ -601,30 +610,132 @@
                                     </div>
 									<div class="tab-pane fade" id="pills-msg" role="tabpanel" aria-labelledby="pills-msg-tab">
                                         <div class="card">
-                                            <h5 class="card-header">Send Messages</h5>
-                                            <form class="card-body">
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" type="text" name="adminId" placeholder="아이디" autocomplete="off">
-								                </div>
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" type="password" name="adminPass"placeholder="비밀번호" autocomplete="off">
-								                </div>
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" type="password" name="adminPassCheck"placeholder="비밀번호 확인" autocomplete="off">
-								                </div>
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" type="text" name="adminName" placeholder="이름">
-								                </div>
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" id="adminPhone" type="text" name="adminPhone" placeholder="연락처" onkeyup="checkphone()">
-								                </div>
-								                <div class="form-group">
-								                    <input class="form-control form-control-lg" type="text" name="adminAddress" placeholder="주소">
-								                </div>
-								                <div class="form-group pt-2">
-								                    <button class="btn btn-block btn-primary" id="signUp" type="button"> 수정하기 </button>
-								                </div>
-								            </form>
+                                            <h5 class="card-header"> 내 정보 </h5>
+                                            <div class="card-body">
+                                            
+                                            	<form id="adminInfoChangeForm" action="<c:url value='/update_admin_info.do'/>" method="POST">
+                                            		<input type="hidden" id="adminPk" name="adminPk" value="${adminVO.adminPk }">
+                                            		<div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right">아이디</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="text" id="adminId" name="adminId" readonly="readonly" value="${adminVO.adminId }" placeholder="아이디" autocomplete="off">
+			                                            </div>
+			                                        </div>
+			                                        
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 부서 </label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <select class="form-control form-control-lg" name="jc_fk">
+			                                                	<option value="0">선택되지 않음</option>
+			                                                	<c:forEach var="jclist" items="${jcList }">
+			                                                		<option value="${jclist.jcPk }">${jclist.jcType }</option>
+			                                                	</c:forEach>
+			                                                </select>
+			                                            </div>
+			                                        </div>
+			                                        
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 출근시각</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="text" id="adminWorktime" value="${adminVO.adminWorktime }" name="adminWorktime" placeholder="이름">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right">이름</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="text" id="adminName" value="${adminVO.adminName }" name="adminName" placeholder="이름">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right">연락처</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" id="adminPhone" id="adminPhone" type="text" value="${adminVO.adminPhone }" name="adminPhone" placeholder="연락처" onkeyup="checkphone()">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right">주소</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="text" id="adminAddress" value="${adminVO.adminAddress }" name="adminAddress" placeholder="주소">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 비밀번호 확인 </label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="password" id="adminPass" name="adminPass" placeholder="비밀번호" autocomplete="off">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group pt-2">
+									                    <button class="btn btn-block btn-primary" id="updateAdminInfoBtn" type="submit"> 수정하기 </button>
+									                </div>
+                                            	</form>
+								            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="admin-auth" role="tabpanel" aria-labelledby="admin-auth-tab">
+                                        <div class="card">
+                                            <h5 class="card-header"> 접속권한 </h5>
+                                            <div class="card-body">
+                                            	<div class="form-group row">
+		                                            <label class="col-sm-3 col-form-label text-sm-right"> 권한 변경 및 삭제</label>
+		                                            <div class="col-sm-6">
+		                                                <div class="custom-controls-stacked">
+		                                                    <label class="custom-control custom-checkbox">
+		                                                        <input type="checkbox" value="ROLE_USER"
+		                                                        	<c:forEach var="adRolelist" items="${adRoleList }">
+		                                                        		<c:if test="${adRolelist.role ==  'ROLE_USER'}">
+		                                                        			checked="checked" data-role-pk="${adRolelist.adminRolePk }"
+		                                                        		</c:if>
+		                                                        	</c:forEach>
+		                                                        class="custom-control-input admin_auth"><span class="custom-control-label">일반</span>
+		                                                    </label>
+		                                                    <label class="custom-control custom-checkbox">
+		                                                        <input type="checkbox" value="ROLE_ADMIN"  
+		                                                        	<c:forEach var="adRolelist" items="${adRoleList }">
+		                                                        		<c:if test="${adRolelist.role ==  'ROLE_ADMIN'}">
+		                                                        			checked="checked" data-role-pk="${adRolelist.adminRolePk }"
+		                                                        		</c:if>
+		                                                        	</c:forEach>
+		                                                        class="custom-control-input admin_auth"><span class="custom-control-label">관리자</span>
+		                                                    </label>
+		                                                    <label class="custom-control custom-checkbox">
+		                                                        <input type="checkbox" value="ROLE_DEVELOPER" 
+		                                                        	<c:forEach var="adRolelist" items="${adRoleList }">
+		                                                        		<c:if test="${adRolelist.role ==  'ROLE_DEVELOPER'}">
+		                                                        			checked="checked" data-role-pk="${adRolelist.adminRolePk }"
+		                                                        		</c:if>
+		                                                        	</c:forEach>
+		                                                        class="custom-control-input admin_auth"><span class="custom-control-label">개발</span>
+		                                                    </label>
+															
+		                                                    <div id="error-container2"></div>
+		                                                </div>
+		                                            </div>
+		                                        </div>
+								            </div>
+                                        </div>
+                                        <div class="card">
+                                            <h5 class="card-header"> 비밀번호 변경 </h5>
+                                            <div class="card-body">
+                                            	<form id="changeAdminPassForm" action="<c:url value='/change_admin_pass.do'/>" method="POST">
+                                            		<input type="hidden" id="adminPk" name="adminPk" value="${adminVO.adminPk }">
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 새 비밀번호</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="password" id="updateAdminPass" name="adminPass"placeholder="비밀번호" autocomplete="off">
+			                                            </div>
+			                                        </div>
+			                                        <div class="form-group row">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 새 비밀번호확인</label>
+			                                            <div class="col-12 col-sm-8 col-lg-6">
+			                                                <input class="form-control form-control-lg" type="password" id="updateAdminPassCheck" name="adminPassCheck"placeholder="비밀번호 확인" autocomplete="off">
+			                                            </div>
+			                                        </div>
+
+			                                        <div class="form-group pt-2">
+									                    <button class="btn btn-block btn-primary" id="updateAdminInfoBtn" type="submit"> 변경하기 </button>
+									                </div>
+                                            	</form>
+								            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -645,5 +756,72 @@
     <script src='${pageContext.request.contextPath}/resources/vendor/full-calendar/js/moment.min.js'></script>
     <script src='${pageContext.request.contextPath}/resources/vendor/full-calendar/js/fullcalendar.js'></script>
     <script src='${pageContext.request.contextPath}/resources/vendor/full-calendar/js/jquery-ui.min.js'></script>
-    
+    <script type="text/javascript">
+    	$(function(){
+    		
+    		$("#changeAdminPassForm").submit(function(){
+    			var updateAdminPass= $("#updateAdminPass").val();
+    			var updateAdminPassCheck = $("#updateAdminPassCheck").val();
+    			
+    			if(updateAdminPass.length < 6){
+	    			alert("비밀번호는 6자리 이상이어야 합니다.");
+	    			$("#updateAdminPass").focus();
+	    			return false;
+	    			
+	    		}else if(updateAdminPass != updateAdminPassCheck){
+	    			alert("비밀번호가 서로 다릅니다");
+	    			$("#updateAdminPass").val("");
+	    			$("#updateAdminPassCheck").val("");
+	    			$("#updateAdminPass").focus();
+	    			return false;
+
+	    		}
+    			
+    		});
+    		
+			$("#adminInfoChangeForm").submit(function(event){
+    			//정규화 공식
+    			var regNumber = /(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/;
+    			
+	    		var adminPass = $("#adminPass").val();
+	    		var adminName = $("#adminName").val();
+	    		var adminPhone = $("#adminPhone").val();
+	    		var adminAddress = $("#adminAddress").val();
+	    		
+	    		if(adminPass.length < 6){
+	    			alert("비밀번호는 6자리 이상이어야 합니다.");
+	    			$("#adminPass").focus();
+	    			return false;
+	    			
+	    		}else if(adminName.trim() == ""){
+	    			alert("이름을 입력해주세요.");
+	    			$("#adminName").focus();
+	    			return false;
+	    			
+	    		}else if(regNumber.test(adminPhone) == false){
+	    			alert("연락처는 숫자만 입력해야 합니다.");
+	    			$("#adminPhone").focus();
+	    			return false;
+	    			
+	    		}
+	    		
+    		});
+			
+			$(".admin_auth").change(function(){
+    			var roleName = $(this).val();
+    			var adminRolePk = $(this).data("role-pk");
+    			var adminId = $("#adminId").val();
+    			var adminPk = $("#adminPk").val();
+    			
+    			if(adminRolePk == null){
+    				adminRolePk = 0;
+    			}
+    			
+    			location.href = "<c:url value='/admin/add_or_delete_Auth.do?roleName="+roleName+"&adminRolePk="+adminRolePk+"&adminId="+adminId+"&adminPk="+adminPk+"'/>";
+    			
+    			
+    		 });
+			
+    	});
+    </script>
         <%@ include file="../../inc/bottom.jsp" %>

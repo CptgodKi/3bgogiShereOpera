@@ -757,8 +757,7 @@
 				 
                 
 			WHERE 
-                od.or_delivery_invoice_number IS NULL
-                AND od.or_excel_div_flag = 0
+                od.or_excel_div_flag = 0
                 AND od.or_serial_special_number	IN 
                 <foreach collection="orSerialSpecialNumberList" item="specialNumber" index="index" separator="," open="(" close=")">
 	                    #{specialNumber}

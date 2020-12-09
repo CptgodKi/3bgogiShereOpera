@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.gogi.proj.analytics.model.AnalyticsService;
+import com.gogi.proj.analytics.vo.LocalAreaVO;
 import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.configurations.model.ConfigurationService;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
@@ -364,5 +365,68 @@ public class AnalyticsController {
 		model.addAttribute("canlcedList", canlcedList);
 		
 		return "admin/analy_search/total_sales";
+	}
+	
+	/**
+	 * 
+	 * @MethodName : localAnalyticsGet
+	 * @date : 2020. 10. 28.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 지역별 기초 통계 들어가기
+	 */
+	@RequestMapping(value="/local.do", method=RequestMethod.GET)
+	public String localAnalyticsGet(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar calendar = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, -30);
+			Date sevenDays = calendar.getTime();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(sevenDays));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+
+		List<OrdersVO> localList = analyService.selectLocalAreaAnalytics(osVO);
+		
+		model.addAttribute("localList",localList );
+		model.addAttribute("osVO", osVO);
+		
+		return "admin/analy_search/local_analytics";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : localAnalyticsDetail
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 지역 통계 상세사항
+	 */
+	@RequestMapping(value="/local_deteail.do", method=RequestMethod.GET)
+	public String localAnalyticsDetail(@ModelAttribute OrderSearchVO osVO, Model model) {
+		
+		List<LocalAreaVO> topProductList = analyService.sleectLocalAreaTopProducts(osVO);
+		LocalAreaVO laVO = analyService.localAreaAnlayDetail(osVO);
+		List<LocalAreaVO> inflowList = analyService.selectLocalAreaInflowRoute(osVO);
+		
+		
+		model.addAttribute("topProductList", topProductList);
+		model.addAttribute("osVO", osVO);
+		model.addAttribute("laVO", laVO);
+		model.addAttribute("inflowList", inflowList);
+		
+		return "admin/analy_search/local_analytics_detail";
 	}
 }

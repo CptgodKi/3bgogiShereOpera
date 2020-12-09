@@ -59,4 +59,10 @@ public class ProductsServiceImpl implements ProductsService{
 		// TODO Auto-generated method stub
 		return productsDao.selectProductOptionList();
 	}
+
+	@Override
+	public int updateProducts(ProductsVO proVO) {
+		// TODO Auto-generated method stub
+		return productsDao.updateProducts(proVO);
+	}
 }

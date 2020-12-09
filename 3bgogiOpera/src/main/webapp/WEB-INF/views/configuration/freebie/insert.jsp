@@ -200,6 +200,9 @@
 	                                                <label class="custom-control custom-radio custom-control-inline">
 	                                                	<input type="radio" value="1" name="fbType" class="custom-control-input"><span class="custom-control-label"> 주문번호 기준 </span>
 		                                            </label>
+		                                            <label class="custom-control custom-radio custom-control-inline">
+	                                                	<input type="radio" value="2" name="fbType" class="custom-control-input"><span class="custom-control-label"> 수령자 번호 기준 </span>
+		                                            </label>
 	                                            </div>
 	                                        </div>
 	                                    </div>

@@ -24,8 +24,10 @@ import com.gogi.proj.admin.attendance.vo.AdminAttendanceVO;
 import com.gogi.proj.admin.attendance.vo.AdminDaysoffVO;
 import com.gogi.proj.another.vo.DatesVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.security.AdminRolesVO;
 import com.gogi.proj.security.AdminServiceImpl;
 import com.gogi.proj.security.AdminVO;
+import com.gogi.proj.security.JobCodeVO;
 import com.gogi.proj.util.DateCompare;
 
 @Controller
@@ -83,9 +85,12 @@ public class AttendanceController {
 	   
 	   List<AdminAttendanceVO> aaList =  attendanceService.selectTotalAdminBreaks(adminVo.getAdminPk());
 	   
+	   List<JobCodeVO> jcList = adminService.selectJobCode();
+	   
 	   model.addAttribute("adminVo", adminVo);
 	   model.addAttribute("aaVO", aaVO);
 	   model.addAttribute("aaList", aaList);
+	   model.addAttribute("jcList", jcList);
 	   
 	   return "admin/attendance/attendance";
 	   
@@ -217,12 +222,15 @@ public class AttendanceController {
 	  AdminVO adminVO = adminService.selectAdminInfoByAdminPk(adminPk);
 	  
 	  //출결 기록에서 년도 기록 수정날짜 2019-04-01 
-	   List<DatesVO> datesYearList = attendanceService.selectAdminAttendanceYearLog(datesVO);
+	  List<DatesVO> datesYearList = attendanceService.selectAdminAttendanceYearLog(datesVO);
+	  
+	  List<AdminRolesVO> adRoleList = adminService.selectRolesByAdminId(adminVO.getAdminId());
 	  
 	  model.addAttribute("osVO", osVO);
 	  model.addAttribute("adList", adList);
 	  model.addAttribute("adminVO", adminVO);
 	  model.addAttribute("datesYearList", datesYearList);
+	  model.addAttribute("adRoleList", adRoleList);
 	  
 	  return "/admin/team/team_info_detail";
   }

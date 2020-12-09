@@ -87,6 +87,28 @@
 		WHERE admin_id = #{adminId}
 	</select>
 	
+	<update id="updateAdminInfo" parameterType="com.gogi.proj.security.AdminVO">
+		UPDATE
+			admins
+		SET
+			admin_name = #{adminName},
+			admin_phone = #{adminPhone},
+			admin_address = #{adminAddress},
+			jc_fk = #{jcFk},
+			admin_worktime = #{adminWorktime}
+		WHERE
+			admin_pk = #{adminPk}
+	</update>
+	
+	<update id="changeAdminPassword" parameterType="com.gogi.proj.security.AdminVO">
+		UPDATE
+			admins
+		SET
+			admin_pass = #{adminPass}
+		WHERE
+			admin_pk = #{adminPk}
+	</update>
+	
 	<insert id="addAdminAuthRole" parameterType="com.gogi.proj.security.AdminRolesVO">
 		INSERT INTO admin_roles(admin_id, role)
 		VALUES( #{adminId}, #{role})
@@ -98,11 +120,13 @@
 	</delete>
 	
 	<select id="selectAdminInfoByAdminPk" parameterType="int" resultType="com.gogi.proj.security.AdminVO">
-		SELECT * 
-		FROM admins AS ad
-		LEFT JOIN job_code AS jc
-		ON ad.jc_fk = jc.jc_pk
-		WHERE admin_pk = #{adminPk}
+		SELECT 
+			* 
+		FROM 
+			admins AS ad
+			LEFT JOIN job_code AS jc	ON ad.jc_fk = jc.jc_pk
+		WHERE 
+			admin_pk = #{adminPk}
 	</select>
 	
 </mapper>

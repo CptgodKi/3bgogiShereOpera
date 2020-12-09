@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.delivery.vo.SendingRequestVO;
+import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.log.vo.OrderHistoryVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -201,5 +202,28 @@ public interface DeliveryDAO {
 	 * @메소드설명 : 중복 여부 확인
 	 */
 	public int dupliSendingReq(SendingRequestVO srVO);
+	
+	/**
+	 * 
+	 * @MethodName : deleteSendingReq
+	 * @date : 2020. 10. 22.
+	 * @author : Jeon KiChan
+	 * @param regVO
+	 * @return
+	 * @메소드설명 : 강제출고요청 삭제하기
+	 */
+	public int deleteSendingReq(RegDataVO regVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectSendingResults
+	 * @date : 2020. 10. 29.
+	 * @author : Jeon KiChan
+	 * @param ssVO
+	 * @return
+	 * @메소드설명 : 송장부여페이지에서 발송 결과보기
+	 */
+	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO);
 	
 }

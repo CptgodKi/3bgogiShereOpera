@@ -58,28 +58,36 @@
     			$("#userSelect").prop("checked", true);
     		});
     		
-    		$(".reprinting_deliv_invoice").click(function(){
-    			
-    			if(confirm("송장을 재출력하시겠습니까? ( * 주의 : 송장이 중복으로 나올 수 있으니 송장 삭제 후 재출력 권장 * )")){
-    				serialNumber = $(this).data("reprint");
-    				
-    				window.open("<c:url value='/security/reprinting_deliv_invoice.do?searchKeyword="+serialNumber+"'/>", "송장 재출력" , "width=700, height=800, top=100, left=300, scrollbars=no");
-    				
-    				
-    			}else{
-    				event.preventDefault();
-    				
-    			}
-    			
-    			
-    		});
-    		
+
 			$("#delivResultBtn").click(function(){
     			window.open("<c:url value='/security/epost/deliv_date.do'/>", "송장 결과" , "width=700, height=800, top=100, left=300, scrollbars=no");
 
     		});
 			
-    		
+        	//발송처리양식
+        	$("#delivOutputSaved").click(function(){
+        		$("select[name=dateType]").val("or_sending_deadline");
+        		$("#weeksAgo").prop("checked","checked");
+        		$("select[name=outputPosiv]").val("1");
+        		$("select[name=deliveryInvoiceFlag]").val("1");
+        		$("select[name=reservationType]").val("2");
+        		$("select[name=recordCountPerPage]").val("200");
+        		
+        		
+        	});
+        	
+        	//주문서,라벨지 양식
+			$("#productOutputSaved").click(function(){
+				$("select[name=dateType]").val("or_sending_deadline");
+        		$("#weeksAgo").prop("checked","checked");
+        		$("select[name=outputPosiv]").val("1");
+        		$("select[name=deliveryInvoiceFlag]").val("1");
+        		$("select[name=reservationType]").val("2");
+        		$("select[name=recordCountPerPage]").val("1000");
+        		
+        	});
+        	
+        	
 		});
 		
 		function pageFunc(index){
@@ -87,8 +95,8 @@
 			$("#searchCustomerInfo").submit();
 		}
 		
-		function searchDeliveryState(deliveryInvoiceNumber){
-			window.open("https://service.epost.go.kr/trace.RetrieveDomRigiTraceList.comm?sid1="+deliveryInvoiceNumber+"&displayHeader=N", "송장 조회" , "width=700, height=800, top=100, left=300, scrollbars=no");
+		function searchDeliveryState(urls, deliveryInvoiceNumber){
+			window.open(urls+deliveryInvoiceNumber, "송장 조회" , "width=700, height=800, top=100, left=300, scrollbars=no");
 		}
     </script>
     <style type="text/css">
@@ -514,12 +522,53 @@
 															selected="selected"
 														</c:if>
 													>${insertingCountNum } 차 <fmt:formatDate value='${isoList.orRegdate }' pattern='yyyy-MM-dd HH:mm:ss'/></option>
+													
+													
 													<c:set var="insertingCountNum" value="${insertingCountNum + 1 }"/>
 												</c:forEach>
 											</select>
 				                        </div>
+				                        <div class="form-group">
+					                        <select class="form-control" name="edtFk">
+						                        <option value="0"> 배송타입 </option>
+												<option value="1">우체국택배</option>
+												<option value="3">새벽배송(프레시솔루션)</option>
+											</select>
+											
+				                        </div>
+				                        <c:set var="invoiceCountNum" value="1"/>
+				                        <div class="form-group">
+											<select class="selectpicker" multiple data-actions-box="true" data-width="300px" id="createInvoiceNumList" name="createInvoiceNumList">
+											
+								            	<c:if test="${empty invoiceNum }">
+								                	<option disabled>송장 차수 </option>
+								                </c:if>
+								                
+								                <c:if test="${!empty invoiceNum }">
+								                	<option disabled>송장 차수 </option>
+								                	<c:forEach var="invoiceNumList" items="${invoiceNum }">
+														<option value="${invoiceNumList.orInvoiceNumDate }"
+														
+															<c:if test="${!empty osVO.createInvoiceNumList }">
+															
+																<c:forEach var="invoiceNums" items="${osVO.createInvoiceNumList }">				
+																												
+																	<c:if test="${invoiceNumList.orInvoiceNumDate  == invoiceNums }">
+																		selected="selected"
+																	</c:if>
+																	
+																</c:forEach>
+															</c:if>
+														>송장 ${invoiceCountNum} 차 ${invoiceNumList.orDeliveryCompany} ${invoiceNumList.orInvoiceNumDate }</option>
+														
+														<c:set  var="invoiceCountNum" value="${invoiceCountNum + 1 }"/>
+													</c:forEach>
+								                </c:if>
+							                </select>
+				                        </div>
 	                            	</div>
                             	</div>
+                            	
                             			<div class="card-body" style="padding-top: 0px;">
                             				<div class="btn-group">
 				                            	<select class="form-control" name="searchAddType">
@@ -608,6 +657,13 @@
 				                            	<input class="form-control" id="searchAddKeyword" name="searchAddKeyword" type="text"  placeholder="추가 검색어 입력" value="${osVO.searchAddKeyword }">
 				                            </div>
                             	</div>
+                            	<div class="card-body" style="padding-top: 0px;">
+                            		<div class="btn-group">
+				                    	<button class="btn btn-success btn-xs mb-2" id="delivOutputSaved" type="button" style="margin-right:5px;"> 발송처리 양식 </button>
+				                    	
+				                    	<button class="btn btn-success btn-xs mb-2" id="productOutputSaved" type="button"> 주문서, 라벨지 양식 </button>
+				                    </div> 
+                            	</div>
                             </div>
                         </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -619,7 +675,20 @@
                             		</div>
 	                                <div class="card-body">
 	                                	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
-	                                	
+	                                		<div class="btn btn-warning btn-xs mb-2">
+				                                <button class="" data-toggle="dropdown" type="button"> 선택 재출력 사항 <span class="caret"></span></button>
+				                                <div class="dropdown-menu dropdown-menu-right" role="menu">
+				                                
+				                                	<a id="reprintingDelivInvoiceBtn" class="dropdown-item" href="#"> 송장 재출력 </a>
+				                                	<a id="orderDelivInvoiceBtn" class="dropdown-item" href="#"> 주문서 재출력 </a>
+				                                	<a id="labelDelivInvoiceBtn" class="dropdown-item" href="#"> 라벨지 재출력 </a>
+				                                	
+				                                    <!-- <div class="dropdown-divider"></div>
+				                                    <a class="dropdown-item searchType" href="#">입고 무게 내림</a>
+				                                    <a class="dropdown-item searchType" href="#">입고 무게 올림</a> -->
+				                                </div>
+				                            </div>
+				                            
 	                                		<button class="btn btn-success btn-xs mb-2" id="excelResultDown" type="button"> 검색 결과 엑셀 다운로드 </button>
 	                                		<button class="btn btn-brand btn-xs mb-2" id="delivResultBtn" type="button"> 발송 결과 보기 </button>
 	                                		<button class="btn btn-success btn-xs mb-2 createNewOrder" type="button" id="createNewOrder"> 새주문생성 </button>
@@ -731,9 +800,15 @@
 			                                                    		<button type="button" class="btn btn-outline-success btn-xs insertDelivNum" value="${orderlist.orSerialSpecialNumber }">송장직접입력</button>
 			                                                    	</c:if>
 			                                                    	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber }">
-			                                                    		<a onclick="searchDeliveryState(${orderlist.orDeliveryInvoiceNumber})" href="javascript:void(0)">${orderlist.orDeliveryInvoiceNumber }</a>
-			                                                    		<br>
-			                                                    		<span class="text-brand reprinting_deliv_invoice" data-reprint="${orderlist.orSerialSpecialNumber }" style="cursor: pointer;">송장재출력</span>
+			                                                    	
+			                                                    		<c:forEach var="edtlist" items="${edtList }">
+			                                                    			<c:if test="${orderlist.edtFk == edtlist.edtPk }">
+					                                                    		<a onclick="searchDeliveryState('${edtlist.edtUrl }','${orderlist.orDeliveryInvoiceNumber}')" href="javascript:void(0)">
+					                                                    			${orderlist.orDeliveryInvoiceNumber }<br>
+					                                                    			${edtlist.edtType }
+					                                                    		</a>
+			                                                    			</c:if>
+			                                                    		</c:forEach>
 			                                                    		
 			                                                    	</c:if>
 			                                                    </td>

@@ -293,13 +293,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_fk)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_user_column4, or_fk)
 		SELECT #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice},  #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1}, #{orFk}
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1}, #{orUserColumn4}, #{orFk}
 		FROM dual
 		WHERE NOT EXISTS(
 			SELECT 
@@ -322,13 +322,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price, or_total_cost,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1,or_user_column4, or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
 		VALUES( #{orSerialSpecialNumber}, #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice}, #{orTotalCost}, #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag}, #{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},#{orUserColumn4},  #{orDevideFlag}, #{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
 	</insert>
 	
 	<!-- 상품 추가할 때 -->
@@ -338,13 +338,13 @@
 							or_product_price, or_product_option_price, or_discount_price, or_total_price, or_total_cost,  or_check_day, or_sending_deadline, or_delivery_charge_type, or_delivery_number,
 							or_delivery_price, or_delivery_discount_price, or_receiver_contract_number1, or_receiver_contract_number2, or_shipping_address_number, or_shipping_province, or_shipping_address,
 							or_shipping_address_detail, or_sending_address, or_payment_type, or_payment_commision, or_another_payment_commision, or_inflow_route, or_tax_flag, or_regdate, or_settlement_day, ss_fk,
-							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
+							or_delivery_invoice_number, or_delivery_charge_payment_type, or_delivery_special_price, or_user_column1, or_user_column4,or_devide_flag, or_special_region_flag, or_special_region_check_flag, or_output_flag, or_output_date)
 		VALUES( #{orSerialSpecialNumber}, #{orBuyerId}, #{orBuyerName}, #{orBuyerAnotherName}, #{orBuyerContractNumber1}, #{orBuyerContractNumber2}, #{orReceiverName}, #{orProduct}, #{orProductType}, #{orProductOption},
 				#{orAmount}, #{orDeliveryMessage}, #{orDeliveryType}, #{orDeliveryCompany}, #{orOrderNumber}, #{orProductOrderNumber}, #{orProductNumber}, #{orPaymentPositionType}, 
 				#{orProductPrice}, #{orProductOptionPrice}, #{orDiscountPrice}, #{orTotalPrice}, #{orTotalCost}, #{orCheckDay}, #{orSendingDeadline}, #{orDeliveryChargeType}, #{orDeliveryNumber},
 				#{orDeliveryPrice}, #{orDeliveryDiscountPrice}, #{orReceiverContractNumber1}, #{orReceiverContractNumber2}, #{orShippingAddressNumber}, #{orShippingProvince}, #{orShippingAddress},
 				#{orShippingAddressDetail}, #{orSendingAddress}, #{orPaymentType}, #{orPaymentCommision}, #{orAnotherPaymentCommision}, #{orInflowRoute}, #{orTaxFlag}, #{orRegdate}, #{orSettlementDay}, #{ssFk},
-				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},  #{orDevideFlag},#{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
+				#{orDeliveryInvoiceNumber}, #{orDeliveryChargePaymentType}, #{orDeliverySpecialPrice}, #{orUserColumn1},#{orUserColumn4},  #{orDevideFlag},#{orSpecialRegionFlag}, #{orSpecialRegionCheckFlag}, #{orOutputFlag}, #{orOutputDate})
 	</insert>
 	
 	<update id="updateDevideOrderData" parameterType="com.gogi.proj.orders.vo.OrdersVO">

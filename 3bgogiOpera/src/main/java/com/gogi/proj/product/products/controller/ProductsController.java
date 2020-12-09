@@ -67,6 +67,37 @@ public class ProductsController {
 		return "product/read/products";
 	}
 	
+	
+	/**
+	 * 
+	 * @MethodName : readProductsPost
+	 * @date : 2020. 11. 4.
+	 * @author : Jeon KiChan
+	 * @param proVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 상품 수정하기
+	 */
+	@RequestMapping(value="/read/product.do",method=RequestMethod.POST)
+	public String readProductsPost(@ModelAttribute ProductsVO proVO, Model model) {
+		
+		String msg = "";
+		String url = "/products/read/product.do?productPk="+proVO.getProductPk();
+		
+		int result = productsService.updateProducts(proVO);
+		
+		if( result > 0) {
+			msg = "상품 수정 완료";
+		}else {
+			msg = "상품 수정 실패";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+	}
+	
 	/**
 	 * @MethodName : insertProductsPost
 	 * @date : 2019. 2. 20.

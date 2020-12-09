@@ -14,10 +14,6 @@
     
     	$(function(){
     		
-    		$("#sendingDelivButton").hide();
-    		var orderFlag = false;
-    		var labelFlag = false;
-    		
     		$('#exSearchBar').hide();
     		
     		$(".productInfo").mouseover(function(){
@@ -76,7 +72,8 @@
     		$("#sendingDelivButton").click(function(){
     			var orSize = $("input[name=orSerialSpecialNumberList]:checked").length;
     			
-    			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){    				
+    			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){
+    					
 	    			var orSerialSpecialNumberList = new Array(orSize);
 	    				
 					window.open('', 'viewer', 'width=1000, height=700');
@@ -100,6 +97,43 @@
 	    			$("#excelDownloadIframe").append(delivForm);
 	    			
 	    			delivForm.submit();
+	    			$("#excelDownloadIframe").html("");
+    			}
+    			
+    			
+    		});
+    		
+    		//테스트용
+    		$("#freshSolutionExcelDelivButton").click(function(){
+    			var orSize = $("input[name=orSerialSpecialNumberList]:checked").length;
+    			
+    			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){
+    				
+    				if($("select[name=edtFk]").val() == '3'){
+    					alert("임시 송장을 부여합니다");
+    					
+    				}
+    				
+					var divs = document.createElement("div");
+	    			
+	    			var excelDownloadForm =  document.createElement("form");
+	    			excelDownloadForm.action="/security/fresh_solution.do";
+	    			excelDownloadForm.method="POST";
+    					
+	    			var orSerialSpecialNumberList = new Array(orSize);
+	    			
+	    			for(var i=0; i<orSize; i++){
+	    				var orSerialSpecialNumberInput = document.createElement("input");
+	    				orSerialSpecialNumberInput.name="orSerialSpecialNumberList";
+	    				orSerialSpecialNumberInput.value=$("input[name=orSerialSpecialNumberList]:checked")[i].value;
+	    				excelDownloadForm.append(orSerialSpecialNumberInput);
+	    				
+	    			}
+	    			
+	    			$("#excelDownloadIframe").append(excelDownloadForm);
+	    			
+	    			excelDownloadForm.submit();
+	    			
 	    			$("#excelDownloadIframe").html("");
     			}
     			
@@ -372,7 +406,6 @@
 													> 특수지역 </option>
 												</select>
 				                            </div>
-				                            
 				                            <div class="btn-group">
 				                                <select class="form-control" name=totalQtyAlarm>
 													<option value="12"
@@ -403,6 +436,20 @@
 												</select>
 				                            </div>
 				                            <div class="btn-group">
+				                            	<select class="form-control" name="edtFk">
+				                            		<option value="0">배송 타입 전체 </option>
+				                            		<option value="3"
+				                            			<c:if test="${OrderSearchVO.edtFk == 3 }">
+															selected="selected"
+														</c:if>
+				                            		>새벽배송(프레쉬솔루션)</option>
+				                            		<%-- <c:forEach var="edtlist" items="${edtList }">
+				                            			<option value="${edtlist.edtPk }"> ${edtlist.edtType }</option>
+				                            		</c:forEach> --%>
+				                            		
+				                            	</select>
+				                            </div>
+				                            <div class="btn-group">
 				                            	<input type="text" class="btn btn-light" id="dateStart" name="dateStart" style="width: 8em;" value="${OrderSearchVO.dateStart }"/> &nbsp; 
 				                                <input type="text" class="btn btn-light" id="dateEnd" name="dateEnd" style="width: 8em;" value="${OrderSearchVO.dateEnd }"/>
 				                            </div>
@@ -424,41 +471,55 @@
 				                            <div class="btn-group" style="text-align: right;">
 				                                <button class="btn btn-primary" type="submit"> 조건 검색 </button>
 				                            </div>
-				                            <div class="btn-group" style="text-align: right;">
-				                            	<button type="button" class="btn btn-primary" id="orderIO">  주문서 출력  </button>
-				                            </div>
-				                            
-				                            <div class="btn-group" style="text-align: right;">
-				                            	<button type="button" class="btn btn-primary" id="labelIO">  라벨지 출력  </button>
-				                            </div>
-				                            <div class="btn-group" style="text-align: right;">
-				                            	<button class="btn btn-danger" id="sendingDelivButton" style="display: none;"> 송장 부여 </button>
-				                            </div>
 				                        </div>
 	                        		</form>
 		                        </div>
 	                        </div>
                         </div>
                         
-		                        
-		                        
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        	<div class="card">                        	
+	                        	<div class="card-body border-top">
+	                        		<div class="row">
+	                        		
+                                        <div class="form-group col-sm-12 pl-0">
+                                        	<p class="text-right">
+												<button type="button" class="btn btn-primary" id="orderIO">  주문서 출력  </button>
+												<button type="button" class="btn btn-primary" id="labelIO">  라벨지 출력  </button>
+												<c:if test="${OrderSearchVO.edtFk == 0 }">
+													<button class="btn btn-danger" id="sendingDelivButton"> 우체국택배 송장 부여 </button>
+												</c:if>
+												
+												<c:if test="${OrderSearchVO.edtFk == 3 }">
+													<button class="btn btn-warning" id="freshSolutionExcelDelivButton"> 프레시솔루션 송장 엑셀 생성 </button>
+												</c:if>
+                                        	</p>											
+                                        </div>
+                                    </div>
+	                            </div>
+                        	</div>
+                        </div>
                     </div>
                     <div class="row">
                     	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
                                 <h5 class="card-header"> 미부여송장 목록 ( <fmt:formatNumber value="${OrderSearchVO.totalRecord }" pattern="#,###" /> 개) </h5>
+                                	<c:if test="${OrderSearchVO.edtFk == 3 }">
+                                		<h3 class="card-header" style="color: red; font-weight: bold; "> 송장 엑셀 파일 다운로드 후 남는 목록은 배송 불가 지역입니다</h3>
+                                	</c:if>
+                                	
                                 <div class="card-body">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr style="text-align: center;">
-                                            	<th scope="col"> 순서 </th>
-                                            	<th scope="col">
-			                                        <label class="custom-control custom-checkbox be-select-all">
+                                            	<th scope="col" colspan="2">
+			                                        <label class="custom-control custom-checkbox be-select-all" style="display: inline-block;">
 									             	   <input class="custom-control-input chk_all" type="checkbox" name="chk_all" id="orSeiralSpecialNumberAllSelect"><span class="custom-control-label"></span>
 									                </label>
 		                                        </th>
                                                 <th scope="col"> 구매자 / 수령자</th>
                                                 <th scope="col"> 주소 </th>
+                                                <th scope="col"> 출입방법 </th>
                                                 <th scope="col"> 구매 상품 </th>
                                                 <th scope="col"> 매칭 상품 </th>
                                                 <th scope="col"> 총 합 </th>
@@ -502,14 +563,16 @@
 			                                        	</c:if>
 			                                        	<c:if test="${!empty stocklist.productMatchingVOList }">	                                        			
 			                                        		<c:forEach var="pmlist" items="${stocklist.productMatchingVOList }"> 
-			                                        		
+			                                        				<td  style="width:150px; text-align: center;" data-table-info="${tableCountings }">
+													                 	${stocklist.orDelivEnter }
+													                 </td>
+													                 
 					                                        		<td style="border: 1px solid lightgray; width:430px;" class="productInfo" data-table-product-info="${tableCountings }">
 																		<span style="font-size: 12px;"> ${stocklist.orProduct }</span><br>
 																		<span style="font-size: 12px;"> ${stocklist.orProductOption } </span><a data-or-pk="${stocklist.orPk }" class="SelfdevisionOrderBtn" style="color:red; font-size:10px"> [ 나누기 ]</a>
 					                                        		</td>
 			                                        		</c:forEach>
 	                                        			</c:if>
-	                                        			
 	                                        			<c:if test="${!empty stocklist.productMatchingVOList }">
 	                                        					                                        			
 			                                        		<c:forEach var="pmlist" items="${stocklist.productMatchingVOList }"> 
@@ -546,6 +609,12 @@
 		                                        	<c:set var="totalProductQty" value="0"/>
 		                                        	
 	                                        	</c:forEach>
+	                                        	
+	                                        	<tr>
+	                                        		<td colspan="7">  
+	                                        			<button class="btn btn-success btn-block" type="button" onclick="goTop()">맨 위로 올라가기</button>
+	                                        		</td>
+	                                        	</tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -582,7 +651,11 @@
 		 $(document).ready(function(e){
 		        genRowspan("totalProductQty");
 		    });
-		     
+		    
+		 	function goTop(){		 		
+		 		$('html').scrollTop(0);
+		 	}
+		 	
 		    function genRowspan(className){
 		    	
 		        $("." + className).each(function( i , selector) {

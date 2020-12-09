@@ -434,7 +434,7 @@ public class ConfigurationController {
 			
 		}
 		
-		if(osVO.getSearchKeyword() != null || !osVO.getSearchKeyword().equals("")) {
+		if(osVO.getSearchKeyword() != null && !osVO.getSearchKeyword().equals("")) {
 			String [] wordSplit = osVO.getSearchKeyword().split(",");
 			List<String> wordList = new ArrayList<String>();
 			
@@ -446,7 +446,7 @@ public class ConfigurationController {
 			osVO.setSearchKeywordList(wordList);
 		}
 		
-		if(osVO.getExSerachKeyword() != null || !osVO.getExSerachKeyword().equals("")) {
+		if(osVO.getExSerachKeyword() != null && !osVO.getExSerachKeyword().equals("")) {
 			String [] wordSplit = osVO.getExSerachKeyword().split(",");
 			List<String> wordList = new ArrayList<String>();
 			
@@ -473,15 +473,21 @@ public class ConfigurationController {
 		
 		odList = configService.selectEventMsgTarget(osVO);
 		
-		List<OrdersVO> keywords = configService.selectEventMsgProductKeyword(osVO);
-		
-		if(osVO.getSearchKeyword() == null || osVO.getSearchKeyword().equals("")) {
-			model.addAttribute("keywords", null);
+		if((osVO.getSearchKeyword() != null && !osVO.getSearchKeyword().equals("")) ||(osVO.getExSerachKeyword() != null && !osVO.getExSerachKeyword().equals("")) ) {
 			
-		}else {
-			model.addAttribute("keywords", keywords);
+			List<OrdersVO> keywords = configService.selectEventMsgProductKeyword(osVO);
+			
+			if(osVO.getSearchKeyword() == null && osVO.getSearchKeyword().equals("")) {
+				model.addAttribute("keywords", null);
+				
+			}else {
+				model.addAttribute("keywords", keywords);
+				
+			}
 			
 		}
+		
+		
 		
 		List<ClassificationVO> cfList = accService.selectClassificationList();
 		

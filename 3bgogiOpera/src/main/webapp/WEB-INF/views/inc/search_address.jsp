@@ -36,33 +36,65 @@
 			        			"address":result.address
 			        		},success:function(data){
 						    	console.log(data);
-			        			var orAddressXmap = data.documents[0].address.x;
-					        	var orAddressYmap = data.documents[0].address.y;
-					        	var title = data.documents[0].address_name;
-					        	
-					        	if(orAddressXmap != null && orAddressYmap != null){
-					        		
-					        		$("#mapResultDiv").show();
-					        		$("#mapResultHead").html("<p class='text-primary'>"+title+"</p>");
-						        	createMap(orAddressXmap, orAddressYmap);
-						        	
-						        	$("#orShippingAddressNumber").val(result.zonecode);
-						        	$("#orShippingAddress").val(result.address);
-						        	
-						        	var addrDetail = "";
-						        	
-						        	if(result.bname != "" && result.buildingName != ""){
-						        		addrDetail="("+result.bname+", "+result.buildingName+")";
+						    	
+						    	if(data.documents.length != 0){
+						    		
+						    		var orAddressXmap = data.documents[0].address.x;
+						        	var orAddressYmap = data.documents[0].address.y;
+						        	var title = data.documents[0].address_name;
+
 						        		
-						        	}else if(result.bname != ""){
-						        		addrDetail="("+result.bname+")";
-						        		
-						        	}else if(result.buildingName != ""){
-						        		addrDetail="("+result.buildingName+")";
-						        		
-						        	}
-						        	$("#orShippingAddressDetail").val(addrDetail);
-					        	}
+						        		$("#mapResultDiv").show();
+						        		$("#mapResultHead").html("<p class='text-primary'>"+title+"</p>");
+							        	createMap(orAddressXmap, orAddressYmap);
+							        	
+							        	$("#orShippingAddressNumber").val(result.zonecode);
+							        	$("#orShippingAddress").val(result.address);
+							        	
+							        	var addrDetail = "";
+							        	
+							        	if(result.bname != "" && result.buildingName != ""){
+							        		addrDetail="("+result.bname+", "+result.buildingName+")";
+							        		
+							        	}else if(result.bname != ""){
+							        		addrDetail="("+result.bname+")";
+							        		
+							        	}else if(result.buildingName != ""){
+							        		addrDetail="("+result.buildingName+")";
+							        		
+							        	}
+							        	
+							        	$("#orShippingAddressDetail").val(addrDetail);
+						        	
+						        
+						    	}else{
+						    		
+						    		$("#mapResultHead").html("<p class='text-primary'>"+"지도 공개가 불가능한 지역"+"</p>");
+						    		
+									
+									$("#mapResultDiv").show();
+									
+									
+							       	$("#orShippingAddressNumber").val(result.zonecode);
+							       	$("#orShippingAddress").val(result.address);
+							       	
+							       	var addrDetail = "";
+							       	
+							       	if(result.bname != "" && result.buildingName != ""){
+							       		addrDetail="("+result.bname+", "+result.buildingName+")";
+							       		
+							       	}else if(result.bname != ""){
+							       		addrDetail="("+result.bname+")";
+							       		
+							       	}else if(result.buildingName != ""){
+							       		addrDetail="("+result.buildingName+")";
+							       		
+							       	}
+							       	
+							       	$("#orShippingAddressDetail").val(addrDetail);
+						        	
+						    	}
+			        			
 			        		}
 			        		
 			        	});

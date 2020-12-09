@@ -581,6 +581,7 @@ jQuery(document).ready(function($) {
 		if(orSize == 0){
 			alert("송장이 부여된 주문건이 없습니다"); 
 			return false;
+			
 		}
 		
 		if(confirm(orSize+" 개의 송장을 삭제하시겠습니까?")){
@@ -849,6 +850,112 @@ jQuery(document).ready(function($) {
 			frm.target = "aligoSms";
 			frm.method = "post";
 			frm.submit();
+		}
+		
+	});
+	
+	$("#reprintingDelivInvoiceBtn").click(function(){
+		
+		var orSize = $("input[data-deliv='1']:checked, input[data-output='1']:checked").length;
+		
+		
+		if(orSize == 0){
+			alert("송장 재출력을 할 수 있는 주문건이 없습니다"); 
+			return false;
+		}
+		
+		if(confirm(orSize+" 건의 송장을 재출력하시겠습니까? ( * 주의 : 송장이 중복으로 나올 수 있으니 송장 삭제 후 재출력 권장 * )")){			
+			orSerialSpecialNumberList = new Array(orSize);
+				
+			window.open('', 'viewer', 'width=1000, height=700');
+			
+			delivForm =  document.createElement("form");
+			delivForm.method="POST";
+			
+			delivForm.action = '/security/reprinting_deliv_invoice.do';
+			delivForm.target = "viewer";
+			
+			
+			for(var i=0; i<orSize; i++){
+				orSerialSpecialNumberInput = document.createElement("input");
+				orSerialSpecialNumberInput.name="orSerialSpecialNumberList";
+				orSerialSpecialNumberInput.type="hidden";
+				orSerialSpecialNumberInput.value=$("input[data-deliv='1']:checked, input[data-output='1']:checked")[i].value;
+				
+				delivForm.append(orSerialSpecialNumberInput);
+				
+			}
+			
+			$("#excelDownloadIframe").append(delivForm);
+			
+			delivForm.submit();
+			$("#excelDownloadIframe").html("");
+		}
+		
+		
+	});
+	
+	$("#orderDelivInvoiceBtn").click(function(){
+		
+		var orSize = $("input[data-deliv='1']:checked, input[data-output='1']:checked").length;
+		
+		if(orSize == 0){
+			alert("주문서를 재출력할 수 있는 주문건이 없습니다"); 
+			return false;
+		}
+	
+		if(confirm(orSize+" 건의 주문서를 재출력하시겠습니까?")){			
+			orSerialSpecialNumberList = new Array(orSize);
+			delivForm =  document.createElement("form");
+			
+			delivForm.method="POST";
+			delivForm.action = '/security/orderIO.do';
+
+			for(var i=0; i<orSize; i++){
+				orSerialSpecialNumberInput = document.createElement("input");
+				orSerialSpecialNumberInput.name="orSerialSpecialNumberList";
+				orSerialSpecialNumberInput.type="hidden";
+				orSerialSpecialNumberInput.value=$("input[data-deliv='1']:checked, input[data-output='1']:checked")[i].value;
+				delivForm.append(orSerialSpecialNumberInput);
+				
+			}
+			
+			$("#excelDownloadIframe").append(delivForm);
+			
+			delivForm.submit();
+			$("#excelDownloadIframe").html("");
+		}
+		
+	});
+	
+	$("#labelDelivInvoiceBtn").click(function(){
+		
+		var orSize = $("input[data-deliv='1']:checked, input[data-output='1']:checked").length;
+		
+		if(orSize == 0){
+			alert("라벨을 재출력할 수 있는 주문건이 없습니다"); 
+			return false;
+		}
+	
+		if(confirm(orSize+" 건에 대한 라벨지를 재출력하시겠습니까?")){			
+			orSerialSpecialNumberList = new Array(orSize);
+			delivForm =  document.createElement("form");
+			delivForm.method="POST";
+			delivForm.action = '/security/product_label.do';
+
+			for(var i=0; i<orSize; i++){
+				orSerialSpecialNumberInput = document.createElement("input");
+				orSerialSpecialNumberInput.name="orSerialSpecialNumberList";
+				orSerialSpecialNumberInput.type="hidden";
+				orSerialSpecialNumberInput.value=$("input[data-deliv='1']:checked, input[data-output='1']:checked")[i].value;
+				delivForm.append(orSerialSpecialNumberInput);
+				
+			}
+			
+			$("#excelDownloadIframe").append(delivForm);
+			
+			delivForm.submit();
+			$("#excelDownloadIframe").html("");
 		}
 		
 	});

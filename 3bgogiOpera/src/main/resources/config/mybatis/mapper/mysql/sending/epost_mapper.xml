@@ -58,7 +58,7 @@
 		<result property="optionMatchingChecking" column="option_matching_checking" javaType="boolean"/>
 		<result property="productChecking" column="product_checking" javaType="boolean"/>
 		<result property="orCancledFlag" column="or_cancled_flag" javaType="boolean"/>
-		
+		<result property="orDelivEnter" column="or_deliv_enter" javaType="String"/>
 		<!-- 상품명 매칭 -->
 		<collection property="productMatchingVOList" ofType="ProductMatchingVO">
 			<id property="pmPk" column="pm_pk" javaType="int"/>
@@ -124,7 +124,7 @@
 		<result property="orDeliveryInvoiceNumber" column="or_delivery_invoice_number" javaType="String"/>
 		<result property="orShippingAddress" column="or_shipping_address" javaType="String"/>
 		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
-			
+		
 		<collection property="orVoList" ofType="OrdersVO">
 			<id property="orPk" column="or_pk" javaType="int"/>
 			<result property="pmFk" column="pm_fk" javaType="int"/>
@@ -152,7 +152,7 @@
 			<result property="orDeliveryChargeType" column="or_delivery_charge_type" javaType="String"/>
 			<result property="orDeliveryNumber" column="or_delivery_number" javaType="String"/>
 			<result property="orDeliveryPrice" column="or_delivery_price" javaType="int"/>
-			
+			<result property="orDelivEnter" column="or_deliv_enter" javaType="String"/>
 			<result property="orShippingAddressNumber" column="or_shipping_address_number" javaType="String"/>
 			<result property="orShippingProvince" column="or_shipping_province" javaType="String"/>
 			<result property="orSpecialRegionDetail" column="or_special_region_detail" javaType="boolean"/>
@@ -243,6 +243,7 @@
 		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
 		<result property="orSendingAddress" column="or_sending_address" javaType="String"/>
 		<result property="orDeliveryMessage" column="or_delivery_message" javaType="String"/>
+		<result property="orDelivEnter" column="or_deliv_enter" javaType="String"/>
 		<result property="reqNo" column="req_no" javaType="String"/>
 		<result property="resNo" column="res_no" javaType="String"/>
 		<result property="regiNo" column="regi_no" javaType="String"/>
@@ -416,8 +417,15 @@
 				LEFT JOIN options op ON om.option_fk = op.option_pk
 				LEFT JOIN options_costs_matching ocm ON ocm.option_fk = op.option_pk
 				LEFT JOIN products pro ON pro.product_pk = op.product_fk
+				<if test="edtFk != 0">
+					INNER JOIN early_deliv_area eda ON od.or_shipping_address_number = eda.eda_zip_code
+					INNER JOIN early_deliv_type edt ON edt.edt_pk = eda.edt_fk
+				</if>
 				<trim prefix="WHERE" prefixOverrides="AND |OR ">
 					od.or_delivery_invoice_number IS NULL
+					<if test="edtFk != 0">
+						AND edt.edt_pk = #{edtFk}
+					</if>
 					<![CDATA[
 						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
 					]]>
@@ -486,6 +494,38 @@
 				</trim>
 			GROUP BY
 				od.or_serial_special_number
+			<if test="edtFk != 0">
+				HAVING
+					od.or_serial_special_number NOT IN (
+						SELECT
+							deliv_out.or_serial_special_number
+						FROM
+							(SELECT
+								od.or_serial_special_number,
+								COUNT(od.or_serial_special_number) AS serial_count,
+								SUM(od.or_inv_flag) AS total_flag 
+							FROM
+								orders od
+								INNER JOIN early_deliv_area eda ON od.or_shipping_address_number = eda.eda_zip_code
+								INNER JOIN early_deliv_type edt ON edt.edt_pk = eda.edt_fk
+								INNER JOIN deliv_impos		di	ON	di.eda_fk = eda.eda_pk
+							WHERE
+								<![CDATA[								
+								od.or_excel_div_flag = 0
+								AND od.regi_no IS NULL
+								AND od.or_cancled_flag = 0
+								AND od.or_sending_deadline >= #{dateStart} 
+								AND od.or_sending_deadline <= #{dateEnd}
+								AND CONCAT(od.or_shipping_address, ' ', od.or_shipping_address_detail) LIKE CONCAT('%',di.di_address,'%')
+								]]>
+							GROUP BY
+								od.or_serial_special_number
+							) deliv_out
+						WHERE
+							deliv_out.serial_count = deliv_out.total_flag
+						
+						)
+			</if>
 			) output
 		GROUP BY
 			output.or_serial_special_number
@@ -528,7 +568,8 @@
 				op.option_pk,
                 op.option_name,
                 op.option_cost_flag,
-                SUM(od.or_amount * om.om_option_amount) AS cf_fk
+                SUM(od.or_amount * om.om_option_amount) AS cf_fk,
+                GROUP_CONCAT(od.or_user_column4 separator ',') AS or_deliv_enter
 			FROM
 				orders od
 				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
@@ -537,6 +578,7 @@
 				INNER JOIN options op ON om.option_fk = op.option_pk
 				INNER JOIN products pro ON pro.product_pk = op.product_fk
 				INNER JOIN excel_order_seq eo ON op.eo_fk = eo.eos_pk
+				
 			WHERE
 				<![CDATA[
 					od.or_sending_deadline >= #{dateStart}
@@ -578,11 +620,18 @@
 					SUM(od.or_inv_flag) AS total_flag 
 				FROM
 					orders od
+					<if test="edtFk != 0">
+						INNER JOIN early_deliv_area eda ON od.or_shipping_address_number = eda.eda_zip_code
+						INNER JOIN early_deliv_type edt ON edt.edt_pk = eda.edt_fk
+					</if>
 				<trim prefix="WHERE" prefixOverrides="AND |OR ">
 					od.or_delivery_invoice_number IS NULL
 					<![CDATA[
 						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
 					]]>	
+					<if test="edtFk != 0">
+						AND edt.edt_pk = #{edtFk}
+					</if>
 					<if test="ssPk != 0">
 						AND od.ss_fk = #{ssPk}
 					</if>
@@ -654,6 +703,40 @@
 				) output
 			WHERE
 				output.serial_count = output.total_flag
+			GROUP BY
+				output.or_serial_special_number
+			<if test="edtFk != 0">
+				HAVING
+					output.or_serial_special_number NOT IN (
+						SELECT
+							deliv_out.or_serial_special_number
+						FROM
+							(SELECT
+								od.or_serial_special_number,
+								COUNT(od.or_serial_special_number) AS serial_count,
+								SUM(od.or_inv_flag) AS total_flag 
+							FROM
+								orders od
+								INNER JOIN early_deliv_area eda ON od.or_shipping_address_number = eda.eda_zip_code
+								INNER JOIN early_deliv_type edt ON edt.edt_pk = eda.edt_fk
+								INNER JOIN deliv_impos		di	ON	di.eda_fk = eda.eda_pk
+							WHERE
+								<![CDATA[								
+								od.or_excel_div_flag = 0
+								AND od.regi_no IS NULL
+								AND od.or_cancled_flag = 0
+								AND od.or_sending_deadline >= #{dateStart} 
+								AND od.or_sending_deadline <= #{dateEnd}
+								AND CONCAT(od.or_shipping_address, ' ', od.or_shipping_address_detail) LIKE CONCAT('%',di.di_address,'%')
+								]]>
+							GROUP BY
+								od.or_serial_special_number
+							) deliv_out
+						WHERE
+							deliv_out.serial_count = deliv_out.total_flag
+						
+						)
+			</if>
 			LIMIT #{firstRecordIndex}, #{recordCountPerPage} 
             ) SELECTER
 		WHERE
@@ -678,7 +761,10 @@
 			v_tel_no = #{vTelNo},
 			arr_cnpo_nm = #{arrCnpoNm},
 			deliv_po_nm = #{delivPoNm},
-			deliv_area_cd = #{delivAreaCd}
+			deliv_area_cd = #{delivAreaCd},
+			or_invoice_num_date = #{orInvoiceNumDate},
+			or_deliv_count = #{orDelivCount},
+			edt_fk = 1
 		WHERE
 			or_pk = #{orPk}
 	</update>
@@ -697,7 +783,11 @@
 			v_tel_no = null,
 			arr_cnpo_nm = null,
 			deliv_po_nm = null,
-			deliv_area_cd = null
+			deliv_area_cd = null,
+			or_invoice_num_date = null,
+			or_delivery_company = null,
+			or_deliv_count = null,
+			edt_fk = 0
 		WHERE
 			or_pk IN (
 				SELECT
@@ -868,7 +958,11 @@
 			v_tel_no = #{vTelNo},
 			arr_cnpo_nm = #{arrCnpoNm},
 			deliv_po_nm = #{delivPoNm},
-			deliv_area_cd = #{delivAreaCd}
+			deliv_area_cd = #{delivAreaCd},
+			or_invoice_num_date = #{orInvoiceNumDate},
+			or_deliv_count = #{orDelivCount},
+			or_delivery_company = '우체국택배',
+			edt_fk = 1
 		WHERE
 			or_pk IN 
 			<foreach item="item" collection="productOptionList" open="(" separator="," close=")">
@@ -930,6 +1024,7 @@
 					od.or_discount_price,
 		            od.or_product_fk,
 		            od.or_order_number,
+		            od.or_request,
                     GROUP_CONCAT(od.or_delivery_message separator ',') AS or_delivery_message,
                     od.or_delivery_invoice_number,
                     od.req_no, 
@@ -988,6 +1083,7 @@
 		            od.or_product_fk,
 		            od.or_order_number,
 		            od.or_delivery_invoice_number,
+		            od.or_request,
                     od.req_no, 
                     od.res_no,
                     od.regi_no,
@@ -1061,6 +1157,176 @@
 			or_shipping_address_detail,
 			or_delivery_invoice_number
 	</select>
+	
+	
+	<select id="freshSolutionDelivExcel" resultType="OrdersVO" parameterType="OrderSearchVO">
+            SELECT
+				INNE.or_serial_special_number,
+                DATE_FORMAT(DATE_ADD(INNE.or_sending_deadline, INTERVAL 1 DAY), '%Y-%m-%d') AS or_sending_deadline,
+                INNE.or_buyer_name,
+                INNE.or_receiver_name,
+                INNE.or_shipping_address_number,
+				INNE.or_shipping_address,
+				INNE.or_shipping_address_detail,
+                INNE.or_receiver_contract_number2,
+                INNE.or_receiver_contract_number1,
+				INNE.or_delivery_message,
+                INNE.or_pk,
+                INNE.or_user_column1,
+                INNE.or_user_column4 AS or_deliv_enter,
+                CONCAT(INNE.product_name, ' ', INNE.option_name) AS or_product,
+                SUM(totalQuantity) AS or_amount,
+				INNE.or_buyer_contract_number1,
+	            INNE.pm_pk,
+				INNE.product_pk,
+				INNE.om_pk,
+				INNE.option_pk
+			FROM(
+                
+                SELECT
+					od.or_pk,
+					od.or_serial_special_number,
+					od.or_buyer_name,
+					od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+                    od.or_sending_deadline,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+		            od.or_product_fk,
+                    GROUP_CONCAT(od.or_delivery_message separator ',') AS or_delivery_message,
+                    od.or_user_column1,
+                    od.or_user_column4,
+		            pm.pm_pk,
+					pro.product_pk,
+                    pro.product_name,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_pk,
+					om.om_store_option_name,
+					SUM(od.or_amount * om.om_option_amount) as totalQuantity,
+					op.option_pk,
+                    op.option_name
+				FROM
+					orders od
+					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
+					INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options op ON om.option_fk = op.option_pk
+					INNER JOIN products pro ON pro.product_pk = op.product_fk
+				WHERE 
+                    od.regi_no IS NULL
+					AND od.or_excel_div_flag = 0
+					AND od.or_cancled_flag = 0
+					AND od.or_serial_special_number = #{searchKeyword}
+				GROUP BY
+					od.or_pk,
+					od.or_serial_special_number,
+					od.or_buyer_name,
+                    od.or_buyer_another_name,
+		            od.or_receiver_name,
+		            od.or_buyer_contract_number1,
+		            od.or_receiver_contract_number1,
+		            od.or_receiver_contract_number2,
+		            od.or_shipping_address,
+		            od.or_shipping_address_detail,
+		            od.or_shipping_address_number,
+                    od.or_sending_deadline,
+					od.or_product,
+					od.or_product_option,
+					od.or_amount,
+		            od.or_product_fk,
+                    od.or_user_column1,
+                    od.or_user_column4,
+		            pm.pm_pk,
+		            om.om_pk,
+					pro.product_pk,
+					pro.cf_fk,
+					pro.product_flag,
+					om.om_store_option_name,
+					om.om_option_amount,
+					op.option_pk,
+		            op.option_name
+				ORDER BY
+					od.or_pk
+			) INNE
+		GROUP BY
+			INNE.or_pk,
+			INNE.or_serial_special_number,
+			or_sending_deadline,
+			INNE.or_buyer_name,
+			INNE.or_receiver_name,
+			INNE.or_shipping_address_number,
+			INNE.or_shipping_address,
+			INNE.or_shipping_address_detail,
+			INNE.or_receiver_contract_number2,
+			INNE.or_receiver_contract_number1,
+			INNE.or_delivery_message,
+			INNE.or_user_column1,
+			or_deliv_enter,
+			INNE.or_buyer_contract_number1,
+			INNE.pm_pk,
+			INNE.product_pk,
+			INNE.om_pk,
+			INNE.option_pk
+		ORDER BY
+			INNE.or_serial_special_number ASC,
+            INNE.product_name DESC
+	</select>
+	
+	<update id="updateFreshSolutionTarget" parameterType="OrdersVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_company = '프레시솔루션',
+			or_delivery_invoice_number = '입력전',
+			regi_no = '입력전',
+			edt_fk = 3
+			
+		WHERE
+			or_pk = #{orPk}
+	</update>
+	
+	<update id="updateFreshSolutionInvoiceNumber" parameterType="OrdersVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = #{orDeliveryInvoiceNumber},
+			regi_no = #{orDeliveryInvoiceNumber}
+		WHERE
+			or_pk = #{orPk}
+	</update>
+	
+	
+	<update id="deleteDelivInfoByPk" parameterType="OrdersVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = null,
+			req_no = null,
+			res_no = null,
+			regi_no = null,
+			regi_po_nm = null,
+			res_date = null,
+			price = null,
+			v_tel_no = null,
+			arr_cnpo_nm = null,
+			deliv_po_nm = null,
+			deliv_area_cd = null,
+			or_invoice_num_date = null,
+			or_delivery_company = null,
+			or_deliv_count = null,
+			edt_fk = 0
+		WHERE
+			or_pk = #{orPk} 
+            
+	</update>
 	
 </mapper>
 

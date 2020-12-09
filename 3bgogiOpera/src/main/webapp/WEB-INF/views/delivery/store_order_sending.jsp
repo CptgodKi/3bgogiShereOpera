@@ -36,6 +36,17 @@
     		
     	}
     	
+    	function storeSendingResults(sendingTime, store_num){
+    		ssSendingDay = $("#dateStart").val();
+    		
+    		if(confirm("발송 목록을 보시겠습니까?")){
+    			location.href="<c:url value='/delivery/sending/results.do?ssRegdate="+sendingTime+"&ssPk="+store_num+"&ssSendingDay="+ssSendingDay+"'/>";
+    			
+    		}else{
+    			
+    		}
+    	}
+    	
     	function storeExcelDownload(sendingTime, store_num){
     		
     		if(confirm("발송 엑셀파일을 다운로드 하시겠습니까?")){
@@ -50,6 +61,11 @@
     			ssPkInput.type="hidden";
     			ssPkInput.value=store_num;
     			
+    			var ssSendingDayInput = document.createElement("input");
+    			ssSendingDayInput.name="ssSendingDay";
+    			ssSendingDayInput.type="hidden";
+    			ssSendingDayInput.value=$("#dateStart").val();
+    			
     			var excelDownloadForm =  document.createElement("form")
     			excelDownloadForm.action="/delivery/sending/excel_download.do";
     			excelDownloadForm.method="GET";
@@ -58,6 +74,7 @@
     			
     			excelDownloadForm.append(ssRegdateInput);
     			excelDownloadForm.append(ssPkInput);
+    			excelDownloadForm.append(ssSendingDayInput);
     			
     			$("#excelDownloadIframe").append(excelDownloadForm);
     			
@@ -168,7 +185,7 @@
 	                                                <th scope="col">송장 개수</th>
 	                                                <th scope="col">발송 시간</th>
 	                                                <th scope="col">판매처 발송파일</th>
-	                                                <th scope="col"> - 임시 - </th>
+	                                                <th scope="col"> 목록 </th>
 	                                            </tr>
 	                                        </thead>
 	                                        <tbody>
@@ -201,7 +218,9 @@
 			                                                		</button>
 			                                                	</c:if>
 			                                                </td>
-			                                                <td></td>
+			                                                <td>
+			                                                	<button class="btn btn-primary btn-xs" type="button"  onclick="storeSendingResults('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">발송 목록</button>
+			                                                </td>
 			                                            </tr>
 	                                        		</c:forEach>
 	                                        	</c:if>

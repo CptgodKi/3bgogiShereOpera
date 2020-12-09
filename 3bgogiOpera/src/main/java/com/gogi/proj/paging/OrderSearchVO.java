@@ -3,6 +3,7 @@ package com.gogi.proj.paging;
 import java.util.List;
 
 import com.gogi.proj.configurations.vo.BlockSendingListVO;
+import com.gogi.proj.product.cost.vo.CostDetailVO;
 
 public class OrderSearchVO {
 
@@ -45,6 +46,7 @@ public class OrderSearchVO {
 	private String totalList;
 	
 	private List<BlockSendingListVO> bslList;
+	private List<String> createInvoiceNumList;
 	
 	//추가사항
 	private int ssPk; //스토어 고유값 넣어주기
@@ -52,6 +54,17 @@ public class OrderSearchVO {
 	private String ssList;
 	
 	private int matchingFlag; //매칭 여부
+	
+	private int edtFk; //배송타입 설정
+	
+	
+	//원육 출고 관리 
+	private int ccPk;
+	private int cdPk; 
+	private int deleteBtn;
+	private int labelBtn;
+	private int sortingBtn;
+	private List<CostDetailVO> cdList;
 	
 	//리스트 값은 쉼표로 나누기
 	//다중 검색에 필요한 변수
@@ -62,6 +75,70 @@ public class OrderSearchVO {
 	private String exSearchType; //제외 검색어 타입
 	private String exSerachKeyword; //제외 검색어
 	private List<String> exSearchKeywordList; //제외 검색어 리스트값
+	
+	public int getEdtFk() {
+		return edtFk;
+	}
+
+	public void setEdtFk(int edtFk) {
+		this.edtFk = edtFk;
+	}
+
+	public List<String> getCreateInvoiceNumList() {
+		return createInvoiceNumList;
+	}
+
+	public void setCreateInvoiceNumList(List<String> createInvoiceNumList) {
+		this.createInvoiceNumList = createInvoiceNumList;
+	}
+
+	public int getCcPk() {
+		return ccPk;
+	}
+
+	public void setCcPk(int ccPk) {
+		this.ccPk = ccPk;
+	}
+
+	public List<CostDetailVO> getCdList() {
+		return cdList;
+	}
+
+	public void setCdList(List<CostDetailVO> cdList) {
+		this.cdList = cdList;
+	}
+
+	public int getCdPk() {
+		return cdPk;
+	}
+
+	public void setCdPk(int cdPk) {
+		this.cdPk = cdPk;
+	}
+
+	public int getDeleteBtn() {
+		return deleteBtn;
+	}
+
+	public void setDeleteBtn(int deleteBtn) {
+		this.deleteBtn = deleteBtn;
+	}
+
+	public int getLabelBtn() {
+		return labelBtn;
+	}
+
+	public void setLabelBtn(int labelBtn) {
+		this.labelBtn = labelBtn;
+	}
+
+	public int getSortingBtn() {
+		return sortingBtn;
+	}
+
+	public void setSortingBtn(int sortingBtn) {
+		this.sortingBtn = sortingBtn;
+	}
 
 	public List<BlockSendingListVO> getBslList() {
 		return bslList;

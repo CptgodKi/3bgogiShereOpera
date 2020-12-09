@@ -101,7 +101,7 @@
 			sending_request
 		WHERE
 			sr_invoice_num = #{srInvoiceNum}
-			AND sr_regdate >= DATE_FORMAT(DATA_ADD(NOW(), INTERVAL - 1 MONTH), '%Y-%m-%d')
+			AND sr_regdate >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL - 1 MONTH), '%Y-%m-%d')
 	</select>
 	
 	<select id="selectAllSedingRequest" resultType="SendingRequestVO">
@@ -112,6 +112,25 @@
 		ORDER BY
 			sr_pk DESC
 	</select>
+	
+	<delete id="deleteSendingReq" parameterType="RegDataVO">
+		DELETE FROM
+			sending_request
+		WHERE
+			sr_pk IN (
+				SELECT
+					inne.sr_pk
+				FROM
+					(
+						SELECT
+							sr_pk
+						FROM
+							sending_request
+						WHERE
+							sr_invoice_num = #{regiNo}
+					)inne
+			)
+	</delete>
 	
 	<update id="sendingOrders" parameterType="SendingRequestVO">
 		UPDATE
@@ -130,7 +149,7 @@
 							orders
 						WHERE
 							or_delivery_invoice_number = #{srInvoiceNum}
-							AND or_sending_deadline >= DATE_FORMAT(DATA_ADD(NOW(), INTERVAL - 1 MONTH), '%Y-%m-%d')
+							AND or_sending_deadline >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL - 1 MONTH), '%Y-%m-%d')
 					) inne
 			)
 			

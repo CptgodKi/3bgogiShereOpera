@@ -51,7 +51,6 @@
 								<h5 class="card-header"> 부분육 등록하기 </h5>
 								<div class="card-body">
 									<form class="needs-validation" id="insetCostIo" method="POST" action="<c:url value='/stock/carcass/carcass_cut_insert.do'/>">
-										<input type="hidden" name="ciPk" value="${ciVO.ciPk }">
 										<div class="mb-3">
 											<label for="cdFk">원재료 명</label> 
 											<select class="form-control" name="cdFk" id="cdFk" data-live-search="true" data-size="8">
@@ -70,10 +69,6 @@
 											<div class="col-md-5 mb-3">
 												<label for="ciWeight"> 입고 무게( g단위로 입력 ) </label> 
 												<input type="text" class="form-control numberCheck" id="ciWeight" name="ciWeight" placeholder="" value="${ciVO.ciWeight }" required="">
-											</div>
-											<div class="col-md-4 mb-3">
-												<label for="ciOutputWeight"> 출고 무게 </label> 
-												<input type="text" class="form-control numberCheck" id="ciOutputWeight" name="ciOutputWeight" placeholder="" value="${ciVO.ciOutputWeight }" required="" disabled="disabled">
 											</div>
 											<div class="col-md-3 mb-3">
 												<label for="ciLevel">등급</label> 

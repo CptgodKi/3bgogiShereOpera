@@ -253,12 +253,13 @@ public class SecurityController {
 	 */
    @RequestMapping(value="/admin/add_or_delete_Auth.do", method=RequestMethod.GET)
    public String addOrDeleteAdminAuth(@RequestParam String adminId, 
-		   								@RequestParam int adminRolePk, 
+		   								@RequestParam int adminRolePk,
+		   								@RequestParam int adminPk, 
 		   								@RequestParam String roleName,
 		   								Authentication auth,
 		   								Model model) {
 	   String msg = "";
-	   String url = "/admin/team/team_auth.do";
+	   String url = "/admin/team/team_info_detail.do?adminPk="+adminPk;
 	   
 	   int authCount = 0;
 	   
@@ -298,6 +299,76 @@ public class SecurityController {
 	   
 	   return "common/message";
 	   
+   }
+   
+   
+   /**
+    * 
+    * @MethodName : updateAdminInfo
+    * @date : 2020. 10. 23.
+    * @author : Jeon KiChan
+    * @param adminVO
+    * @param model
+    * @return
+    * @메소드설명 : 관리자 정보 변경
+    */
+   @RequestMapping(value="/update_admin_info.do", method=RequestMethod.POST)
+   public String updateAdminInfo(@ModelAttribute AdminVO adminVO, Model model) {
+	   
+	   Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+	   AdminVO adminAuth = (AdminVO)auth.getPrincipal();
+	
+	   String msg = "";
+	   String url = "/admin/team/team_info_detail.do?adminPk="+adminVO.getAdminPk();
+	   
+	   if(adminVO.getAdminPk() != adminAuth.getAdminPk()) {
+		   msg = "본인이 아니면 정보를 변경할 수 없습니다";
+		
+	   }else {
+		   msg = adminService.updateAdminInfo(adminVO);
+		   
+	   }
+			 
+	   
+	   model.addAttribute("msg", msg);
+	   model.addAttribute("url", url);
+	   
+	   return "common/message";
+	   
+   }
+   
+   
+   
+   /**
+    * 
+    * @MethodName : changeAdminPassword
+    * @date : 2020. 10. 23.
+    * @author : Jeon KiChan
+    * @param adminVO
+    * @param model
+    * @return
+    * @메소드설명 : 관리자 비밀번호 변경
+    */
+   @RequestMapping(value="/change_admin_pass.do", method=RequestMethod.POST)
+   public String changeAdminPassword(@ModelAttribute AdminVO adminVO, Model model) {
+	   
+	   String msg = "";
+	   String url = "/admin/team/team_info_detail.do?adminPk="+adminVO.getAdminPk();
+	   
+	   int result = adminService.changeAdminPassword(adminVO);
+	   
+	   if(result > 0 ) {
+		   msg = "비밀번호 변경 완료";
+		   
+	   }else {
+		   msg = "비밀번호 변경 실패";
+	   }
+	   
+	   model.addAttribute("msg", msg);
+	   model.addAttribute("url", url);
+	   
+	   return "common/message";
    }
 
 }

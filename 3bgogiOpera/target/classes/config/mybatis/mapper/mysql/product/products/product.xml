@@ -6,6 +6,7 @@
 
 	<resultMap type="com.gogi.proj.product.products.vo.ProductsVO" id="productModel">
 		<id property="productPk" column="product_pk" javaType="int"/>
+		<result property="cfFk" column="cf_fk" javaType="int"/>
 		<result property="productName" column="product_name" javaType="String"/>
 		<result property="productFlag" column="product_flag" javaType="boolean"/>
 		<result property="productRemark" column="product_remark" javaType="String"/>
@@ -29,9 +30,29 @@
 		</collection>
 	</resultMap>
 	
+	<update id="updateProducts" parameterType="ProductsVO">
+		UPDATE
+			products
+		SET
+			product_name = #{productName},
+			product_flag = #{productFlag},
+			product_remark = #{productRemark},
+			product_memo1 = #{productMemo1},
+			product_memo2 = #{productMemo2},
+			product_memo3 = #{productMemo3},
+			product_memo4 = #{productMemo4},
+			product_memo5 = #{productMemo5},
+			product_memo6 = #{productMemo6},
+			product_thumbnail1 = #{productThumbnail1},
+			product_thumbnail2 = #{productThumbnail2}
+		WHERE
+			product_pk = #{productPk}
+	</update>
+	
 	<select id="selectDetailProductWithOptionByProductPk" resultMap="productModel" parameterType="int">
 		SELECT
 			pro.product_pk,
+			pro.cf_fk,
 			pro.product_name,
 			pro.product_flag,
 			pro.product_remark,
@@ -61,6 +82,7 @@
 		 pro.product_pk = #{productPk}
 		GROUP BY
 			pro.product_pk,
+			pro.cf_fk,
 			pro.product_name,
 			pro.product_flag,
 			pro.product_remark,

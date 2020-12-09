@@ -66,6 +66,7 @@
 		
 		<result property="orExcelDivFlag" column="or_excel_div_flag" javaType="boolean"/>
 		<result property="orFk" column="or_fk" javaType="int"/>
+		<result property="edtFk" column="edt_fk" javaType="int"/>
 		
 		<!-- 상품명 매칭 -->
 		<collection property="productMatchingVOList" ofType="ProductMatchingVO">
@@ -131,14 +132,13 @@
 		<result property="orReceiverContractNumber1" column="or_receiver_contract_number1" javaType="String"/>
 		<result property="orTotalPrice" column="or_total_price" javaType="int"/>
 		<result property="totalOrderCount" column="total_order_count" javaType="int"/>
-		
 		<result property="orAmount" column="or_amount" javaType="int"/>
 		<result property="orCancledQty" column="or_cancled_qty" javaType="int"/>
 		<result property="totalOrderCount" column="total_order_count" javaType="int"/>
 		<result property="orSendingDeadline" column="or_sending_deadline" javaType="java.sql.Date"/>
 		<result property="orSendingDay" column="or_sending_day" javaType="java.sql.Timestamp"/>
 		<result property="orRefunds" column="or_refunds" javaType="int"/>
-
+		<result property="orTotalExcelDiv" column="or_total_excel_div" javaType="int"/>
 	</resultMap>
 	
 	
@@ -162,7 +162,8 @@
 			SUM(datas.or_cancled_qty) AS or_cancled_qty,
 			datas.or_sending_deadline,
 			GROUP_CONCAT(DISTINCT datas.or_sending_day SEPARATOR ',') AS or_sending_day,
-			SUM(datas.or_refunds) AS or_refunds
+			SUM(datas.or_refunds) AS or_refunds,
+			datas.edt_fk
 		FROM
             (
             SELECT
@@ -193,7 +194,8 @@
 					WHEN od.or_cancled_flag = 1
 					THEN
 						SUM(od.or_amount)
-				END AS or_cancled_qty
+				END AS or_cancled_qty,
+				od.edt_fk
 			FROM
 				orders od
 				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
@@ -243,7 +245,8 @@
 				od.or_sending_day,
 				od.or_cancled_flag,
 				od.or_refunds,
-				od.or_settlement_day
+				od.or_settlement_day,
+				od.edt_fk
 			ORDER BY
 				od.or_settlement_day DESC
 			) datas
@@ -258,7 +261,8 @@
 			datas.or_delivery_company,
 			datas.or_buyer_contract_number1,
 			datas.or_receiver_contract_number1,
-			datas.or_sending_deadline
+			datas.or_sending_deadline,
+			datas.edt_fk
 		<trim prefix="HAVING" prefixOverrides="AND |OR ">
 			<if test="cancledFlag == 1">
 				AND SUM(datas.or_cancled_qty) IS NULL
@@ -287,8 +291,17 @@
 						LEFT JOIN options op ON om.option_fk = op.option_pk
 						LEFT JOIN products pro ON pro.product_pk = op.product_fk
 						<trim prefix="WHERE" prefixOverrides="AND |OR ">
+									<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+											AND or_invoice_num_date IN
+											<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+												#{inoviceNum}
+											</foreach>
+										</if>
 									<if test="ssPk != 0">
 										AND od.ss_fk = #{ssPk}
+									</if>
+									<if test="edtFk != 0">
+										AND edt_fk = #{edtFk}
 									</if>
 									<if test="datePeriod == 0">
 										<![CDATA[
@@ -459,8 +472,17 @@
 							LEFT JOIN options op ON om.option_fk = op.option_pk
 							LEFT JOIN products pro ON pro.product_pk = op.product_fk
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
+										<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+											AND or_invoice_num_date IN
+											<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+												#{inoviceNum}
+											</foreach>
+										</if>
 										<if test="ssPk != 0">
 											AND od.ss_fk = #{ssPk}
+										</if>
+										<if test="edtFk != 0">
+											AND edt_fk = #{edtFk}
 										</if>
 										<if test="datePeriod == 0">
 											<![CDATA[
@@ -634,7 +656,8 @@
 				SUM(datas.or_cancled_qty) AS or_cancled_qty,
 				datas.or_sending_deadline,
 				GROUP_CONCAT(DISTINCT datas.or_sending_day SEPARATOR ',') AS or_sending_day,
-				SUM(datas.or_refunds) AS or_refunds
+				SUM(datas.or_refunds) AS or_refunds,
+				datas.edt_fk
 			FROM
 	            (
 	            SELECT
@@ -656,6 +679,7 @@
 					od.or_cancled_flag,
 					od.or_refunds,
 					od.or_settlement_day,
+					od.edt_fk,
 					CASE
 						WHEN od.or_cancled_flag = 0
 						THEN
@@ -715,7 +739,8 @@
 					od.or_sending_day,
 					od.or_cancled_flag,
 					od.or_refunds,
-					od.or_settlement_day
+					od.or_settlement_day,
+					od.edt_fk
 				ORDER BY
 					od.or_settlement_day DESC
 				) datas
@@ -730,7 +755,8 @@
 				datas.or_delivery_company,
 				datas.or_buyer_contract_number1,
 				datas.or_receiver_contract_number1,
-				datas.or_sending_deadline
+				datas.or_sending_deadline,
+				datas.edt_fk
 			<trim prefix="HAVING" prefixOverrides="AND |OR ">
 				<if test="cancledFlag == 1">
 					AND SUM(datas.or_cancled_qty) IS NULL
@@ -759,8 +785,17 @@
 							LEFT JOIN options op ON om.option_fk = op.option_pk
 							LEFT JOIN products pro ON pro.product_pk = op.product_fk
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
+										<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+											AND or_invoice_num_date IN
+											<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+												#{inoviceNum}
+											</foreach>
+										</if>
 										<if test="ssPk != 0">
 											AND od.ss_fk = #{ssPk}
+										</if>
+										<if test="edtFk != 0">
+											AND edt_fk = #{edtFk}
 										</if>
 										<if test="datePeriod == 0">
 											<![CDATA[
@@ -930,8 +965,17 @@
 								LEFT JOIN options op ON om.option_fk = op.option_pk
 								LEFT JOIN products pro ON pro.product_pk = op.product_fk
 								<trim prefix="WHERE" prefixOverrides="AND |OR ">
+											<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+												AND or_invoice_num_date IN
+												<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+													#{inoviceNum}
+												</foreach>
+											</if>
 											<if test="ssPk != 0">
 												AND od.ss_fk = #{ssPk}
+											</if>
+											<if test="edtFk != 0">
+												AND edt_fk = #{edtFk}
 											</if>
 											<if test="datePeriod == 0">
 												<![CDATA[
@@ -1110,7 +1154,8 @@
             datas.or_product_option,
             datas.or_inflow_route,
 			datas.product_name AS or_user_column1,
-			datas.option_name AS or_user_column2
+			datas.option_name AS or_user_column2,
+			datas.edt_fk
 		FROM
             (
             SELECT
@@ -1134,6 +1179,7 @@
 				od.or_cancled_flag,
 				od.or_refunds,
 				od.or_settlement_day,
+				od.edt_fk,
 				CASE
 					WHEN od.or_cancled_flag = 0
 					THEN
@@ -1206,7 +1252,8 @@
                 od.or_product_option,
                 od.or_inflow_route,
                 pro.product_name,
-                op.option_name
+                op.option_name,
+                od.edt_fk
 			) datas
 		GROUP BY
 			datas.or_serial_special_number,
@@ -1228,7 +1275,8 @@
             datas.or_settlement_day,
             datas.total_amounts,
 			datas.product_name,
-			datas.option_name
+			datas.option_name,
+			datas.edt_fk
 		<trim prefix="HAVING" prefixOverrides="AND |OR ">
 			<if test="cancledFlag == 1">
 				AND SUM(inne.or_cancled_qty) IS NULL
@@ -1257,8 +1305,17 @@
 						LEFT JOIN options op ON om.option_fk = op.option_pk
 						LEFT JOIN products pro ON pro.product_pk = op.product_fk
 						<trim prefix="WHERE" prefixOverrides="AND |OR ">
+									<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+											AND or_invoice_num_date IN
+											<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+												#{inoviceNum}
+											</foreach>
+										</if>
 									<if test="ssPk != 0">
 										AND od.ss_fk = #{ssPk}
+									</if>
+									<if test="edtFk != 0">
+										AND edt_fk = #{edtFk}
 									</if>
 									<if test="datePeriod == 0">
 										<![CDATA[
@@ -1427,8 +1484,17 @@
 							LEFT JOIN options op ON om.option_fk = op.option_pk
 							LEFT JOIN products pro ON pro.product_pk = op.product_fk
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
+										<if test="createInvoiceNumList != null and createInvoiceNumList.size != 0">
+											AND or_invoice_num_date IN
+											<foreach collection="createInvoiceNumList" item="inoviceNum" open="(" close=")" separator=",">
+												#{inoviceNum}
+											</foreach>
+										</if>
 										<if test="ssPk != 0">
 											AND od.ss_fk = #{ssPk}
+										</if>
+										<if test="edtFk != 0">
+											AND edt_fk = #{edtFk}
 										</if>
 										<if test="datePeriod == 0">
 											<![CDATA[

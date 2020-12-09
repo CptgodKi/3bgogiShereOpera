@@ -54,4 +54,10 @@ public class ProductsDAOMybatis extends SqlSessionDaoSupport implements Products
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectProductOptionList");
 	}
+
+	@Override
+	public int updateProducts(ProductsVO proVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(namespace+".updateProducts", proVO);
+	}
 }
