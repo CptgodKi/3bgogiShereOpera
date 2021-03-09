@@ -138,6 +138,7 @@
                     	<form class="row" id="searchCustomerInfo" action="<c:url value='/orders/search/customer_orders.do'/>" method="get">
                     		<input type="hidden" name="searchCondition" >
                         	<input type="hidden" name="currentPage" value="${osVO.currentPage}">
+                        	<input type="hidden" name="excelOrFk" value="0">
                         <!-- ============================================================== -->
                         <!-- search bar  -->
                         <!-- ============================================================== -->
@@ -232,6 +233,11 @@
 															 selected="selected"
 														</c:if>
 								                    >수령인</option>
+								                    <option value="anotherName"
+								                    	<c:if test="${osVO.searchType == 'anotherName' }">
+															 selected="selected"
+														</c:if>
+								                    >송장표기명</option>
 								                    <option value="buyerNum"
 								                    	<c:if test="${osVO.searchType == 'buyerNum' }">
 															 selected="selected"
@@ -331,7 +337,11 @@
                             	<div class="card-body" style="padding-bottom: 5px;">
 	                            	<div class="form-inline">
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="outputPosiv">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.outputPosiv != 0 }">
+			                            			selected-values
+			                            		</c:if>
+			                            	" name="outputPosiv">
 			                            		<option value="0"
 			                            			<c:if test="${osVO.outputPosiv == 0 }">
 			                            				selected="selected"
@@ -350,7 +360,12 @@
 			                            	</select>
 		                            	</div>
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="deliveryInvoiceFlag">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.deliveryInvoiceFlag != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="deliveryInvoiceFlag">
 			                            		<option value="0"
 			                            			<c:if test="${osVO.deliveryInvoiceFlag == 0 }">
 														selected="selected"
@@ -369,7 +384,12 @@
 			                            	</select>
 		                            	</div>
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="reservationType">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.reservationType != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="reservationType" >
 			                            		<option value="0"
 			                            			<c:if test="${osVO.reservationType == 0 }">
 														selected="selected"
@@ -388,7 +408,35 @@
 			                            	</select>
 		                            	</div>
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="refundFlag">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.depositFlag != 0 }">
+			                            			selected-values
+			                            		</c:if>
+			                            	" name="depositFlag" >
+			                            		<option value="0"
+			                            			<c:if test="${osVO.depositFlag == 0 }">
+														selected="selected"
+													</c:if>
+			                            		> 입금 여부 </option>
+			                            		<option value="1"
+			                            			<c:if test="${osVO.depositFlag == 1 }">
+														selected="selected"
+													</c:if>
+			                            		> 입금 완료</option>
+			                            		<option value="2"
+			                            			<c:if test="${osVO.depositFlag == 2 }">
+														selected="selected"
+													</c:if>
+			                            		> 입금 대기</option>
+			                            	</select>
+		                            	</div>
+		                            	<div class="form-group">                            	
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.refundFlag != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="refundFlag" >
 			                            		<option value="0"
 			                            			<c:if test="${osVO.refundFlag == 0 }">
 			                            				selected="selected"
@@ -407,7 +455,12 @@
 			                            	</select>
 		                            	</div>
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="cancledFlag">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.cancledFlag != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="cancledFlag" >
 			                            		<option value="0"
 			                            			<c:if test="${osVO.cancledFlag == 0 }">
 			                            				selected="selected"
@@ -428,6 +481,40 @@
 			                            				selected="selected"
 			                            			</c:if>
 			                            		>취소만</option>
+			                            	</select>
+		                            	</div>
+		                            	<div class="form-group">                            	
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.excelFlag != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="excelFlag" >
+			                            		<option value="0"
+			                            			<c:if test="${osVO.excelFlag == 0 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>대량주소 여부</option>
+			                            		<option value="1"
+			                            			<c:if test="${osVO.excelFlag == 1 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>대량주소 원본파일</option>
+			                            		<option value="2"
+			                            			<c:if test="${osVO.excelFlag == 2 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>대량주소 대상파일</option>
+			                            		<option value="3"
+			                            			<c:if test="${osVO.excelFlag == 3 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>대량주소 원본,대상파일</option>
+			                            		<option value="4"
+			                            			<c:if test="${osVO.excelFlag == 4 }">
+			                            				selected="selected"
+			                            			</c:if>
+			                            		>대량주소 원본파일 제외</option>
 			                            	</select>
 		                            	</div>
 		                            	<!-- <div class="form-group">                            	
@@ -493,7 +580,12 @@
 			                            	</select>
 		                            	</div> --%>
 		                            	<div class="form-group">                            	
-			                            	<select class="form-control" name="specialReq">
+			                            	<select class="form-control
+			                            		<c:if test="${osVO.specialReq != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+			                            	" name="specialReq" >
 			                            		<option value="0"
 			                            			<c:if test="${osVO.specialReq == 0 }">
 			                            				selected="selected"
@@ -529,7 +621,47 @@
 											</select>
 				                        </div>
 				                        <div class="form-group">
-					                        <select class="form-control" name="edtFk">
+					                        <select class="form-control
+					                        	<c:if test="${osVO.receiveType != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+					                        " name="receiveType"  >
+						                        <option value="0"
+						                        	<c:if test="${osVO.receiveType == 0}">
+														selected="selected"
+													</c:if>
+						                        > 상품수령타입 </option>
+												<option value="1"
+													<c:if test="${osVO.receiveType == 1}">
+														selected="selected"
+													</c:if>
+												>택배</option>
+												<option value="2"
+													<c:if test="${osVO.receiveType == 2}">
+														selected="selected"
+													</c:if>
+												>퀵서비스</option>
+												<option value="3"
+													<c:if test="${osVO.receiveType == 3}">
+														selected="selected"
+													</c:if>
+												>방문수령</option>
+												<option value="4"
+													<c:if test="${osVO.receiveType == 3}">
+														selected="selected"
+													</c:if>
+												>제주익일특급</option>
+											</select>
+											
+				                        </div>
+				                        <div class="form-group">
+					                        <select class="form-control
+					                        	<c:if test="${osVO.edtFk != 0 }">
+			                            			selected-values
+			                            				
+			                            		</c:if>
+					                        " name="edtFk"  >
 						                        <option value="0"> 배송타입 </option>
 												<option value="1">우체국택배</option>
 												<option value="3">새벽배송(프레시솔루션)</option>
@@ -568,7 +700,6 @@
 				                        </div>
 	                            	</div>
                             	</div>
-                            	
                             			<div class="card-body" style="padding-top: 0px;">
                             				<div class="btn-group">
 				                            	<select class="form-control" name="searchAddType">
@@ -660,7 +791,6 @@
                             	<div class="card-body" style="padding-top: 0px;">
                             		<div class="btn-group">
 				                    	<button class="btn btn-success btn-xs mb-2" id="delivOutputSaved" type="button" style="margin-right:5px;"> 발송처리 양식 </button>
-				                    	
 				                    	<button class="btn btn-success btn-xs mb-2" id="productOutputSaved" type="button"> 주문서, 라벨지 양식 </button>
 				                    </div> 
                             	</div>
@@ -692,10 +822,12 @@
 	                                		<button class="btn btn-success btn-xs mb-2" id="excelResultDown" type="button"> 검색 결과 엑셀 다운로드 </button>
 	                                		<button class="btn btn-brand btn-xs mb-2" id="delivResultBtn" type="button"> 발송 결과 보기 </button>
 	                                		<button class="btn btn-success btn-xs mb-2 createNewOrder" type="button" id="createNewOrder"> 새주문생성 </button>
+	                                		<button class="btn btn-success btn-xs mb-2 createOrderByOrderInfo" type="button" id="createOrderByOrderInfo"> 기존정보로 새주문생성</button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="addProductButton"> 상품추가 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="aligoSmsBtn"> 문자 보내기 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="changeSendingDeadlineBtn"> 발송일 변경 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="combineOrderButton"> 주문서 합치기 및 정보변경</button>
+	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="pickUpServiceBtn"> 수령방식변경 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="devideOrderButton"> 주문서 나누기 </button>
 	                                		<button class="btn btn-danger btn-xs mb-2" type="button" id="deleteDelivButton"> 송장 삭제 </button>
 	                                		<button class="btn btn-primary btn-xs mb-2" type="button" id="outputBtn"> 발송 하기 </button>
@@ -717,7 +849,7 @@
 		                                                <th scope="col">ID</th>
 		                                                <th scope="col">발송기한</th>
 		                                                <th scope="col">판매처</th>
-		                                                <th scope="col">구매자/수령인</th>
+		                                                <th scope="col">구매자(표기명)/수령인</th>
 		                                                <th scope="col"><i class="fas fa-phone mr-2  text-danger"></i>연락처</th>
 		                                                <th scope="col"><i class="fa fa-map-marker-alt mr-2  text-primary"></i>주소</th>
 		                                                <th scope="col">주문건</th>
@@ -736,7 +868,12 @@
 		                                        	<c:if test="${!empty orderList }">
 		                                        		<c:set var="now" value="<%=new java.util.Date()%>" />
 		                                        		<c:forEach var="orderlist" items="${orderList }">
-				                                            <tr>
+		                                        		
+				                                            <tr
+				                                            	<c:if test="${orderlist.orExcelDivCount > 0 }">
+				                                            		style='background-color:#FFC6C6;'
+				                                            	</c:if>
+				                                            >
 				                                                <td scope="row" class="checkTd">
 				                                                	<label class="custom-control custom-checkbox be-select-all">
 										                                <input class="custom-control-input chk_all" type="checkbox" name="orSerialSpecialNumberList" 
@@ -770,8 +907,7 @@
 				                                                <td>
 				                                                	${orderlist.ssName }
 				                                                </td>
-				                                                
-				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">${orderlist.orBuyerName }/<br>
+				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">${orderlist.orBuyerName }(${orderlist.orBuyerAnotherName ==  null ? ' - ' :  orderlist.orBuyerAnotherName })/<br>
 				                                                	${orderlist.orReceiverName }
 				                                                </td>
 				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">${orderlist.orBuyerContractNumber1 }/<br>
@@ -779,6 +915,10 @@
 				                                                </td>
 				                                                <td  class="orderDetails" data-serial-num="${orderlist.orSerialSpecialNumber }" data-toggle="modal" data-target="#customerOrderModal">
 			                                                       	${orderlist.orShippingAddress } ${orderlist.orShippingAddressDetail }  
+			                                                       	<c:if test="${orderlist.orDepositFlag == true }">
+			                                                       		<br>
+			                                                       		 <span class="text-danger">- 해당 주문건은 입금이 확인되지 않았습니다 -</span>
+			                                                       	</c:if>
 			                                                    </td>
 			                                                    <td>
 			                                                    	${orderlist.totalOrderCount } 건
@@ -787,40 +927,87 @@
 			                                                    	<c:if test="${orderlist.orCancledQty > 0 }">
 			                                                    		<br> <span class="text-danger">취소  ${orderlist.orCancledQty } 개 </span>
 			                                                    	</c:if>
-			                                                    	
 			                                                    	<c:if test="${orderlist.orRefunds > 0 }">
 			                                                    		<br> <span class="text-danger">환불  ${orderlist.orRefunds } 개 </span>
 			                                                    	</c:if>
 			                                                    </td>
-			                                                    
-			                                                    <td><fmt:formatNumber value="${orderlist.orTotalPrice }" pattern="#,###"/> 원
-			                                                    </td>
-			                                                    <td style="text-align: center;">
-			                                                    	<c:if test="${empty orderlist.orDeliveryInvoiceNumber }">
-			                                                    		<button type="button" class="btn btn-outline-success btn-xs insertDelivNum" value="${orderlist.orSerialSpecialNumber }">송장직접입력</button>
-			                                                    	</c:if>
-			                                                    	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber }">
-			                                                    	
-			                                                    		<c:forEach var="edtlist" items="${edtList }">
-			                                                    			<c:if test="${orderlist.edtFk == edtlist.edtPk }">
-					                                                    		<a onclick="searchDeliveryState('${edtlist.edtUrl }','${orderlist.orDeliveryInvoiceNumber}')" href="javascript:void(0)">
-					                                                    			${orderlist.orDeliveryInvoiceNumber }<br>
-					                                                    			${edtlist.edtType }
-					                                                    		</a>
-			                                                    			</c:if>
-			                                                    		</c:forEach>
-			                                                    		
-			                                                    	</c:if>
-			                                                    </td>
 			                                                    <td>
-			                                                    	<c:if test="${empty orderlist.orSendingDay  }">
-			                                                    		-
-			                                                    	</c:if>
-			                                                    	<c:if test="${!empty orderlist.orSendingDay  }">
-			                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="yyyy-MM-dd"/><br>
-			                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="HH:mm:ss"/>
-			                                                    	</c:if>
+			                                                    	<fmt:formatNumber value="${orderlist.orTotalPrice }" pattern="#,###"/> 원 
+			                                                    	
 			                                                    </td>
+			                                                    <c:if test="${orderlist.orRecType > 0 }">
+			                                                    	<c:if test="${orderlist.orDepositFlag == true }">
+				                                                    	<td colspan="2" style="text-align: center;">
+				                                                    		<button  type="button" class="btn btn-rounded btn-success btn-xs" value="${orderlist.orSerialSpecialNumber }" name="depositBtn">입금완료처리</button>
+				                                                    	</td>
+				                                                    </c:if>
+				                                                    <c:if test="${orderlist.orDepositFlag == false }">
+					                                                    <td style="text-align: center;">
+					                                                    	<c:if test="${empty orderlist.orDeliveryInvoiceNumber }">
+					                                                    		<c:if test="${orderlist.orRecType == 1 }">
+					                                                    			- 퀵서비스 예정 -
+					                                                    		</c:if>
+					                                                    		<c:if test="${orderlist.orRecType == 2 }">
+					                                                    			- 방문수령 예정 -
+					                                                    		</c:if>
+					                                                    	</c:if>
+					                                                    	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber }">
+					                                                    		${orderlist.orDeliveryInvoiceNumber}<br>
+					                                                    		<c:if test="${orderlist.orRecType == 1 }">
+					                                                    			- 퀵서비스 -
+					                                                    		</c:if>
+					                                                    		<c:if test="${orderlist.orRecType == 2 }">
+					                                                    			- 방문수령 -
+					                                                    		</c:if>
+					                                                    	</c:if>
+					                                                    </td>
+					                                                    <td>
+					                                                    	<c:if test="${empty orderlist.orSendingDay  }">
+					                                                    		-
+					                                                    	</c:if>
+					                                                    	<c:if test="${!empty orderlist.orSendingDay  }">
+					                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="yyyy-MM-dd"/><br>
+					                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="HH:mm:ss"/>
+					                                                    	</c:if>
+					                                                    </td>
+				                                                    </c:if>
+			                                                    </c:if>
+			                                                    
+			                                                    <c:if test="${orderlist.orRecType == 0 }">
+			                                                    	<c:if test="${orderlist.orDepositFlag == true }">
+				                                                    	<td colspan="2" style="text-align: center;">
+				                                                    		<button  type="button" class="btn btn-rounded btn-success btn-xs" value="${orderlist.orSerialSpecialNumber }" name="depositBtn">입금완료처리</button>
+				                                                    	</td>
+				                                                    </c:if>
+				                                                    <c:if test="${orderlist.orDepositFlag == false }">
+					                                                    <td style="text-align: center;">
+					                                                    	<c:if test="${empty orderlist.orDeliveryInvoiceNumber }">
+					                                                    		-
+					                                                    	</c:if>
+					                                                    	<c:if test="${!empty orderlist.orDeliveryInvoiceNumber }">
+					                                                    		<c:forEach var="edtlist" items="${edtList }">
+					                                                    			<c:if test="${orderlist.edtFk == edtlist.edtPk }">
+							                                                    		<a onclick="searchDeliveryState('${edtlist.edtUrl }','${orderlist.orDeliveryInvoiceNumber}')" href="javascript:void(0)">
+							                                                    			${orderlist.orDeliveryInvoiceNumber }<br>
+							                                                    			${edtlist.edtType }
+							                                                    		</a>
+					                                                    			</c:if>
+					                                                    		</c:forEach>
+					                                                    	</c:if>
+					                                                    </td>
+					                                                    <td>
+					                                                    	<c:if test="${empty orderlist.orSendingDay  }">
+					                                                    		-
+					                                                    	</c:if>
+					                                                    	<c:if test="${!empty orderlist.orSendingDay  }">
+					                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="yyyy-MM-dd"/><br>
+					                                                    		<fmt:formatDate value="${orderlist.orSendingDay }" pattern="HH:mm:ss"/>
+					                                                    	</c:if>
+					                                                    </td>
+				                                                    </c:if>
+			                                                    </c:if>
+			                                                    
+			                                                    
 				                                            </tr>
 		                                        		</c:forEach>
 		                                        	</c:if>
@@ -831,8 +1018,9 @@
 	                            </div>
                             </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-								<nav aria-label="Page navigation" style="text-align: center;">
+								<nav aria-label="Page navigation" style="text-align: center;" >
 									<ul class="pagination" style="display: table; margin-left: auto; margin-right: auto;">
+									
 										<c:if test="${osVO.firstPage>1 }">
 											<li class="page-item" style="float:left; padding-top:5px;"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${osVO.firstPage-1})">«</a></li>
 										</c:if>
@@ -905,9 +1093,16 @@
 									<h3 class="font-16">주문 정보</h3>
 									<div class="">
 										<ul class="list-unstyled mb-0" style="font-size: 12px;">
-											<!-- <li class="mb-2" id="orderDetailSettlementDay"></li> -->
+											<li class="mb-2" id="orderDetailSettlementDay"></li>
 											<li class="mb-2" id="orderDetailInflowRoute"></li>
-											<li class="mb-0" id="orderDetailDeliveryPrice"></li>
+											<li class="mb-2" id="orderDetailDeliveryPrice"></li>
+											<br>
+											
+											<li class="mb-2" id="orderDetailRecType" style="display: none; font-size: 16px;"></li>
+											
+											<li class="mb-2" id="orderDetailRecMemo" style="display: none;"></li>
+											<li class="mb-2" id="orderDetailRecStoragePlace" style="display: none;"></li>
+											
 										</ul>
 									</div>
 								</div>
@@ -930,19 +1125,8 @@
 							<div class="influence-profile-content pills-regular">
 								<ul class="nav nav-pills mb-1 nav-justified" id="pills-tab"
 									role="tablist">
-									<li class="nav-item"><a class="nav-link active"
-										id="pills-campaign-tab" data-toggle="pill"
-										href="#pills-campaign" role="tab"
-										aria-controls="pills-campaign" aria-selected="true"> 상품 주문
-											정보 </a></li>
-									<li class="nav-item"><a class="nav-link"
-										id="pills-review-tab" data-toggle="pill" href="#pills-review"
-										role="tab" aria-controls="pills-review" aria-selected="false">
-											cs 내역 </a></li>
-									<li class="nav-item"><a class="nav-link"
-										id="pills-msg-tab" data-toggle="pill" href="#pills-msg"
-										role="tab" aria-controls="pills-msg" aria-selected="false">
-											메모하기 </a></li>
+									<li class="nav-item"><a class="nav-link active" id="pills-campaign-tab" data-toggle="pill" href="#pills-campaign" role="tab" aria-controls="pills-campaign" aria-selected="true"> 주문 정보 </a></li>
+									<li class="nav-item"><a class="nav-link" id="order_cs-tab" data-toggle="pill" href="#order_cs" role="tab" aria-controls="order_cs" aria-selected="false"> cs 내역 </a></li>
 								</ul>
 								<div class="tab-content" id="pills-tabContent">
 									<div class="tab-pane fade show active" id="pills-campaign"
@@ -952,7 +1136,7 @@
 												<div class="card">
 													<div class="card-body">
 														<p>총 주문 건 수</p>
-														<h3 class="mb-1" id="orderDetailOrderQuantity">4 건</h3>
+														<h3 class="mb-1" id="orderDetailOrderQuantity"></h3>
 													</div>
 												</div>
 											</div>
@@ -960,7 +1144,7 @@
 												<div class="card">
 													<div class="card-body">
 														<p>총 상품 건 수</p>
-														<h3 class="mb-1" id="orderDetailProductQuantity">23개</h3>
+														<h3 class="mb-1" id="orderDetailProductQuantity"></h3>
 													</div>
 												</div>
 											</div>
@@ -968,7 +1152,7 @@
 												<div class="card">
 													<div class="card-body">
 														<p>총 주문 금액</p>
-														<h3 class="mb-1" id="orderDetailTotalPrice">143,580 원</h3>
+														<h3 class="mb-1" id="orderDetailTotalPrice"></h3>
 													</div>
 												</div>
 											</div>
@@ -984,125 +1168,34 @@
 											<button class="btn btn-success btn-xs" id="multiMatchingDivBtn"> 복수 매칭 나누기 </button>
 											<button class="btn btn-primary btn-xs" id="excelGiftSetBtn"> 엑셀 주소지 입력 </button>
 										</div>
-										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="orderProductDetailHTML" 
-											style="height: 550px; overflow-y: auto;border: 2px solid #e6e6f2; padding-top: 20px;">
-											<div class="card">
-												<div class="card-body">
-													<div class="row">
-														<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-															<div class="media influencer-profile-data d-flex align-items-center p-2">
-																<div class="media-body ">
-																	<div class="influencer-profile-data">
-																		<h4 class="m-b-10">매칭상품명 : 미국산 소갈비살 , 매칭옵션명 : 구이용
-																			300g</h4>
-																		<p>
-																			<span class="m-r-20 d-inline-block"> 스토어 상품명 <span
-																				class="m-l-10 text-primary"> 삼형제고기 미국산 소갈비살
-																					300g </span>
-																			</span> <span class="m-r-20 d-inline-block"> 스토어 옵션명 <span
-																				class="m-l-10 text-secondary"> 선택: 구이용 </span>
-																			</span>
-																		</p>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="border-top card-footer p-0">
-													<div class="campaign-metrics d-xl-inline-block">
-														<h4 class="mb-0">총 개수</h4>
-														<p>7 개</p>
-													</div>
-													<div class="campaign-metrics d-xl-inline-block">
-														<h4 class="mb-0">배송메세지</h4>
-														<p>빨리 빨리 보내주세요 !</p>
-													</div>
-												</div>
-											</div>
+										<!-- 상품 정보란 -->
+										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="orderProductDetailHTML" style="height: 550px; overflow-y: auto;border: 2px solid #e6e6f2; padding-top: 20px;">
 										</div>
 									</div>
+									
 									<!-- cs 현황쪽 -->
-									<div class="tab-pane fade" id="pills-review" role="tabpanel"
-										aria-labelledby="pills-review-tab">
+									<div class="tab-pane fade" id="order_cs" role="tabpanel" aria-labelledby="order_cs-tab">
 										<div class="card">
-											<h5 class="card-header">Campaign Reviews</h5>
 											<div class="card-body">
-												<div class="review-block">
-													<p class="review-text font-italic m-0">“Quisque
-														lobortis vestibulum elit, vel fermentum elit pretium et.
-														Nullam id ultrices odio. Cras id nulla mollis, molestie
-														diam eu, facilisis tortor. Mauris ultrices lectus laoreet
-														commodo hendrerit. Nullam varius arcu sed aliquam
-														imperdiet. Etiam ut luctus augue.”</p>
-													<div class="rating-star mb-4">
-														<i class="fa fa-fw fa-star"></i> <i
-															class="fa fa-fw fa-star"></i> <i class="fa fa-fw fa-star"></i>
-														<i class="fa fa-fw fa-star"></i> <i
-															class="fa fa-fw fa-star"></i>
-													</div>
-													<span class="text-dark font-weight-bold">Tabitha C.
-														Campbell</span><small class="text-mute"> (Company name)</small>
-												</div>
-											</div>
-										</div>
-										<nav aria-label="Page navigation example"
-											style="text-align: center;">
-											<ul class="pagination">
-												<li class="page-item"><a class="page-link" href="#">Previous</a></li>
-												<li class="page-item"><a class="page-link" href="#">1</a></li>
-												<li class="page-item active"><a class="page-link "
-													href="#">2</a></li>
-												<li class="page-item"><a class="page-link" href="#">3</a></li>
-												<li class="page-item"><a class="page-link" href="#">Next</a></li>
-											</ul>
-										</nav>
-									</div>
-									<div class="tab-pane fade" id="pills-msg" role="tabpanel"
-										aria-labelledby="pills-msg-tab">
-										<div class="card">
-											<h5 class="card-header">Send Messages</h5>
-											<div class="card-body">
-												<form>
-													<div class="row">
-														<div
-															class="offset-xl-3 col-xl-6 offset-lg-3 col-lg-3 col-md-12 col-sm-12 col-12 p-4">
-															<div class="form-group">
-																<label for="name">Your Name</label> <input type="text"
-																	class="form-control form-control-lg" id="name"
-																	placeholder="">
-															</div>
-															<div class="form-group">
-																<label for="email">Your Email</label> <input
-																	type="email" class="form-control form-control-lg"
-																	id="email" placeholder="">
-															</div>
-															<div class="form-group">
-																<label for="subject">Subject</label> <input type="text"
-																	class="form-control form-control-lg" id="subject"
-																	placeholder="">
-															</div>
-															<div class="form-group">
-																<label for="messages">Messgaes</label>
-																<textarea class="form-control" id="messages" rows="3"></textarea>
-															</div>
-															<button type="submit" class="btn btn-primary float-right">Send
-																Message</button>
+												<form class="form-group" id="orderRecordForm">
+													<div class="input-group mb-3">
+														<input type="text" class="form-control" id="aorReason" placeholder="c/s 내역을 입력해주세요">
+														<div class="input-group-append">
+															<button type="submit" class="btn btn-primary"> 입력 </button>
 														</div>
 													</div>
 												</form>
+												<div class="card" id="adminOrderRecordList">
+									
+												</div>
 											</div>
 										</div>
 									</div>
+									
+									
 								</div>
 							</div>
-							<!-- ============================================================== -->
-							<!-- end campaign tab one -->
-							<!-- ============================================================== -->
 						</div>
-						<!-- ============================================================== -->
-						<!-- end campaign data -->
-						<!-- ============================================================== -->
 					</div>
 				</div>
 			</div>

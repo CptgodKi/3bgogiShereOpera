@@ -3,6 +3,7 @@ package com.gogi.proj.delivery.model;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,25 +37,26 @@ public class DeliveryServiceImpl implements DeliveryService{
 	@Transactional
 	public int updateOrderSendingDay(List<String> orPkList, String ip, String adminId) {
 		// TODO Auto-generated method stub
-		int result = 0;
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date today = new Date();
 		String dates = sdf.format(today);
+		Map<String, Object> orderInfo = new HashMap<>();
 		
-		OrdersVO orVO;
-		OrderHistoryVO ohVO = null;
+		
 		Timestamp now = new Timestamp(new Date().getTime());
 		
+		orderInfo.put("orPkList", orPkList);
+		orderInfo.put("orSendingDay", now);
+		
+		int result = deliDao.updateOrderSendingDay(orderInfo);
+		
+		OrderHistoryVO ohVO = null;
 		for(int i=0; i<orPkList.size(); i++) {
-			orVO = new OrdersVO();
-			orVO.setOrSendingDay(now);
-			orVO.setOrPk(Integer.parseInt(orPkList.get(i)));
-			
-			result += deliDao.updateOrderSendingDay(orVO);
-			
+
 			ohVO = new OrderHistoryVO();
 			 
-			ohVO.setOrFk(orVO.getOrPk());
+			ohVO.setOrFk(Integer.parseInt(orPkList.get(i)));
 			ohVO.setOhIp(ip);
 			ohVO.setOhAdmin(adminId);
 			ohVO.setOhEndPoint("출고 - 발송처리");
@@ -146,8 +148,9 @@ public class DeliveryServiceImpl implements DeliveryService{
 		return deliDao.selectSendingExcel(ssVO);
 	}
 
+	@Transactional
 	@Override
-	public int insertSendingRequest(SendingRequestVO srVO) {
+	public int insertSendingRequest(SendingRequestVO srVO, String ip) {
 		// TODO Auto-generated method stub
 		
 		int dupli = deliDao.dupliSendingReq(srVO);
@@ -156,6 +159,22 @@ public class DeliveryServiceImpl implements DeliveryService{
 			return 0;
 			
 		}else {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String today = sdf.format(new Date());
+			
+			List<OrderHistoryVO> ohList = deliDao.selectOrderPkByInvoiceNumber(srVO);
+			
+			for(OrderHistoryVO ohVO : ohList) {
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(srVO.getSrAdminId());
+				ohVO.setOhEndPoint("출고 - 발송처리");
+				ohVO.setOhRegdate(today);
+				ohVO.setOhDetail("강제출고 요청 [ "+srVO.getSrReason()+" ]");
+				
+				logService.insertOrderHistory(ohVO);
+			}
+			
+			
 			return deliDao.insertSendingRequest(srVO);
 			
 		}
@@ -209,6 +228,18 @@ public class DeliveryServiceImpl implements DeliveryService{
 	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO) {
 		// TODO Auto-generated method stub
 		return deliDao.selectSendingResults(ssVO);
+	}
+
+	@Override
+	public List<OrdersVO> godomallAutoSendingTarget(StoreSectionVO ssVO) {
+		// TODO Auto-generated method stub
+		return deliDao.godomallAutoSendingTarget(ssVO);
+	}
+
+	@Override
+	public int nonPickingCount() {
+		// TODO Auto-generated method stub
+		return deliDao.nonPickingCount();
 	}
 	
 }

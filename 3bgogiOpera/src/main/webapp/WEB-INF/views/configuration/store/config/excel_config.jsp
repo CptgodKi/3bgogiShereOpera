@@ -66,6 +66,22 @@
 						                                            <form class="needs-validation" action="<c:url value='/config/store/update/excel_config.do'/>" method="POST">
 						                                            	<input type="hidden" name="sedsPk" value="${sedsVO.sedsPk }">
 						                                            	<input type="hidden" name="ssFk" value="${sedsVO.ssFk }">
+						                                            	<div class="form-group row">
+								                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 엑셀 주문 데이터 시작 행 </label>
+								                                            <div class="col-12 col-sm-8 col-lg-6">
+								                                                <select class="form-control form-control-sm" id="sedsStartRow" name="sedsStartRow">
+								                                                	<option value="-1"> 행을 선택해주세요 </option>
+								                                                	<c:forEach var="i" begin="0" end="10" step="1">                             	
+									                                                    <option value="${i }"
+									                                                    	<c:if test="${sedsVO.sedsStartRow == i }">
+									                                                    		selected="selected"
+									                                                    	</c:if>
+									                                                    >${i + 1} 행</option>
+								                                                	</c:forEach>
+								                                                </select>
+								                                            </div>
+								                                        </div>
+								                                        
 								                                        <div class="form-group row">
 								                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 구매자명 </label>
 								                                            <div class="col-12 col-sm-8 col-lg-6">

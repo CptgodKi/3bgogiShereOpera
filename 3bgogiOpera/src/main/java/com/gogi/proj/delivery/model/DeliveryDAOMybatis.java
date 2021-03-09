@@ -26,9 +26,9 @@ public class DeliveryDAOMybatis extends SqlSessionDaoSupport implements Delivery
 	}
 
 	@Override
-	public int updateOrderSendingDay(OrdersVO orVO) {
+	public int updateOrderSendingDay(Map<String, Object> orderInfo) {
 		// TODO Auto-generated method stub
-		return getSqlSession().update(namespace+".updateOrderSendingDay", orVO);
+		return getSqlSession().update(namespace+".updateOrderSendingDay", orderInfo);
 	}
 
 	@Override
@@ -131,5 +131,23 @@ public class DeliveryDAOMybatis extends SqlSessionDaoSupport implements Delivery
 	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(namespace+".selectSendingResults", ssVO);
+	}
+
+	@Override
+	public List<OrdersVO> godomallAutoSendingTarget(StoreSectionVO ssVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".godomallAutoSendingTarget", ssVO);
+	}
+
+	@Override
+	public int nonPickingCount() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(namespace+".nonPickingCount");
+	}
+
+	@Override
+	public List<OrderHistoryVO> selectOrderPkByInvoiceNumber(SendingRequestVO srVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectOrderPkByInvoiceNumber",srVO);
 	}
 }

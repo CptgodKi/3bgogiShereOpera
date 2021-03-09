@@ -204,10 +204,10 @@ public class MatchingController {
 		model.addAttribute("order_process", 3);
 		
 		//매칭 및 원가 적용
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		/*Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		AdminVO adminVo = (AdminVO)auth.getPrincipal();
-		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());
+		matchingService.matchingsProductAndOrders(request.getRemoteAddr(), adminVo.getUsername());*/
 		
 		return "orders/checking_order_option_matching";
 	}

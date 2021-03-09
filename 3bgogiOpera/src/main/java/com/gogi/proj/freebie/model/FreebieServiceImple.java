@@ -13,6 +13,8 @@ import com.gogi.proj.freebie.vo.FreebieCheckVO;
 import com.gogi.proj.freebie.vo.FreebieVO;
 import com.gogi.proj.orders.model.OrdersDAO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.util.PageUtility;
 
 @Service
 public class FreebieServiceImple implements FreebieService{
@@ -149,6 +151,24 @@ public class FreebieServiceImple implements FreebieService{
 	public int updateFreebieByPk(FreebieVO fbVO) {
 		// TODO Auto-generated method stub
 		return fbDao.updateFreebieByPk(fbVO);
+	}
+
+	@Override
+	public List<FreebieVO> selectFreebies(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return fbDao.selectFreebies(osVO);
+	}
+
+	@Override
+	public int selectFreebieCount(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return fbDao.selectFreebieCount(osVO);
+	}
+
+	@Override
+	public int deleteFreebie(FreebieVO fbVO) {
+		// TODO Auto-generated method stub
+		return fbDao.deleteFreebie(fbVO);
 	}
 	
 }

@@ -73,9 +73,9 @@ body {
 								<thead>
 									<tr>
 										<th scope="col"></th>
-										<th scope="col">등록일</th>
+										<th scope="col">발송기한</th>
 										<th scope="col">구매자</th>
-										<th scope="col">주문인 이름 변경</th>
+										<th scope="col">주문표기명</th>
 										<th scope="col">수령자</th>
 										<th scope="col">주소</th>
 										<th scope="col">구매자핸드폰</th>
@@ -92,7 +92,7 @@ body {
 													<input type="radio" name="changeOrderInfo" class="custom-control-input"
 													data-serial-special-number="${orders.orSerialSpecialNumber }"
 													data-buyer-name="${orders.orBuyerName }"
-													data-buyer-name="${orders.orBuyerAnotherName }"
+													data-buyer-another-name="${orders.orBuyerAnotherName }"
 													data-buyer-contract-number1="${orders.orBuyerContractNumber1 }"
 													data-buyer-contract-number2="${orders.orBuyerContractNumber2 }"
 													data-receiver-name="${orders.orReceiverName }"
@@ -109,12 +109,14 @@ body {
 											</td>
 											<td>${orders.orSendingDeadline }</td>
 											<td>${orders.orBuyerName }</td>
+											<td>${orders.orBuyerAnotherName }</td>
 											<td>${orders.orReceiverName }</td>
 											<td>${orders.orShippingAddress } ${orders.orShippingAddressDetail }</td>
 											<td>${orders.orBuyerContractNumber1 }</td>
 											<td>${orders.orReceiverContractNumber1 }</td>
 											<td>${orders.orDeliveryMessage }</td>
 										</tr>
+										
 									</c:forEach>
 								</tbody>
 							</table>
@@ -141,7 +143,7 @@ body {
 								<input class="form-control" id="orBuyerName" type="text" name="orBuyerName">
 							</div>
 							<div class="form-group">
-								<label for="orBuyerName"> 주문인 이름 변경 </label> 
+								<label for="orBuyerName"> 주문표기명 </label> 
 								<input class="form-control" id="orBuyerAnotherName" type="text" name="orBuyerAnotherName">
 							</div>
 							<div class="form-group">

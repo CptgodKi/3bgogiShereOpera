@@ -44,7 +44,7 @@ public interface DeliveryService {
 	 * @return
 	 * @메소드설명 : 출고 요청 데이터 넣기
 	 */
-	public int insertSendingRequest(SendingRequestVO srVO);
+	public int insertSendingRequest(SendingRequestVO srVO, String ip);
 	
 	
 	/**
@@ -114,4 +114,26 @@ public interface DeliveryService {
 	 * @메소드설명 : 송장부여페이지에서 발송 결과보기
 	 */
 	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO);
+	
+	/**
+	 * 
+	 * @MethodName : godomallAutoSendingTarget
+	 * @date : 2021. 1. 12.
+	 * @author : Jeon KiChan
+	 * @param ssVO
+	 * @return
+	 * @메소드설명 : 고도몰 자동 발송 대상
+	 */
+	public List<OrdersVO> godomallAutoSendingTarget(StoreSectionVO ssVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : nonPickingCount
+	 * @date : 2021. 2. 23.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 분류되지 않은 송장 개수
+	 */
+	public int nonPickingCount();
 }

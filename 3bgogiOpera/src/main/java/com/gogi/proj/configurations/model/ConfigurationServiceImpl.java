@@ -138,5 +138,11 @@ public class ConfigurationServiceImpl implements ConfigurationService{
 		// TODO Auto-generated method stub
 		return configurationDao.selectEventMsgProductKeyword(osVO);
 	}
+
+	@Override
+	public List<StoreSectionVO> storeListOrderInTwoMonth() {
+		// TODO Auto-generated method stub
+		return configurationDao.storeListOrderInTwoMonth();
+	}
 	
 }

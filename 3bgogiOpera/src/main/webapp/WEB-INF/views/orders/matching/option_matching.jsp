@@ -113,9 +113,11 @@ body {
 						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
 							<div class="product-sidebar">
 								<div class="product-sidebar-widget">
-									<h4 class="mb-0"> ${ordersVO.orProduct } </h4> 
-									<h4 class="mb-0"> ${ordersVO.orProductOption } </h4>
+									<h4 class="mb-0">판매처 상품명 : ${ordersVO.orProduct } </h4> 
+									<h4 class="mb-0">판매처 옵션명 : ${ordersVO.orProductOption } </h4>
+									<hr>
 									<h4 class="mb-0"> 선택된 옵션 </h4>
+									
 								</div>
 								<form class="product-sidebar-widget" id="productOptionInsertForm">
 								

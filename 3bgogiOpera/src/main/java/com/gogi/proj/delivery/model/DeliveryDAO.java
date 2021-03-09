@@ -24,7 +24,7 @@ public interface DeliveryDAO {
 	 * @return
 	 * @메소드설명 : 발송처리하기
 	 */
-	public int updateOrderSendingDay(OrdersVO orVO);
+	public int updateOrderSendingDay(Map<String, Object> orderInfo);
 	
 	
 	/**
@@ -225,5 +225,39 @@ public interface DeliveryDAO {
 	 * @메소드설명 : 송장부여페이지에서 발송 결과보기
 	 */
 	public List<OrdersVO> selectSendingResults(StoreSectionVO ssVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : godomallAutoSendingTarget
+	 * @date : 2021. 1. 12.
+	 * @author : Jeon KiChan
+	 * @param ssVO
+	 * @return
+	 * @메소드설명 : 고도몰 자동 발송 대상
+	 */
+	public List<OrdersVO> godomallAutoSendingTarget(StoreSectionVO ssVO);
+	
+	/**
+	 * 
+	 * @MethodName : nonPickingCount
+	 * @date : 2021. 2. 23.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 분류되지 않은 송장 개수
+	 */
+	public int nonPickingCount();
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectOrderPkByInvoiceNumber
+	 * @date : 2021. 3. 3.
+	 * @author : Jeon KiChan
+	 * @param srVO 송장번호
+	 * @return
+	 * @메소드설명 : 강제출고요청의 주문서 고유값 가져오기 
+	 */
+	public List<OrderHistoryVO> selectOrderPkByInvoiceNumber(SendingRequestVO srVO);
 	
 }

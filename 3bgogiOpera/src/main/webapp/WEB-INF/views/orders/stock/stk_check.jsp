@@ -62,9 +62,9 @@
 									<h4> 주문서 진행 단계 </h4>
 									<a href="<c:url value='/orders/order_page.do'/>" class="btn btn-success"> 주문서 입력</a>
 									<a href="<c:url value='/order/config/search_except_addr_order.do'/>" class="btn btn-success"> 특수 지역 체크  </a>
-									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value="/order/matching/products_matching.do"/>" class="btn btn-success"> 상품 매칭 </a> 
 									<a href="<c:url value="/order/matching/option_matching.do"/>" class="btn btn-success"> 옵션 매칭 </a>
+									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value='/orders/delivery_msg_check.do'/>" class="btn btn-success"> 요구사항 체크 </a>
 									<a href="<c:url value='/stock/stk_check.do'/>" class="btn btn-success blinking"> 재고 할당 </a> 
 									<a href="<c:url value='/orders/cancled_order_check.do'/>" class="btn"> 취소 주문  </a>
@@ -103,7 +103,7 @@
                                     	<c:set var="notInv" value="${searchResult[0].notInv == null ? 0 : searchResult[0].notInv }" />
                                     	<c:set var="notOutputToday" value="${searchResult[0].notInv == null ? 0 : searchResult[0].notOutputToday }" />
                                     	<c:set var="specialRegion" value="${searchResult[0].specialRegion == null ? 0 : searchResult[0].specialRegion }" />
-                                    	
+                                    	<c:set var="depositFlag" value="${searchResult[0].depositFlag == null ? 0 : searchResult[0].depositFlag }" />
                                         <tbody>
                                             <tr>
                                                 <td colspan="2">출고가능 ${outputPosiv } 건 (미출고 :  ${notOutputToday } 건)</td>
@@ -121,6 +121,10 @@
                                             <tr>
                                                 <td colspan="2"> 특수지역  ${specialRegion } 건 </td>
                                                 <td colspan="2"><button class="btn btn-outline-danger btn-block" name="stockDetail" value="specialRegion"> 특수지역 목록 </button></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"> 입금대기  ${depositFlag } 건 </td>
+                                                <td colspan="2"><button class="btn btn-outline-danger btn-block" name="stockDetail" value="depositOrder"> 입금대기 목록 </button></td>
                                             </tr>
                                         </tbody>
                                     </table>

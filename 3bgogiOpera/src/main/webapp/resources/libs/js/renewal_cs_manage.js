@@ -3,12 +3,13 @@ jQuery(document).ready(function($) {
 	jQuery.ajaxSettings.traditional = true;
 	
 	var dataChangeFlag = false;
-	
+	var sendingFlag = false;
+	var orSerialSpecialNumber;
 	$(".orderDetails").click(function(){
 		orderOrPk = 0;
 		orderCancledFlag = false;
-		var orSerialSpecialNumber = $(this).data("serial-num");
-		
+		orSerialSpecialNumber = $(this).data("serial-num");
+
 		$.ajax({
 		    type       : 'GET',
 		    data       : {
@@ -21,6 +22,14 @@ jQuery(document).ready(function($) {
 		    	$("#orderDetailCustomerName").text(" 구매자 : "+data[0].orBuyerName+"( id : "+buyerId+")");
 		    	$("#orderDetailReceiverName").text(" 수령자 : "+data[0].orReceiverName);
 		    	$("#orderDetailCustomerPhone").html('<i class="fas fa-fw fa-phone mr-2"></i> 구매자 : '+data[0].orBuyerContractNumber1+" / 수령인 : "+data[0].orReceiverContractNumber1);
+		    	
+		    	if(data[0].orSendingDay != null){
+		    		sendingFlag = true;
+		    		
+		    	}else{
+		    		sendingFlag = false;
+		    	}
+		    	
 		    	var orAddress = "";
 		    	
 		    	if(data[0].orShippingAddressDetail != null){
@@ -37,8 +46,30 @@ jQuery(document).ready(function($) {
 		    		dataChangeFlag=false;
 		    	}
 		    	
+		    	//택배수령
+		    	if(data[0].orRecType == 0){
+		    		$("#orderDetailRecType, #orderDetailRecMemo, #orderDetailRecStoragePlace").hide();
+		    		
+		    	//택배수령이 아닐 경우
+		    	}else if(data[0].orRecType == 1){
+		    		$("#orderDetailRecType, #orderDetailRecMemo, #orderDetailRecStoragePlace").show();
+		    		$("#orderDetailRecType").text(' - 퀵서비스 -');
+		    		$("#orderDetailRecMemo").text(' 수령 시간 및 메모 : '+data[0].orRecMemo);
+		    		$("#orderDetailRecStoragePlace").text(' 보관장소 : '+data[0].orRecStoragePlace);
+		    		
+		    	}else if(data[0].orRecType == 2){
+		    		$("#orderDetailRecType, #orderDetailRecMemo, #orderDetailRecStoragePlace").show();
+		    		$("#orderDetailRecType").text(' - 방문수령 -');
+		    		$("#orderDetailRecMemo").text(' 수령 시간 및 메모 : '+data[0].orRecMemo);
+		    		$("#orderDetailRecStoragePlace").text(' 보관장소 : '+data[0].orRecStoragePlace);
+		    		
+		    	}
+		    	
 		    	$("#orderDetailShippingAddress").html('<i class="fas fa-home mr-2"></i>'+orAddress);
-		    	// $("#orderDetailSettlementDay").text(' 결제일 : '+ allFormatDate(data[0].orSettlementDay));
+		    	
+		    	$("#orderDetailSettlementDay").text(' 결제일 : '+ allFormatDate(data[0].orSettlementDay));
+		    	
+		    	
 		    	
 		    	$("#orderDetailInflowRoute").text(' 유입경로 : '+(data[0].orInflowRoute == null ? " - " : data[0].orInflowRoute));
 		    	
@@ -73,6 +104,9 @@ jQuery(document).ready(function($) {
 		    	$("#orderDetailOrderQuantity").text(data.length+" 개");
 		    	$("#orderDetailProductQuantity").text(productQuantity+" 개");
 		    	$("#orderDetailTotalPrice").text(comma(orderTotalPrice)+" 원");
+		    	
+		    	
+		    	searchOrderRecordList(orSerialSpecialNumber);
 		    	
 		    	productFormView(data);
 		    }
@@ -184,7 +218,7 @@ jQuery(document).ready(function($) {
 						if(orderList[i].orExcelDivFlag == true){
 							
 							orderProductDetailList+='<div class="campaign-metrics d-xl-inline-block">'
-							+'<h4 class="mb-0" style="color: red;"> 해당 주문 건은 대량 엑셀파일로 지정됐습니다 </h4>'
+							+'<h4 class="mb-0" style="color: red;"> 해당 주문 건은 대량 엑셀파일로 지정됐습니다  <a href="#" class="searchExcelTarget" data-excel-or-fk="'+orderList[i].orPk+'">[대상 주문서 검색 ]</a></h4>'
 						+'</div>';
 						
 						}else if(orderList[i].orCancledFlag == true){
@@ -373,6 +407,15 @@ jQuery(document).ready(function($) {
 		orderCancledFlag = $(this).data("cancled-flag");
 	});
 	
+	
+	$(document).on("click", ".searchExcelTarget", function(){
+		$("select[name=excelFlag]").val("2");
+		$("input[name=excelOrFk]").val($(this).data("excel-or-fk"));
+		
+		$("#searchCustomerInfo").submit();
+		
+	});
+	
 	//환불 처리 하기 
 	$("#refundOrderBtn").click(function(){
 		var cancledCount = 0;
@@ -393,6 +436,11 @@ jQuery(document).ready(function($) {
 	//특별 요청 사항 처리하기
 	$("#specialReqBtn").click(function(){
 
+		if(!dataChangeFlag){
+			alert("송장 삭제 및 발송을 취소 후 나눠주세요");
+			return false;
+		}
+		
 		if(orderOrPk == 0){
 			alert("선택된 주문서가 없습니다");
 			
@@ -468,6 +516,10 @@ jQuery(document).ready(function($) {
 			alert("선택된 주문서가 없습니다");
 			
 			return false;
+		}if(sendingFlag == true){
+			alert("발송된 주문서는 지정할 수 없습니다");
+			
+			return false;
 		}
 		
 		window.open("/orders/devide/gift.do?orPk="+orderOrPk, "엑셀 주소지 입력" , "width=800px, height=620px, top=50px, left=50px, scrollbars=no");
@@ -478,7 +530,8 @@ jQuery(document).ready(function($) {
 	$("input[name=changeOrderInfo]").change(function(){
 		
 		var orSerialSpecialNumber = $(this).data("serial-special-number");
-		var orBuyerName = $(this).data("buyer-name"); 
+		var orBuyerName = $(this).data("buyer-name");
+		var orBuyerAnotherName = $(this).data("buyer-another-name"); 
 		var orBuyerContractNumber1 = $(this).data("buyer-contract-number1");
 		var orBuyerContractNumber2 = $(this).data("buyer-contract-number2");
 		var orReceiverName = $(this).data("receiver-name");
@@ -491,8 +544,10 @@ jQuery(document).ready(function($) {
 		var orSendingDeadline = $(this).data("sending-deadline");
 		var orRegdate = $(this).data("regdate");
 		
+		
 		$("#orSendingDeadline").val(orSendingDeadline);
 		$("#orBuyerName").val(orBuyerName);
+		$("#orBuyerAnotherName").val(orBuyerAnotherName);
 		$("#orReceiverName").val(orReceiverName);
 		$("#orShippingAddress").val(orShippingAddress);
 		$("#orShippingAddressDetail").val(orShippingAddressDetail);
@@ -959,6 +1014,161 @@ jQuery(document).ready(function($) {
 		}
 		
 	});
+	
+	$("#cancleOrderPart").click(function(){
+		
+		if(confirm("선택 주문서를 취소처리하시겠습니까?")){
+			
+			if(orderOrPk == 0){
+				alert("선택된 주문서가 없습니다");
+			}else{				
+				
+				$.ajax({
+					type       : 'POST',
+					url        : '/orders/update_cancled_order.do',
+					data       : {"orVoList[0].orPk" : orderOrPk},
+					success    : function(data){
+						alert(data+" 건 취소 처리 완료");
+						location.reload();
+					}
+				
+				});
+			}
+		}
+		
+	});
+	
+	$("button[name='depositBtn']").click(function(){
+		
+		if(confirm("해당 주문건의 입금확인처리를 하겠습니까?")){
+			
+			orSerialSpecialNumber = $(this).val();
+			
+			$.ajax({
+				type       : 'GET',
+				url        : '/orders/check_deposit.do',
+				data       : {"orSerialSpecialNumber" : orSerialSpecialNumber},
+				success    : function(data){
+					if(data == 0){
+						alert("입금 확인처리 실패");
+						location.reload();
+						
+					}else{
+						alert("입금 확인처리 완료");
+						location.reload();
+					}
+				}
+			
+			});
+		}
+		
+	});
+	
+	
+	
+	$("#createOrderByOrderInfo").click(function(){
+		orSize = $("input[name='orSerialSpecialNumberList']:checked").length;
+		
+		if(orSize == 0){
+			alert("선택된 주문서가 없습니다"); 
+			return false;
+		}else if(orSize > 1){
+			alert("한 번에 두 개 이상의 주문서를 생성할 수 없습니다"); 
+			return false;
+		}
+		
+		orSerialSpecialNumber = $("input[name='orSerialSpecialNumberList']:checked").val();
+		
+		window.open('/orders/create/order.do?orSerialSpecialNumber='+orSerialSpecialNumber, "새주문생성" , "width=1500, height=900, top=100, left=100, scrollbars=no");
+		
+	});
+	
+	
+	$("#pickUpServiceBtn").click(function(){
+		orSize = $("input[data-deliv-weiting='1']:checked").length;
+		
+		if(orSize == 0){
+			alert("변경할 수 있는 주문서가 없습니다"); 
+			return false;
+			
+		}else if(orSize > 1){
+			alert("한 번에 두 개 이상의 주문서를 변경할 수 없습니다"); 
+			return false;
+		}
+		
+		orSerialSpecialNumber = $("input[data-deliv-weiting='1']:checked").val();
+		
+		window.open("/orders/pick_up_service.do?orSerialSpecialNumber="+orSerialSpecialNumber, "수령방식변경" , "width=500px, height=620px, top=50px, left=50px, scrollbars=no");
+		
+	});
+	
+	$("#orderRecordForm").submit(function(){
+		
+		aorReason = $("#aorReason").val();
+		
+		if(aorReason == ''){
+			
+			alert("c/s 내역을 입력해주세요 ");
+			
+			$("#aorReason").val("");
+			$("#aorReason").focus();
+			
+			return false;
+			
+		}
+		
+		$.ajax({
+			type       : 'POST',
+			data       : {
+				"aorSerialSpecialNumber":orSerialSpecialNumber,
+				"aorReason":aorReason
+			},
+			url        : '/orders/order_record.do',
+			success    : function(data){		
+				alert("cs 내역 등록 완료");
+				searchOrderRecordList(orSerialSpecialNumber);
+				
+			}
+			
+		});
+		
+		
+		return false;
+		
+	});
+	
+	
+	function searchOrderRecordList(orSerialSpecialNumber){
+		adminOrderRecordListHTML = "";
+		$.ajax({
+			type       : 'GET',
+			data       : {
+				"orSerialSpecialNumber":orSerialSpecialNumber
+			},
+			url        : '/orders/order_record_ajax.do',
+			success    : function(data){		
+				
+				if(data.size != 0){					
+					$.each(data, function(){
+						
+						adminOrderRecordListHTML+='<div class="card-body">'
+							+'<div class="review-block" style="font-size: 13px;">'
+								+'<p class="review-text font-italic m-0">'+this.aorReason+'</p>'
+								+'<span class="text-dark font-weight-bold"> '+this.aorAdminName+' / ( '+this.aorAdminId+' ) </span>'
+								+'<small class="text-mute"> ( '+allFormatDate(this.aorRegdate)+' )</small>'
+							+'</div>'
+						+'</div>';
+					});
+					
+					$("#adminOrderRecordList").html(adminOrderRecordListHTML);
+					
+				}
+			
+				
+			}
+			
+		});
+	}
 
 	
 }); // AND OF JQUERY

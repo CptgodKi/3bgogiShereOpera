@@ -47,6 +47,17 @@
     		}
     	}
     	
+    	function storeAutoSending(sendingTime, store_num){
+    		ssSendingDay = $("#dateStart").val();
+    		
+    		if(confirm("자동 발송처리를 하시겠습니까?")){
+    			location.href="<c:url value='/delivery/godomall_sending.do?ssRegdate="+sendingTime+"&ssPk="+store_num+"&ssSendingDay="+ssSendingDay+"'/>";
+    			
+    		}else{
+    			
+    		}
+    	}
+    	
     	function storeExcelDownload(sendingTime, store_num){
     		
     		if(confirm("발송 엑셀파일을 다운로드 하시겠습니까?")){
@@ -212,14 +223,28 @@
 			                                                	</c:if>
 			                                                </td>
 			                                                <td>
-			                                                	<c:if test="${!empty sendinglist.orOutputDate }">
-			                                                		<button class="btn btn-outline-success" onclick="storeExcelDownload('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">
-			                                                		다운로드
-			                                                		</button>
+			                                                	<c:if test="${!empty sendinglist.orOutputDate}">
+			                                                		<c:if test="${sendinglist.orUserColumn3 == 0 }">
+				                                                		<button class="btn btn-outline-success" onclick="storeExcelDownload('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">
+				                                                		다운로드
+				                                                		</button>
+			                                                		</c:if>
+			                                                		
+			                                                		<c:if test="${sendinglist.orUserColumn3 == 1}">
+			                                                			<button class="btn btn-outline-danger" onclick="storeAutoSending('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">
+				                                                			자동발송
+				                                                		</button>
+			                                                		</c:if>
 			                                                	</c:if>
 			                                                </td>
 			                                                <td>
-			                                                	<button class="btn btn-primary btn-xs" type="button"  onclick="storeSendingResults('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">발송 목록</button>
+			                                                	<c:if test="${!empty sendinglist.orOutputDate }">			                                                	
+				                                                	<button class="btn btn-primary btn-xs" type="button"  onclick="storeSendingResults('<fmt:formatDate value='${sendinglist.orOutputDate }' pattern='yyyy-MM-dd HH:mm:ss'/>', '${sendinglist.ssFk }')">발송 목록</button>
+			                                                	</c:if>
+			                                                	
+			                                                	<c:if test="${empty sendinglist.orOutputDate }">
+			                                                		-
+			                                                	</c:if>
 			                                                </td>
 			                                            </tr>
 	                                        		</c:forEach>

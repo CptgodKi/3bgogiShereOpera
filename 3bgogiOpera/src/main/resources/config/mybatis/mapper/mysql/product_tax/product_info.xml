@@ -193,6 +193,7 @@
 			pi_qty = #{piQty},
 			pi_tax = #{piTax},
 			pi_total_cost = #{piTotalCost},
+			pi_cost = #{piCost},
 			pi_account_receivable = #{piAccountReceivable},
 			pi_remark1 = #{piRemark1},
 			pi_remark2 = #{piRemark2},

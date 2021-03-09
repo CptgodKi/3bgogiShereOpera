@@ -146,13 +146,13 @@
 						                            	<a class="nav-link" href="<c:url value='/order/config/search_except_addr_order.do'/>"> * 특수 지역 체크  </a>
 						                            </li>
 						                            <li class="nav-item">
-						                            	<a class="nav-link" href="<c:url value='/config/freebie/apply.do'/>"> * 사은품 부여 </a>
-						                            </li>
-						                            <li class="nav-item">
 						                            	<a class="nav-link" href="<c:url value="/order/matching/products_matching.do"/>"> * 상품명 매칭 </a>
 						                            </li>
 						                            <li class="nav-item">
 						                            	<a class="nav-link" href="<c:url value="/order/matching/option_matching.do"/>"> * 옵션명 매칭 및 원가체크 </a>
+						                            </li>
+						                            <li class="nav-item">
+						                            	<a class="nav-link" href="<c:url value='/config/freebie/apply.do'/>"> * 사은품 부여 </a>
 						                            </li>
 						                            <li class="nav-item">
 						                            	<a class="nav-link" href="<c:url value='/orders/delivery_msg_check.do'/>"> * 요청 사항 체크 </a>
@@ -164,9 +164,10 @@
 						                            	<a class="nav-link" href="<c:url value='/orders/cancled_order_check.do'/>"> * 취소 주문 체크 </a>
 						                            </li>
 						                            <li class="nav-item">
-						                             	<a class="nav-link" href="<c:url value='/security/epost.do'/>"> * 송장 생성 </a>
+						                             	<a class="nav-link" href="<c:url value='/security/epost.do'/>"> * 송장 부여 </a>
 						                            </li>
                                                 </ul>
+                                                
                                             </div>
                                         </li>
                                     	<li class="nav-item">
@@ -264,6 +265,7 @@
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#configuration_setting" aria-controls="configuration_setting"><i class="fas fa-cogs"></i> 설정 </a>
                                 <div id="configuration_setting" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
+                                    	
                                         <li class="nav-item">
                                             <a class="nav-link" href="<c:url value='/config/store/list.do'/>"> 판매처 설정 </a>
                                         </li>
@@ -304,7 +306,7 @@
                             </li>
                             
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#tax" aria-controls="tax"><i class="fas fa-chart-pie"></i> 세금계산서 </a>
+                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#tax" aria-controls="tax"><i class="fas fa-book"></i> 세금계산서 </a>
                                 <div id="tax" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
@@ -337,6 +339,26 @@
                                     </ul>
                                 </div>
                             </li>
+                            <sec:authorize access="hasRole('ROLE_MASTER')">
+	                             <li class="nav-divider">
+	                               	 관리자 전용
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#logs" aria-controls="logs"> 기록 확인  </a>
+	                                <div id="logs" class="collapse submenu" style="">
+	                                    <ul class="nav flex-column">
+	                                        <li class="nav-item">
+		                                        <a class="nav-link" href="<c:url value='/order/config/delete_order_list.do'/>"> 주문서 삭제 내역 </a>
+		                                    </li>
+		                                    <li class="nav-item">
+		                                    	<a class="nav-link" href="<c:url value='/log/prod_qty_log.do'/>"> 상품 생산 기록 </a>
+		                                    </li>
+	                                        
+	                                    </ul>
+	                                </div>
+	                            </li>
+                            </sec:authorize>
+                            
                         </ul>
                     </div>
                 </nav>

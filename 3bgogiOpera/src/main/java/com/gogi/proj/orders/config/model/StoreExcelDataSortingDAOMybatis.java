@@ -9,6 +9,7 @@ import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.config.vo.StoreCancleExcelDataSortingVO;
 import com.gogi.proj.orders.config.vo.StoreExcelDataSortingVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.orders.vo.OrdersVOList;
 
 @Repository
 public class StoreExcelDataSortingDAOMybatis extends SqlSessionDaoSupport implements StoreExcelDataSortingDAO{
@@ -53,9 +54,9 @@ public class StoreExcelDataSortingDAOMybatis extends SqlSessionDaoSupport implem
 	}
 
 	@Override
-	public List<OrdersVO> cancledOrderSearch(List<OrdersVO> orList) {
+	public List<OrdersVO> cancledOrderSearch(OrdersVOList orVO) {
 		// TODO Auto-generated method stub
-		return getSqlSession().selectList(cancleNamespace+".cancledOrderSearch", orList);
+		return getSqlSession().selectList(cancleNamespace+".cancledOrderSearch", orVO);
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class ProductOptionVO {
 	private int anotherOptionPk;
 	private int optionSupplyCost;
 	private int anotherOptionQty;
-	
+	private int prodSorting;
 	
 	private List<ProductInputListVO> pilList;
 	
@@ -134,6 +134,14 @@ public class ProductOptionVO {
 		this.anotherOptionQty = anotherOptionQty;
 	}
 	
+	public int getProdSorting() {
+		return prodSorting;
+	}
+
+	public void setProdSorting(int prodSorting) {
+		this.prodSorting = prodSorting;
+	}
+
 	public List<ProductInputListVO> getPilList() {
 		return pilList;
 	}

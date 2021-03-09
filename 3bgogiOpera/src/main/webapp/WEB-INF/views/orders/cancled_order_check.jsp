@@ -17,6 +17,20 @@
     			
     		});
     		
+    		$("#ssPk").change(function(){
+    			if($(this).val() == 14){
+    				$("#smartstore").hide();
+    				$("#autoStore").show();
+    				
+    				
+    			}else{
+    				$("#smartstore").show();
+    				$("#autoStore").hide();
+
+    			}
+    			
+    		});
+    		
     		$("input[name=orPk]").click(function(){
     			
     			if($(this).is(":checked")){
@@ -77,9 +91,9 @@
 									<h4> 주문서 진행 단계 </h4>
 									<a href="<c:url value='/orders/order_page.do'/>" class="btn btn-success"> 주문서 입력</a>
 									<a href="<c:url value='/order/config/search_except_addr_order.do'/>" class="btn btn-success"> 특수 지역 체크  </a>
-									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value="/order/matching/products_matching.do"/>" class="btn btn-success"> 상품 매칭 </a> 
 									<a href="<c:url value="/order/matching/option_matching.do"/>" class="btn btn-success"> 옵션 매칭 </a>
+									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value='/orders/delivery_msg_check.do'/>" class="btn btn-success"> 요구사항 체크 </a>
 									<a href="<c:url value='/stock/stk_check.do'/>" class="btn btn-success"> 재고 할당 </a> 
 									<a href="<c:url value='/orders/cancled_order_check.do'/>" class="btn btn-success blinking"> 취소 주문  </a>
@@ -107,8 +121,10 @@
 													</c:if>
 												</select> 
                                             </div>
-                                            <div class="col-9 col-lg-10">
+                                            
+                                            <div class="col-9 col-lg-10 col-form-label">
                                                 <input id="smartstore" type="file" name="excelfile" class="form-control">
+                                                <input id="autoStore" type="text" name="" class="form-control" style="display: none;" value="자동화 작업이 진행됩니다" readonly="readonly">
                                             </div>
                                         </div>
                                         <div class="row pt-2 pt-sm-5 mt-1">
@@ -122,8 +138,8 @@
                                 </div>
                             </div>
                         </div>
-					</div>
-					<c:if test="${!empty cancledOrderList }">					
+					</div>				
+					
 						<div class="row">
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 	                            <div class="card">
@@ -148,45 +164,66 @@
 	                                                <th scope="col">전체보기</th>
 	                                            </tr>
 	                                        </thead>
+	                                        
 	                                        <tbody>
-	                                        	<c:forEach var="cancleList" items="${cancledOrderList }">
+	                                        	<c:if test="${empty cancleCheckFlag and empty cancledOrderList }">
+	                                        		 <tr>
+	                                        		 	<td colspan="7" style="text-align: center;"> 취소주문을 체크해주세요</td>
+	                                        		 </tr>
+	                                        		 
+	                                        	</c:if>
+	                                        	
+	                                        	
+	                                        	
+	                                        	<c:if test="${cancleCheckFlag == true and empty cancledOrderList }">
+	                                        		 <tr>
+	                                        		 	<td colspan="7" style="text-align: center;"> 취소주문건이 존재하지 않습니다</td>
+	                                        		 </tr>
+	                                        	</c:if>
+	                                        	
+	                                        	
+	                                        	<c:if test="${cancleCheckFlag == true and !empty cancledOrderList }">	     
 	                                        		<tr>
-		                                                <th scope="row">
-		                                                	<label class="custom-control custom-checkbox be-select-all">
-		                                                		<input class="custom-control-input chk_all" type="checkbox" name="orPk" value="${cancleList.orPk }">
-		                                                		<span class="custom-control-label"></span>
-		                                                	</label>
-		                                                </th>
-		                                                <td>
-		                                                	${cancleList.orBuyerName } <br>
-		                                                	${cancleList.orBuyerContractNumber1 }
-		                                                </td>
-		                                                <td>
-		                                                	${cancleList.orReceiverName } <br>
-		                                                	${cancleList.orReceiverContractNumber1 }
-		                                                </td>
-		                                                <td>
-		                                                	${cancleList.orShippingAddress } ${cancleList.orShippingAddressDetail }
-		                                                </td>
-		                                                <td>
-		                                                	${cancleList.orProduct } <br>
-		                                                	${cancleList.orProductOption }
-		                                                </td>
-		                                                <td>
-		                                                	${cancleList.orAmount }
-		                                                </td>
-		                                                <td>
-		                                                	<button class="btn btn-outline btn-success" value="${cancleList.orSerialSpecialNumber }"> 보기 </button>
-		                                                </td>
-		                                            </tr>
-	                                        	</c:forEach>
+			                                        	<td colspan="7" style="text-align: center;"> 해당 취소건에 대한 사은품 지급여부를 꼭 확인해주세요 사은품은 취소되지 않습니다 </td>
+			                                        </tr>                                   	
+		                                        	<c:forEach var="cancleList" items="${cancledOrderList }">
+		                                        		<tr>
+			                                                <th scope="row">
+			                                                	<label class="custom-control custom-checkbox be-select-all">
+			                                                		<input class="custom-control-input chk_all" type="checkbox" name="orPk" value="${cancleList.orPk }">
+			                                                		<span class="custom-control-label"></span>
+			                                                	</label>
+			                                                </th>
+			                                                <td>
+			                                                	${cancleList.orBuyerName } <br>
+			                                                	${cancleList.orBuyerContractNumber1 }
+			                                                </td>
+			                                                <td>
+			                                                	${cancleList.orReceiverName } <br>
+			                                                	${cancleList.orReceiverContractNumber1 }
+			                                                </td>
+			                                                <td>
+			                                                	${cancleList.orShippingAddress } ${cancleList.orShippingAddressDetail }
+			                                                </td>
+			                                                <td>
+			                                                	${cancleList.orProduct } <br>
+			                                                	${cancleList.orProductOption }
+			                                                </td>
+			                                                <td>
+			                                                	${cancleList.orAmount }
+			                                                </td>
+			                                                <td>
+			                                                	<button class="btn btn-outline btn-success" value="${cancleList.orSerialSpecialNumber }"> 보기 </button>
+			                                                </td>
+			                                            </tr>
+		                                        	</c:forEach>
+	                                        	</c:if>
 	                                        </tbody>
 	                                    </table>
 	                                </div>
 	                            </div>
 	                        </div>
 						</div>
-					</c:if>
 	            </div>
 	             <iframe id="cancledOrderIframe" width="0" height="0" style="display: none;">
                     	

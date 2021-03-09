@@ -58,7 +58,7 @@ public class OrdersVOGetterSetting {
 	
 	public List<String> excelIOOrdersToeosSeq(ExcelOrderSeqVO eosVO){
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		List<String> IOList = new ArrayList<String>(3);
 		
 		IOList.add(eosVO.getEosSeq()+"");

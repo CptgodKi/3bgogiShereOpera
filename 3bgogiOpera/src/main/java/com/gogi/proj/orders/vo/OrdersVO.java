@@ -9,7 +9,7 @@ import com.gogi.proj.product.options.vo.OptionsVO;
 import com.gogi.proj.product.products.vo.ProductOptionVO;
 import com.gogi.proj.product.products.vo.ProductsVO;
 
-public class OrdersVO implements Cloneable{
+public class OrdersVO implements Cloneable, Comparable<OrdersVO>{
 	
 	private int orPk; //주문서 고유번호
 	private int pmFk; //매칭 고유 번호
@@ -93,6 +93,8 @@ public class OrdersVO implements Cloneable{
 	private String orDelivCount;	//송장 카운트
 	private int orTotalExcelDiv;
 	private String orDelivEnter;	//배송출입
+	private int orExcelDivCount;
+	private boolean orDepositFlag = true; //입금 여부
 	
 	//cs에서 묶음번호를 통해 값을 검색 할 수 있도록 함
 	//null값일 경우 상품주문번호를 통해 가져올 수 있도록
@@ -113,6 +115,10 @@ public class OrdersVO implements Cloneable{
 	//매칭 추가사항
 	private List<ProductMatchingVO> productMatchingVOList;
 
+	//수령방식 추가사항
+	private int orRecType; // 0 = 택배수령, 1 = 퀵서비스, 2 = 방문수령
+	private String orRecMemo; // 시간, 유의사항 등
+	private String orRecStoragePlace; // 보관 장소 = 야채냉장고, 1번냉동고 등
 	
 	//주문생성 추가사항
 	private List<Integer> orAmountList;
@@ -142,6 +148,9 @@ public class OrdersVO implements Cloneable{
 	private String error_code;
 	private String message;
 	
+	private String ip;
+	private String adminId;
+
 	// 우체국 발송용
 	private List<ProductOptionVO> productOptionList;
 	
@@ -292,6 +301,62 @@ public class OrdersVO implements Cloneable{
 		this.productOptionList = productOptionList;
 	}
 	
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getAdminId() {
+		return adminId;
+	}
+
+	public void setAdminId(String adminId) {
+		this.adminId = adminId;
+	}
+
+	public int getOrRecType() {
+		return orRecType;
+	}
+
+	public void setOrRecType(int orRecType) {
+		this.orRecType = orRecType;
+	}
+
+	public String getOrRecMemo() {
+		return orRecMemo;
+	}
+
+	public void setOrRecMemo(String orRecMemo) {
+		this.orRecMemo = orRecMemo;
+	}
+
+	public String getOrRecStoragePlace() {
+		return orRecStoragePlace;
+	}
+
+	public void setOrRecStoragePlace(String orRecStoragePlace) {
+		this.orRecStoragePlace = orRecStoragePlace;
+	}
+
+	public boolean isOrDepositFlag() {
+		return orDepositFlag;
+	}
+
+	public void setOrDepositFlag(boolean orDepositFlag) {
+		this.orDepositFlag = orDepositFlag;
+	}
+
+	public int getOrExcelDivCount() {
+		return orExcelDivCount;
+	}
+
+	public void setOrExcelDivCount(int orExcelDivCount) {
+		this.orExcelDivCount = orExcelDivCount;
+	}
+
 	public String getOrDelivEnter() {
 		return orDelivEnter;
 	}
@@ -1262,6 +1327,35 @@ public class OrdersVO implements Cloneable{
 				+ ", resNo=" + resNo + ", regiNo=" + regiNo + ", regiPoNm=" + regiPoNm + ", resDate=" + resDate
 				+ ", price=" + price + ", vTelNo=" + vTelNo + ", arrCnpoNm=" + arrCnpoNm + ", delivPoNm=" + delivPoNm
 				+ ", delivAreaCd=" + delivAreaCd + ", ediPk=" + ediPk + "]";
+	}
+
+	@Override
+	public int compareTo(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		int targetProdSeq = orVO.getProductOptionList().get(0).getProdSorting();
+		int prodSize = orVO.getProductOptionList().size();
+		
+		
+		
+		if(this.productOptionList.get(0).getProdSorting() == targetProdSeq) {
+			
+			if(targetProdSeq == 1 && prodSize > 1) {
+				for(int i = 1; i < prodSize; i++) {
+					if(orVO.getProductOptionList().get(i).getProdSorting() == 2) {
+						System.out.println(this.orReceiverName+" 비교 중 / => "+orVO.getOrReceiverName());
+						return -1;
+					}
+					
+				}
+				
+				return 1;
+				
+			}
+			
+			return 0;
+		}
+        else if(this.productOptionList.get(0).getProdSorting() > targetProdSeq) return 1;
+        else return -1;
 	}
 
 	

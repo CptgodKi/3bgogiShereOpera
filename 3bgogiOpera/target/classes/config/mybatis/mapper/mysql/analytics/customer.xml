@@ -192,9 +192,6 @@
 							    od.or_sending_day,
 							    od.or_cancled_flag,
 							    od.or_refunds,
-							    op.option_name,
-							    pro.product_name,
-							    om.om_option_amount,
 								CASE
 									WHEN od.or_cancled_flag = 0
 									THEN
@@ -208,10 +205,6 @@
 							FROM
 								orders od 
 							    INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
-							    INNER JOIN product_matching pm ON od.pm_fk = pm.pm_pk
-								INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
-								INNER JOIN options op ON om.option_fk = op.option_pk
-								INNER JOIN products pro ON pro.product_pk = op.product_fk
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
 								od.or_cancled_flag = 0
 									AND ss_fk IN
@@ -284,13 +277,6 @@
 										<if test="searchType == 'storeProduct'">
 											AND ( or_product LIKE CONCAT('%',#{searchKeyword},'%') OR or_product_option LIKE CONCAT('%',#{searchKeyword},'%') )
 										</if>
-										
-										<if test="searchType == 'matchingProduct'">
-											AND pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
-										</if>
-										<if test="searchType == 'matchingOption'">
-											AND op.option_name LIKE CONCAT('%',#{searchKeyword},'%')
-										</if>
 									</if>
 								</trim>
 							GROUP BY
@@ -311,10 +297,7 @@
 							    od.or_sending_deadline,
 							    od.or_sending_day,
 							    od.or_cancled_flag,
-							    od.or_refunds,
-							    om.om_option_amount,
-							    op.option_name,
-							    pro.product_name
+							    od.or_refunds
 							ORDER BY
 								od.or_settlement_day DESC
 							) inne

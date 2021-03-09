@@ -136,6 +136,7 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 	    accessIpList.add("175.223.38.74");
 	    accessIpList.add("222.100.11.103");
 	    accessIpList.add("222.100.11.254");
+	    accessIpList.add("61.255.149.45");
 	    accessIpList.add("192.168.0.0~192.168.0.99");
 
 	    if(accessIpList != null && !accessIpList.isEmpty() ) {
@@ -160,14 +161,14 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 	        }
 	    }
 		
-	    if(authCounting == 0) {
+	    /*if(authCounting == 0) {
 	    	res.setContentType("text/html; charset=UTF-8");
             PrintWriter out = res.getWriter();
             out.println("<script>alert('접근이 허용된 ip가 아닙니다');history.go(-1);</script>");
             out.flush();
             
             return;
-		}
+		}*/
 	    
 		/*if(clientIp.contains("220.79.1.99") || clientIp.contains("127.0.0.1")) {
 			

@@ -31,6 +31,7 @@
 <script src="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/js/bootstrap-select.js"></script>
 <script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
 <script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+<script src="${pageContext.request.contextPath}/resources/libs/js/common_util.js"></script>
 
 
 <script type="text/javascript">

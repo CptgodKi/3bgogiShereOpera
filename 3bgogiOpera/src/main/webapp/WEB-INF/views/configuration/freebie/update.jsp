@@ -62,6 +62,21 @@
     			}
     		});
     		
+    		$("input[name=fbAnotherCheckFlag2]").change(function(){
+    			var fbAnotherCheckFlag2 = $(this).val();
+    			
+    			if(fbAnotherCheckFlag2 == 0){
+    				$("#fbAnotherCheckList2").prop("disabled","disabled");
+    				$("#fbAnotherCheckWord2").prop("readonly","readonly");
+    				$("#fbAnotherCheckType2").prop("disabled","disabled");
+    				
+    			}else{
+    				$("#fbAnotherCheckList2").prop("disabled","");
+    				$("#fbAnotherCheckWord2").prop("readonly","");
+    				$("#fbAnotherCheckType2").prop("disabled","");
+    			}
+    		});
+    		
     		$("#freebieInsertForm").submit(function(){
     			var fbMinPrice = $("#fbMinPrice").val();
     			var fbMaxPrice = $("#fbMaxPrice").val();
@@ -103,6 +118,7 @@
     				$("#maxTotalQty").show();
     				$("#fbMinPrice").prop("placeholder","최소 금액");
     				$("#fbMinTotalQty").prop("placeholder","최소 수량");
+    				
     			}
     			
     			if(fbAddType == 3 && fbTotalQtyFlag == 1){
@@ -169,6 +185,8 @@
 	                                        <div class="form-group row">
 	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 정책 적용 판매처 </label>
 	                                            <div class="col-12 col-sm-8 col-lg-6">
+	                                            
+	                                            	<c:set var="stores" value="${fn:split(fbVO.ssList,',') }"/>
 							                        <select class="selectpicker" multiple data-actions-box="true" data-width="100%" id="ssList" name="ssList">
 								                        <c:if test="${empty ssList }">
 								                        	<option value="0">등록된 판매처가 없습니다</option>
@@ -176,11 +194,12 @@
 								                        <c:if test="${!empty ssList }">
 								                        	<c:forEach var="sslist" items="${ssList }">
 								                        		<option value="${sslist.ssPk }"
-								                        		
-								                        			<c:if test="${fn:contains(fbVO.ssList,sslist.ssPk ) }">
-								                        				selected="selected"
-								                        					
-								                        			</c:if>
+								                        			
+								                        			<c:forEach var="storeslist" items="${stores }">								                        			
+									                        			<c:if test="${sslist.ssPk == storeslist }">
+									                        				selected="selected"
+									                        			</c:if>
+								                        			</c:forEach>
 								                        		>${sslist.ssName }</option>
 								                        	</c:forEach>
 								                        </c:if>
@@ -220,6 +239,13 @@
 		                                                		checked="checked"
 		                                                	</c:if>
 	                                                	><span class="custom-control-label"> 수령자 번호 기준 </span>
+		                                            </label>
+		                                            <label class="custom-control custom-radio custom-control-inline">
+	                                                	<input type="radio" value="3" name="fbType" class="custom-control-input"
+	                                                		<c:if test="${fbVO.fbType == 3 }">
+		                                                		checked="checked"
+		                                                	</c:if>
+	                                                	><span class="custom-control-label"> 구매자 번호 기준 </span>
 		                                            </label>
 	                                            </div>
 	                                        </div>
@@ -319,14 +345,17 @@
 		                                                	placeholder="최소 금액" 
 		                                                </c:if>
 	                                                id="fbMinPrice" name="fbMinPrice" class="form-control" 
-	                                                	<c:if test="${fbVO.fbTotalQtyFlag == false and fbVO.fbAddType == 3}">
+	                                                	<c:if test="${fbVO.fbTotalQtyFlag == true and fbVO.fbAddType == 3}">
 	                                                		readonly="readonly"
 	                                                	</c:if>
+	                                                	
 	                                                	<c:if test="${fbVO.fbTotalQtyFlag == true and fbVO.fbAddType != 3}">
 	                                                		
 	                                                	</c:if>
 	                                                value="${fbVO.fbMinPrice }">
+	                                                
 	                                            </div>
+	                                            
 	                                            <div class="col-6 col-sm-4 col-lg-3" id="maxTotalPrice"
 	                                            	<c:if test="${fbVO.fbAddType == 3 }">
 	                                                	style="display:none;"
@@ -377,7 +406,12 @@
 	                                                	</c:if>
 	                                                 value="${fbVO.fbMinTotalQty }">
 	                                            </div>
-	                                            <div class="col-3 col-sm-2 col-lg-2" id="maxTotalQty">
+	                                            <div class="col-3 col-sm-2 col-lg-2" id="maxTotalQty"
+	                                            	<c:if test="${fbVO.fbAddType == 3 }">
+		                                                style="display:none;"
+		                                            </c:if>
+	                                            >
+	                                            
 	                                                <input type="number" placeholder="최대 수량" id="fbMaxTotalQty" name="fbMaxTotalQty" class="form-control"
 	                                                	<c:if test="${fbVO.fbTotalQtyFlag == false }">
 	                                                		readonly="readonly"
@@ -515,6 +549,115 @@
 	                                                </select>
 	                                            </div>
 	                                        </div>
+	                                        
+	                                        <div class="form-group row">
+	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 문자열 포함 조건 2 </label>
+	                                            <div class="col-6 col-sm-4 col-lg-2">
+	                                                <label class="custom-control custom-radio custom-control-inline">
+	                                                	<input type="radio" name=fbAnotherCheckFlag2 
+	                                                		<c:if test="${fbVO.fbAnotherCheckFlag2 == false }">
+		                                                		checked="checked"
+		                                                	</c:if>
+	                                                	class="custom-control-input" value="0"><span class="custom-control-label"> 미사용 </span>
+		                                            </label>
+		                                            <label class="custom-control custom-radio custom-control-inline">
+		                                                <input type="radio" 
+		                                                	<c:if test="${fbVO.fbAnotherCheckFlag2 == true }">
+		                                                		checked="checked"
+		                                                	</c:if>
+		                                                name="fbAnotherCheckFlag2" class="custom-control-input" value="1"><span class="custom-control-label"> 사용 </span>
+		                                            </label>
+	                                            </div>
+	                                            <div class="col-3 col-sm-2 col-lg-2">
+	                                                <select class="form-control" id="fbAnotherCheckList2" name="fbAnotherCheckList2"
+	                                                	<c:if test="${fbVO.fbAnotherCheckFlag2 == false }">
+		                                                	disabled="disabled"
+		                                                </c:if>
+	                                                >
+	                                                	<option value="0"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 0 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>판매처 상품명</option>
+	                                                	<option value="1"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 1 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>판매처 옵션명</option>
+	                                                	<option value="2"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 2 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>판매처 상품코드</option>
+	                                                	<option value="3"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 3 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>매칭 상품명</option>
+	                                                	<option value="4"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 4 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>매칭 옵션명</option>
+	                                                	<option value="5"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 5 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>주소</option>
+	                                                	<option value="6"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 6 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>사용자정의1</option>
+	                                                	<option value="7"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 7 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>사용자정의2</option>
+	                                                	<option value="8"
+	                                                		<c:if test="${fbVO.fbAnotherCheckList2 == 8 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>사용자정의3</option>
+	                                                </select>
+	                                            </div>
+	                                            <div class="col-3 col-sm-2 col-lg-2">
+	                                                <input type="text" placeholder="문자열" id="fbAnotherCheckWord2" name="fbAnotherCheckWord2" class="form-control" 
+	                                                	<c:if test="${fbVO.fbAnotherCheckFlag2 == false }">
+		                                                	readonly="readonly"
+		                                                </c:if>
+	                                                value="${fbVO.fbAnotherCheckWord2 }">
+	                                            </div>
+	                                             <div class="col-3 col-sm-2 col-lg-2">
+	                                                <select class="form-control" id="fbAnotherCheckType2" name="fbAnotherCheckType2"
+	                                                	<c:if test="${fbVO.fbAnotherCheckFlag2 == false }">
+		                                                	disabled="disabled"
+		                                                </c:if>
+	                                                >
+	                                                	<option value="0"
+	                                                		<c:if test="${fbVO.fbAnotherCheckType2 == 0 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>포함 되지 않음</option>
+	                                                	<option value="1"
+	                                                		<c:if test="${fbVO.fbAnotherCheckType2 == 1 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>포함 됨</option>
+	                                                	<option value="2"
+	                                                		<c:if test="${fbVO.fbAnotherCheckType2 == 2 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>같음</option>
+	                                                	<option value="3"
+	                                                		<c:if test="${fbVO.fbAnotherCheckType2 == 3 }">
+	                                                			selected="selected"
+	                                                		</c:if>
+	                                                	>같지 않음</option>
+	                                                </select>
+	                                            </div>
+	                                        </div>
+	                                        
 	                                    </div>
 	                                </div>
 	                            </div>

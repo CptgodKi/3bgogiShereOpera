@@ -20,6 +20,8 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -42,6 +44,7 @@ import com.gogi.proj.epost.controller.EpostController;
 import com.gogi.proj.epost.vo.RegDataVO;
 import com.gogi.proj.log.model.LogService;
 import com.gogi.proj.log.vo.OrderHistoryVO;
+import com.gogi.proj.orders.model.OrdersDAO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.paging.OrderSearchVO;
@@ -63,6 +66,9 @@ public class EpostServiceImpl implements EpostService {
 	@Autowired
 	private DeliveryConfigService dcService;
 
+	@Autowired
+	private OrdersDAO orderDao;
+	
 	private static final Logger logger = LoggerFactory.getLogger(EpostServiceImpl.class);
 	
 	static final String EPOST_DELIV_SENDING = "http://ship.epost.go.kr/api.InsertOrder.jparcel";
@@ -108,8 +114,14 @@ public class EpostServiceImpl implements EpostService {
 
 	@Transactional
 	@Override
-	public String deleteEpostDelivData(List<String> orSerialSpecialNumberList, String epostUrl) throws Exception {
+	public String deleteEpostDelivData(List<String> orSerialSpecialNumberList, String epostUrl, String ip, String adminId) throws Exception {
 		// TODO Auto-generated method stub
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date today = new Date();
+		
+		String dates = sdf.format(today);
+		
 		EpostSendingUtil esu = new EpostSendingUtil();
 		
 		int result = 0 ;
@@ -123,6 +135,7 @@ public class EpostServiceImpl implements EpostService {
 		
 		for(int i=0; i < orSerialSpecialNumberList.size(); i++) {
 			regVO = epostDao.selectEpostInfoByOrserialspecialnumber(orSerialSpecialNumberList.get(i));
+			List<OrdersVO> orList = orderDao.selectOrdersPkByOrSerialSpecialNumber(orSerialSpecialNumberList.get(i));
 			System.out.println(regVO.epostDeliteToString());
 			System.out.println(regVO.getReqno());
 			System.out.println(regVO.getReqNo());
@@ -162,6 +175,20 @@ public class EpostServiceImpl implements EpostService {
 					}
 			}
 			
+			for(int j = 0; j < orList.size(); j++) {	
+				OrderHistoryVO ohVO = null;
+				
+				ohVO = new OrderHistoryVO();
+				ohVO.setOrFk(orList.get(j).getOrPk());
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhRegdate(dates);
+				ohVO.setOhEndPoint("송장 삭제");
+				ohVO.setOhDetail("송장 송장 삭제 완료 => ( "+regVO.getRegiNo()+" )");
+				
+				logService.insertOrderHistory(ohVO);
+			}
+			
 		}
 		
 		results.append("<br>삭제 완료된 개수 = "+result+" 장");
@@ -185,12 +212,61 @@ public class EpostServiceImpl implements EpostService {
 	@Override
 	public OrdersVO deliveryPrintTarget(OrderSearchVO osVO, String ip, String adminId, String createInvoiceNumDateCounting, int delivCount) {
 		
-		OrdersVO orderList = epostDao.deliveryPrintTarget(osVO);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date today = new Date();
 		
 		String dates = sdf.format(today);
 		
+		OrdersVO orderList = epostDao.deliveryPrintTarget(osVO);
+		
+		if(orderList.getOrRecType() > 0 && orderList.getOrRecType() < 3) {
+			double dValue = Math.random();
+			long delivNum = 10000000000000L;
+			
+			String delivInvoiceNum = ((long) (dValue * delivNum) ) + "";
+			
+			if(orderList.getOrRecType() == 1) {
+				orderList.setOrDeliveryInvoiceNumber(delivInvoiceNum);
+				orderList.setRegiNo(delivInvoiceNum);
+				orderList.setOrDeliveryCompany("퀵서비스");
+
+			}else if(orderList.getOrRecType() == 2) {
+				orderList.setOrDeliveryInvoiceNumber(delivInvoiceNum);
+				orderList.setRegiNo(delivInvoiceNum);
+				orderList.setOrDeliveryCompany("방문수령");
+				
+			}
+			
+			orderList.setOrInvoiceNumDate(createInvoiceNumDateCounting);
+			orderList.setOrDelivCount(delivCount+"");
+			epostDao.gtranReceiverPickUp(orderList);
+			
+			OrderHistoryVO ohVO = null;
+			
+			int temp = 0;
+			
+			for(int i = 0; i < orderList.getProductOptionList().size(); i++) {
+				
+				if( temp == orderList.getProductOptionList().get(i).getAnotherOptionPk()) {
+					
+				}else {
+					ohVO = new OrderHistoryVO();
+					ohVO.setOrFk(orderList.getProductOptionList().get(i).getAnotherOptionPk());
+					ohVO.setOhIp(ip);
+					ohVO.setOhAdmin(adminId);
+					ohVO.setOhRegdate(dates);
+					ohVO.setOhEndPoint(orderList.getOrDeliveryCompany()+" 생성");
+					ohVO.setOhDetail(orderList.getOrDeliveryCompany()+" 분류코드 ( "+orderList.getOrDeliveryInvoiceNumber()+" ) 생성 완료");
+					
+					logService.insertOrderHistory(ohVO);
+					temp = orderList.getProductOptionList().get(i).getAnotherOptionPk();
+					
+				}
+			}
+			
+			return orderList;
+		}
+
 		OrdersVO resOr = null;
 		OrderHistoryVO ohVO = null;
 		
@@ -218,18 +294,24 @@ public class EpostServiceImpl implements EpostService {
 					resOr.setOrInvoiceNumDate(createInvoiceNumDateCounting);
 					resOr.setOrDelivCount(delivCount+"");
 					int result = epostDao.grantDeliveryInvoiceNumber(resOr);
-					
+					int temp = 0;
 					for(int i = 0; i < resOr.getProductOptionList().size(); i++) {
 						
-						ohVO = new OrderHistoryVO();
-						ohVO.setOrFk(resOr.getProductOptionList().get(i).getAnotherOptionPk());
-						ohVO.setOhIp(ip);
-						ohVO.setOhAdmin(adminId);
-						ohVO.setOhRegdate(dates);
-						ohVO.setOhEndPoint("송장 생성");
-						ohVO.setOhDetail("송장 생성 완료 => 우체국 ( "+resOr.getRegiNo()+" )");
-						
-						logService.insertOrderHistory(ohVO);
+						if( temp == resOr.getProductOptionList().get(i).getAnotherOptionPk()) {
+							
+						}else {
+							ohVO = new OrderHistoryVO();
+							ohVO.setOrFk(resOr.getProductOptionList().get(i).getAnotherOptionPk());
+							ohVO.setOhIp(ip);
+							ohVO.setOhAdmin(adminId);
+							ohVO.setOhRegdate(dates);
+							ohVO.setOhEndPoint("송장 생성");
+							ohVO.setOhDetail("송장 생성 완료 => 우체국 ( "+resOr.getRegiNo()+" )");
+							
+							logService.insertOrderHistory(ohVO);
+							temp = resOr.getProductOptionList().get(i).getAnotherOptionPk();
+							
+						}
 					}
 					
 					
@@ -244,8 +326,53 @@ public class EpostServiceImpl implements EpostService {
 	}
 
 	@Override
-	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO) {
+	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO, String ip, String adminId) {
 		// TODO Auto-generated method stub
+		OrdersVO orVO = epostDao.deliveryInvoiceNumberReprinting(osVO);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date today = new Date();
+		
+		String dates = sdf.format(today);
+		
+		List<OrdersVO> orList = orderDao.selectOrdersPkByOrSerialSpecialNumber(osVO.getSearchKeyword());
+		
+		int temp = 0;
+		
+		OrderHistoryVO ohVO = null;
+		
+		for(int i = 0; i < orList.size(); i++) {			
+			
+			if( temp == orList.get(i).getOrPk()) {
+				
+			}else {				
+				ohVO = new OrderHistoryVO();
+				ohVO.setOrFk(orList.get(i).getOrPk());
+				ohVO.setOhIp(ip);
+				ohVO.setOhAdmin(adminId);
+				ohVO.setOhRegdate(dates);
+				if( orVO.getOrRecType() == 0) {					
+					ohVO.setOhEndPoint("송장 재출력");
+					ohVO.setOhDetail("송장 재출력 완료 => 우체국 ( "+orVO.getRegiNo()+" )");
+					
+				}else if( orVO.getOrRecType() == 1) {
+					ohVO.setOhEndPoint("퀵서비스 분류코드 재생성");
+					ohVO.setOhDetail("퀵서비스 분류코드 ( "+orVO.getRegiNo()+" ) 재생성 완료");
+					
+				}else if( orVO.getOrRecType() == 2) {
+					ohVO.setOhEndPoint("방문수령 분류코드 재생성");
+					ohVO.setOhDetail("방문수령 분류코드 ( "+orVO.getRegiNo()+" ) 재생성 완료");
+					
+				}else if( orVO.getOrRecType() == 3) {
+					ohVO.setOhEndPoint("송장 재출력");
+					ohVO.setOhDetail("송장 재출력 완료 => 우체국 ( "+orVO.getRegiNo()+" )");
+					
+				}
+				
+				logService.insertOrderHistory(ohVO);
+				temp = orList.get(i).getOrPk();
+			}
+		}
+		
 		return epostDao.deliveryInvoiceNumberReprinting(osVO);
 	}
 
@@ -477,6 +604,10 @@ public class EpostServiceImpl implements EpostService {
 		}
 		
 		int cellCounting = 1;
+
+		CellStyle cs = workbook.createCellStyle();
+		
+		cs.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
 		
 		for (int i = 0; i < delivTarget.size(); i++) {
 			
@@ -487,6 +618,7 @@ public class EpostServiceImpl implements EpostService {
 
 			cell = (SXSSFCell) row.createCell(1);
 			cell.setCellValue(delivTarget.get(i).getOrSendingDeadline());
+			cell.setCellStyle(cs);
 			
 			cell = (SXSSFCell) row.createCell(2);
 			cell.setCellValue(delivTarget.get(i).getOrBuyerName());

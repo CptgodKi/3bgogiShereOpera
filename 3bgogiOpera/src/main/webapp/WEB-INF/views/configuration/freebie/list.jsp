@@ -4,56 +4,32 @@
     <%@ include file="../../inc/top_nav.jsp" %>
     <script type="text/javascript">
     	$(function(){
-    		//판매처 감추기
-    		$('.cdStoreCompanyDiv').hide();
-    		
-    		$('input[name=cdLossFlag]').change(function(){
-    			if($(this).val()=='1'){
-    				$('.cdLossRateDiv').show();
-    			}else{
-    				$('.cdLossRateDiv').hide();
-    			}
-    		});
-    		
-    		$('input[name=cdCompanyDiagnosis]').change(function(){
-    			if($(this).val()=='1'){
-    				$('.cdManufacturerDiv').show();
-    				$('.cdStoreCompanyDiv').hide();
+    		$("#deleteFreebie").click(function(){
+    			
+    			fbPk = $("input[name=fbPk]:checked").val();
+    			fbSize = $("input[name=fbPk]:checked").length;
+
+    			if(fbSize > 1){
+    				alert("한 번에 한 정책만 삭제할 수 있습니다");
+    				return false;
     				
-    			}else{
-    				$('.cdManufacturerDiv').hide();
-    				$('.cdStoreCompanyDiv').show();
-    			}
-    		});
-    		
-    		//원가에 숫자가 아닌 문자가 들어갈 경우 초기화 시킴
-    		$("#cdCost").keyup(function(){
-    			var regex=  /^\d+$/;
-    			
-    			var cdCost = $(this).val();
-    			
-    			if(!regex.test(cdCost)){
-    				alert("숫자만 입력해야 합니다.");
-    				$(this).val("0");
-    			}
-    		});
-    		
-    		//손실률에 숫자가 아닌 문자가 들어갈 경우 초기화 시킴
-    		$("#cdLossRate").keyup(function(){
-    			var regex=  /^\d+$/;
-    			
-    			var cdLossRate = $(this).val();
-    			
-    			if(!regex.test(cdLossRate)){
-    				alert("숫자만 입력해야 합니다.");
-    				$(this).val("0");
-    			}
-    		});
+    			}if(fbSize == 0){
+    				alert("사은품 정책을 선택해주세요");
+    				return false;
     				
+    			}
+    			
+    			if(confirm("해당 사은품 정책을 삭제하시겠습니까?")){
+    				location.href="<c:url value='/config/freebie/delete.do?fbPk="+fbPk+"'/>";
+
+    			}
+    		});
     	});
+    	
     	function pageFunc(index){
 			$("input[name=currentPage]").val(index);
-			$("#costDetailListForm").submit();
+			$("#freebieForm").submit();
+			
 		}
     	
     	function updateFreebie(fbPk){
@@ -79,13 +55,13 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title"> 데이터 관리 </h2>
+                            <h2 class="pageheader-title"> 사은품 정책 목록 </h2>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 관리 </a></li>
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 데이터 입력 </a></li>
-                                        <li class="breadcrumb-item active" aria-current="page"> 원가 상세사항 입력</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 설정 </a></li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link"> 사은품 정책 </a></li>
+                                        <li class="breadcrumb-item active" aria-current="page"> 사은품 정책 목록</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -102,10 +78,9 @@
                         <!-- ============================================================== -->
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 	                        <div class="card">
-                                <h5 class="card-header">입력된 원가 목록</h5>
                                 <div class="card-body">
                                 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2">
-	                                	<button class="btn btn-success btn-xs mb-2" type="button" id="deleteFreebie"> 해당 사은품 정책 삭제 </button>
+	                                	<button class="btn btn-success btn-xs mb-2" type="button" id="deleteFreebie"> 선택 사은품 정책 삭제 </button>
 	                                </div>
                                 	<div class="table-responsive">
 	                                    <table id="example2" class="table table-bordered" style="text-align: center;">
@@ -157,28 +132,29 @@
                                 </div>
                             </div>
                         </div>
-						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        
+						<form class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="freebieForm">
 							<input type="hidden" name="searchCondition" >
                         	<input type="hidden" name="searchKeyword">
-                        	<input type="hidden" name="currentPage" value="${PaginationInfo.currentPage}">
+                        	<input type="hidden" name="currentPage" value="${osVO.currentPage}">
 							<nav aria-label="Page navigation" style="text-align: center;">
 								<ul class="pagination" style="display: -webkit-inline-box;">
-									<c:if test='${PaginationInfo.firstPage>1 }'>
-										<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${PaginationInfo.firstPage-1})">«</a></li>
+									<c:if test='${osVO.firstPage>1 }'>
+										<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${osVO.firstPage-1})">«</a></li>
 									</c:if>
-									<c:forEach var="i" step="1" end="${PaginationInfo.lastPage}" begin="${PaginationInfo.firstPage }">
+									<c:forEach var="i" step="1" end="${osVO.lastPage}" begin="${osVO.firstPage }">
 										<li class="page-item 
-											<c:if test='${PaginationInfo.currentPage == i }'>
+											<c:if test='${osVO.currentPage == i }'>
 												active
 											</c:if>
 										"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${i})">${i }</a></li>
 									</c:forEach>
-									<c:if test='${PaginationInfo.lastPage < PaginationInfo.totalPage}'>
-										<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${PaginationInfo.lastPage+1})">»</a></li>
+									<c:if test='${osVO.lastPage < osVO.totalPage}'>
+										<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="pageFunc(${osVO.lastPage+1})">»</a></li>
 									</c:if>
 								</ul>
 							</nav>
-						</div>
+						</form>
 
 						<!-- ============================================================== -->
                         <!-- end valifation types -->

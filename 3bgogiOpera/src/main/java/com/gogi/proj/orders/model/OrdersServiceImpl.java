@@ -22,8 +22,10 @@ import com.gogi.proj.log.model.LogDAO;
 import com.gogi.proj.log.model.LogService;
 import com.gogi.proj.log.util.LogUtil;
 import com.gogi.proj.log.vo.OrderHistoryVO;
+import com.gogi.proj.orders.config.model.OrderConfigDAO;
 import com.gogi.proj.orders.config.model.StoreExcelDataSortingDAO;
 import com.gogi.proj.orders.util.OrderUtilityClass;
+import com.gogi.proj.orders.vo.AdminOrderRecordVO;
 import com.gogi.proj.orders.vo.IrregularOrderVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
@@ -60,6 +62,9 @@ public class OrdersServiceImpl implements OrdersService{
 	
 	@Autowired
 	private LogDAO logDao;
+	
+	@Autowired
+	private OrderConfigDAO ocDao;
 	
 	@Transactional
 	public int [] insertOrderData(List<OrdersVO> orderList, int ssPk) {
@@ -120,6 +125,7 @@ public class OrdersServiceImpl implements OrdersService{
 		}
 		
 		for(OrdersVO vo : orderList) {
+			
 			int result = ordersDAO.insertOrderData(vo);
 			if(result > 0) count++;
 			else if(result == 0) dupliCount++;
@@ -135,10 +141,12 @@ public class OrdersServiceImpl implements OrdersService{
 		for(int i=0; i < NotMergedList.size(); i++) {
 			NotMergedList.get(i).setOrSerialSpecialNumber(ssVO.getSsStoreNickname()+"-"+specialNumber);
 			NotMergedList.get(i).setOrMergeList(StringToListUtil.makeForeach(NotMergedList.get(i).getOrMerge()));
-			ordersDAO.grantOrSerialSpecialNumber(NotMergedList.get(i));
+			int mergeResult = ordersDAO.grantOrSerialSpecialNumber(NotMergedList.get(i));
 			
-			specialNumber++;
-			mergedSuccessedResult++;
+			if(mergeResult > 0 ) {
+				specialNumber++;
+				mergedSuccessedResult++;
+			}
 		}
 		
 		ssVO.setSsSpecialNumberCount(specialNumber);
@@ -256,7 +264,7 @@ public class OrdersServiceImpl implements OrdersService{
 
 	@Override
 	@Transactional
-	public boolean deleteOrders(List<String> orSerialSpecialNumberList) {
+	public boolean deleteOrders(List<String> orSerialSpecialNumberList, String ip, String adminId) {
 		// TODO Auto-generated method stub
 		boolean orderDeleteChecking = false;
 		int result = 0;
@@ -266,8 +274,12 @@ public class OrdersServiceImpl implements OrdersService{
 			List<OrdersVO> orPkList = ordersDAO.selectOrdersPkByOrSerialSpecialNumber(orSerialSpecialNumberList.get(i));
 			
 			for(int j=0; j<orPkList.size(); j++) {
+				
 				boolean stockResult = stockService.updateProductChangeValues(orPkList.get(j));
 				result+=ordersDAO.deleteOrdersByOrPk(orPkList.get(j));
+				orPkList.get(j).setAdminId(adminId);
+				orPkList.get(j).setIp(ip);
+				ocDao.insertDeleteOrders(orPkList.get(j));
 				
 				if(stockResult == false) {
 					result--;
@@ -590,8 +602,12 @@ public class OrdersServiceImpl implements OrdersService{
 		OrdersVO changeOr = null;
 		OrderHistoryVO ohVO = null;
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String today = sdf.format(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date now = new Date();
+		
+		String todayYMD = sdf.format(now);
+		
 		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
 			
 			changeOr = new OrdersVO();
@@ -607,7 +623,7 @@ public class OrdersServiceImpl implements OrdersService{
 				ohVO.setOhIp(ip);
 				ohVO.setOhAdmin(adminId);
 				ohVO.setOhEndPoint("cs - 발송일 변경");
-				ohVO.setOhRegdate(today);
+				ohVO.setOhRegdate(todayYMD);
 				ohVO.setOhDetail("발송일 변경 [ "+changeOrderList.get(j).getOrSendingDeadline()+" => "+osVO.getDateStart()+"]");
 				
 				logService.insertOrderHistory(ohVO);
@@ -826,16 +842,13 @@ public class OrdersServiceImpl implements OrdersService{
 		
 		orderList = readOrderExcel.readGiftSetExcelFile(fileName, originalOrVO);
 		
+		System.out.println("orList = > "+orderList.size()+", originalOrder = > "+originalOrVO.getOrAmount());
 		System.out.println(orderList.size()+", "+originalOrVO.getOrAmount());
 		if(originalOrVO.getOrAmount() != orderList.size()) {
 			return null;
 		}
 		
 		int [] result = insertOrderData(orderList, originalOrVO.getSsFk());
-		
-		if(result[0] != orderList.size()) {
-			throw new RuntimeException("개수가 같지 않음");
-		}
 		
 		ordersDAO.updateExcelDivOrders(originalOrVO);
 		
@@ -864,6 +877,42 @@ public class OrdersServiceImpl implements OrdersService{
 	public List<OrdersVO> selectCreateInvoiceNum() {
 		// TODO Auto-generated method stub
 		return ordersDAO.selectCreateInvoiceNum();
+	}
+
+	@Override
+	public OrdersVO selectBuyerAddrInfo(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.selectBuyerAddrInfo(orVO);
+	}
+
+	@Override
+	public int checkDepositOrder(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.checkDepositOrder(orVO);
+	}
+
+	@Override
+	public int receiverPickUp(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.receiverPickUp(orVO);
+	}
+
+	@Override
+	public int deleteExcelGiftOrderByOrFk(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.deleteExcelGiftOrderByOrFk(orVO);
+	}
+
+	@Override
+	public int insertAdminOrderRecord(AdminOrderRecordVO aorVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.insertAdminOrderRecord(aorVO);
+	}
+
+	@Override
+	public List<AdminOrderRecordVO> searchAdminOrderRecordBySerialSpecialNumber(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return ordersDAO.searchAdminOrderRecordBySerialSpecialNumber(orVO);
 	}
 	
 	/*cs 부분 끝*/

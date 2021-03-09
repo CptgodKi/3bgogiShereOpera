@@ -44,6 +44,23 @@
 			store_section
 	</select>
 	
+	<select id="storeListOrderInTwoMonth" resultType="StoreSectionVO">
+		SELECT
+			ss.ss_pk,
+		    ss.ss_name,
+		    COUNT(od.or_pk)
+		FROM
+			store_section ss
+		    INNER JOIN orders od ON ss.ss_pk = od.ss_fk
+		WHERE
+			<![CDATA[
+				od.or_regdate >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -2 MONTH), '%Y-%m-%d')
+			]]>
+		GROUP BY
+			ss.ss_pk,
+		    ss.ss_name
+	</select>
+	
 	<!-- 판매처 고유 값으로 판매처 정보 전부 가져오기 -->
 	<select id="selectStoreSectionBySspk" parameterType="int" resultType="StoreSectionVO">
 		SELECT

@@ -39,6 +39,7 @@
 				WHERE 
 					od.or_delivery_invoice_number = #{orDeliveryInvoiceNumber}
 					AND od.or_regdate >= DATE_FORMAT( DATE_ADD(NOW(), INTERVAL -2 MONTH), '%Y-%m-%d')
+					AND od.or_refunds = 0
 				GROUP BY
 					od.or_pk,
 					od.or_serial_special_number,
@@ -68,16 +69,48 @@
 	<!-- 발송처리하기 -->
 	<update id="updateOrderSendingDay" parameterType="OrdersVO">
 		UPDATE
-			orders
+			orders od
+		    INNER JOIN (
+				SELECT
+		            op.option_pk,
+		            IF(
+						op.option_stock_flag = 0,
+		                SUM(od.or_amount * om.om_option_amount) ,
+		                0
+		            ) AS total_qty
+				FROM
+					orders od
+					INNER JOIN product_matching pm	ON od.pm_fk = pm.pm_pk
+					INNER JOIN option_matching  om	ON pm.pm_pk = om.pm_fk AND od.or_product_option = om.om_store_option_name
+					INNER JOIN options			op	ON option_pk = om.option_fk
+				WHERE
+					od.or_pk IN
+		            <foreach item="item" collection="orPkList" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+		        
+				GROUP BY
+		            op.option_pk
+		    ) INNE
+		    INNER JOIN product_matching pm	ON od.pm_fk = pm.pm_pk
+		    INNER JOIN option_matching  om	ON pm.pm_pk = om.pm_fk AND od.or_product_option = om.om_store_option_name
+		    INNER JOIN options			op	ON op.option_pk = om.option_fk
+		
 		SET
-			or_sending_day = #{orSendingDay}
+			op.option_label_qty = op.option_label_qty - INNE.total_qty,
+		    or_sending_day = #{orSendingDay}
 		WHERE
-			or_pk = #{orPk}
+			op.option_pk = inne.option_pk
+		    AND od.or_pk IN
+				<foreach item="item" collection="orPkList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			
 	</update>
 	
 	
 	<!-- 스토어 발송처리 기능, 한 번만 발송처리 가능 -->
-	<update id="updateDeliveryOutPutOrder" parameterType="OrdersVO">
+	<update id="updateDeliveryOutPutOrder" parameterType="map">
 		UPDATE
 			orders
 		SET
@@ -151,6 +184,7 @@
 		SELECT
 			INNE.ss_name,
 			INNE.ss_pk AS ss_fk,
+			INNE.ss_auto_get_date AS or_user_column3,
 			COUNT(inne.or_serial_special_number) AS or_serial_special_number,
 		    SUM(INNE.or_amount) AS or_amount,
 		    INNE.or_output_date
@@ -159,6 +193,7 @@
 			SELECT
 				ss.ss_name,
 				ss.ss_pk,
+				ss.ss_auto_get_date,
 				od.or_serial_special_number,
 		        SUM(od.or_amount) AS or_amount,
 		        od.or_output_date
@@ -177,6 +212,7 @@
 			GROUP BY
 				ss.ss_name,
 				ss.ss_pk,
+				ss.ss_auto_get_date,
 				od.or_serial_special_number,
 		        od.or_output_date
 			ORDER BY
@@ -185,7 +221,8 @@
 		GROUP BY
 			INNE.ss_name,
 			INNE.ss_pk,
-			INNE.or_output_date
+			INNE.or_output_date,
+			or_user_column3
 	</select>
 	
 	<update id="storeSendingFinished" parameterType="OrderSearchVO">
@@ -225,6 +262,32 @@
 			
 	</update>
 	
+	<select id="godomallAutoSendingTarget" resultType="OrdersVO" parameterType="StoreSectionVO">
+		SELECT
+			or_order_number,
+            GROUP_CONCAT(DISTINCT or_product_order_number SEPARATOR '|') AS or_product_order_number,
+            or_delivery_invoice_number,
+            or_delivery_company
+		FROM 
+			orders od
+		WHERE
+			or_output_date = #{ssRegdate}
+			AND ss_fk = #{ssPk}
+			AND or_cancled_flag = 0
+			AND or_excel_div_flag = 0
+			AND or_refunds = 0
+			AND or_sending_day IS NOT NULL
+			<![CDATA[			
+				AND or_sending_day>= #{ssSendingDay}
+				AND or_sending_day < DATE_ADD(#{ssSendingDay}, INTERVAL 1 DAY) 
+			]]>
+		GROUP BY
+			or_order_number,
+            or_delivery_invoice_number,
+            or_delivery_company
+	
+	</select>
+	
 	<select id="selectSendingExcel" resultType="java.util.LinkedHashMap" parameterType="StoreSectionVO">
 		SELECT
 			${ssSendingBodyForm}
@@ -235,6 +298,7 @@
 			AND ss_fk = #{ssPk}
 			AND or_cancled_flag = 0
 			AND or_excel_div_flag = 0
+			AND or_refunds = 0
 			AND or_sending_day IS NOT NULL
 			<![CDATA[			
 				AND or_sending_day>= #{ssSendingDay}
@@ -276,6 +340,52 @@
 		
 	</select>
 	
+	<select id="nonPickingCount" resultType="int">
+		SELECT
+			COUNT(INNE.or_serial_special_number)
+		FROM(
+			SELECT
+				or_serial_special_number
+			FROM
+				orders od
+			WHERE
+				<![CDATA[				
+					or_sending_deadline >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL - 7 day), '%Y-%m-%d')
+					AND or_sending_deadline < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 day), '%Y-%m-%d')
+					AND od.or_refunds = 0
+					AND od.or_cancled_flag = 0
+					AND od.or_excel_div_flag = 0
+					AND od.or_sending_day IS NULL
+					AND od.or_delivery_invoice_number IS NOT NULL
+					AND NOT EXISTS (
+						SELECT
+							*
+						FROM
+							sending_request
+						WHERE
+			                sr_regdate >= DATE_FORMAT(NOW(), '%Y-%m-%d')
+							AND sr_regdate < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 day), '%Y-%m-%d')
+							AND sr_invoice_num = od.or_delivery_invoice_number
+					)
+				]]>
+			GROUP BY
+				or_serial_special_number
+		        
+		) INNE
+	</select>
+	
+	<select id="selectOrderPkByInvoiceNumber" resultType="OrderHistoryVO" parameterType="SendingRequestVO">
+		SELECT 
+			or_pk AS or_fk
+		FROM 
+			orders
+		WHERE 
+			<![CDATA[			
+				or_sending_deadline >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -7 DAY), '%Y-%m-%d')
+				AND or_sending_deadline < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')  
+			    AND or_delivery_invoice_number = #{srInvoiceNum}
+			]]>
+	</select>
 </mapper>
 
 

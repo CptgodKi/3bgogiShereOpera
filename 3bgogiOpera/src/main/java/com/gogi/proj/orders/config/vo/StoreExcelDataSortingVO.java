@@ -50,6 +50,7 @@ public class StoreExcelDataSortingVO {
 	private int sedsUserColumn2;
 	private int sedsUserColumn3;
 	private int sedsUserColumn4;
+	private int sedsStartRow;
 	
 	public StoreExcelDataSortingVO() {
 		super();
@@ -116,6 +117,14 @@ public class StoreExcelDataSortingVO {
 		this.sedsUserColumn2 = sedsUserColumn2;
 		this.sedsUserColumn3 = sedsUserColumn3;
 		this.sedsUserColumn4 = sedsUserColumn4;
+	}
+	
+	public int getSedsStartRow() {
+		return sedsStartRow;
+	}
+
+	public void setSedsStartRow(int sedsStartRow) {
+		this.sedsStartRow = sedsStartRow;
 	}
 
 	public int getSedsPk() {

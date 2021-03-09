@@ -106,6 +106,7 @@ public class xlsxWriter {
 	        	rowCounting++;
 	        	
 	        	if(rowIdx < eoSeq.size() + 1) {
+	        		int totalCount = 0;
 	        		
 	        		for(int i = 0; i < veList.size(); i++) {
 	        			
@@ -136,6 +137,9 @@ public class xlsxWriter {
 	        							cell = row.createCell(cellIdx);
 	        							cs.setCellsStylesSpecial(style, sheet, workbook, cell);
 	        						}else if(cellIdx == 2){	        							
+	        							
+	        							totalCount+=Integer.parseInt(osGsList.get(cellIdx));
+	        									
 	        							cell = row.createCell(cellIdx);
 	        							cell.setCellValue(Integer.parseInt(osGsList.get(cellIdx)));
 	        							cs.setCellsStylesSpecial(style, sheet, workbook, cell);
@@ -156,9 +160,35 @@ public class xlsxWriter {
         					}//for
         					
         					rowCounting++;
+        					
 	        			}
 	        			
+	        			
 	        		}//for
+	        		
+	        		
+	        		/**
+	        		 * 1 한우, 3 한돈 : 총 개수 넣어주기
+	        		 */
+	        		if(eoSeq.get(rowIdx - 1).getEosSeq() == 1 || eoSeq.get(rowIdx - 1).getEosSeq() == 3) {
+	        			row = sheet.createRow(rowCounting);
+        				cell = row.createCell(0);
+						cell.setCellValue("총 합 ");
+						cs.setCellsStylesSpecial(style, sheet, workbook, cell);
+						
+						cell = row.createCell(1);
+						cell.setCellValue("");
+						cs.setCellsStylesSpecial(style, sheet, workbook, cell);
+						
+						cell = row.createCell(2);
+						cell.setCellValue(totalCount);
+						cs.setCellsStylesSpecial(style, sheet, workbook, cell);
+						
+						sheet.addMergedRegion(new CellRangeAddress(rowCounting, rowCounting, 0, 1));
+						rowCounting++;
+						totalCount = 0;
+					}
+        			
 	        		
 	        	}//if
 	           
@@ -471,34 +501,41 @@ public class xlsxWriter {
 				cell =(SXSSFCell) row.createCell(11);
 				cell.setCellValue(orList.get(rowIdx).getOrAmount());	
 				
-				cell = (SXSSFCell)row.createCell(12);
-				cell.setCellValue(orList.get(rowIdx).getOrProduct());
+				cell =(SXSSFCell) row.createCell(12);
+				cell.setCellValue(orList.get(rowIdx).getOrOrderNumber());
 				
-				cell = (SXSSFCell)row.createCell(13);
-				cell.setCellValue(orList.get(rowIdx).getOrProductOption());
+				cell =(SXSSFCell) row.createCell(13);
+				cell.setCellValue(orList.get(rowIdx).getOrProductOrderNumber());
+				
 				
 				cell = (SXSSFCell)row.createCell(14);
-				cell.setCellValue(orList.get(rowIdx).getOrUserColumn1());
+				cell.setCellValue(orList.get(rowIdx).getOrProduct());
 				
 				cell = (SXSSFCell)row.createCell(15);
-				cell.setCellValue(orList.get(rowIdx).getOrUserColumn2());
+				cell.setCellValue(orList.get(rowIdx).getOrProductOption());
 				
 				cell = (SXSSFCell)row.createCell(16);
-				cell.setCellValue((int)orList.get(rowIdx).getOrCancledQty());
+				cell.setCellValue(orList.get(rowIdx).getOrUserColumn1());
 				
 				cell = (SXSSFCell)row.createCell(17);
+				cell.setCellValue(orList.get(rowIdx).getOrUserColumn2());
+				
+				cell = (SXSSFCell)row.createCell(18);
+				cell.setCellValue((int)orList.get(rowIdx).getOrCancledQty());
+				
+				cell = (SXSSFCell)row.createCell(19);
 				cell.setCellValue((int)orList.get(rowIdx).getOrRefunds());
 
-				cell = (SXSSFCell)row.createCell(18);
+				cell = (SXSSFCell)row.createCell(20);
 				cell.setCellValue(orList.get(rowIdx).getOrSendingDeadline() == null ? " - " : ymd.format(orList.get(rowIdx).getOrSendingDeadline()));
 
-				cell = (SXSSFCell)row.createCell(19);
+				cell = (SXSSFCell)row.createCell(21);
 				cell.setCellValue((orList.get(rowIdx).getOrSendingDay() == null ? " - " : ymdhms.format(orList.get(rowIdx).getOrSendingDay())));
 
-				cell = (SXSSFCell)row.createCell(20);
+				cell = (SXSSFCell)row.createCell(22);
 				cell.setCellValue(orList.get(rowIdx).getOrSettlementDay() == null ? " - " : ymdhms.format(orList.get(rowIdx).getOrSettlementDay()));
 
-				cell = (SXSSFCell)row.createCell(21);
+				cell = (SXSSFCell)row.createCell(23);
 				cell.setCellValue(orList.get(rowIdx).getOrInflowRoute());
 
 
@@ -553,6 +590,8 @@ public class xlsxWriter {
 		 header.add("배송지 상세사항");
 		 header.add("송장번호");
 		 header.add("수량");
+		 header.add("주문번호");
+		 header.add("상품주문번호");
 		 header.add("판매처 상품명");
 		 header.add("판매처 옵션명");
 		 header.add("매칭 상품명");

@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.fileupload.FileUpload;
 import org.json.simple.parser.ParseException;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.xml.sax.SAXException;
 
 import com.gogi.proj.aligo.util.AligoSendingForm;
 import com.gogi.proj.aligo.util.AligoVO;
@@ -48,6 +50,7 @@ import com.gogi.proj.epost.model.EpostService;
 import com.gogi.proj.excel.ReadOrderExcel;
 import com.gogi.proj.excel.xlsxWriter;
 import com.gogi.proj.matching.model.MatchingService;
+import com.gogi.proj.orders.autocomplete.Godomall;
 import com.gogi.proj.orders.config.model.OrderConfigService;
 import com.gogi.proj.orders.config.model.StoreExcelDataSortingService;
 import com.gogi.proj.orders.config.vo.ExceptAddressKeywordVO;
@@ -55,6 +58,8 @@ import com.gogi.proj.orders.config.vo.ReqFilterKeywordVO;
 import com.gogi.proj.orders.config.vo.StoreCancleExcelDataSortingVO;
 import com.gogi.proj.orders.config.vo.StoreExcelDataSortingVO;
 import com.gogi.proj.orders.model.OrdersService;
+import com.gogi.proj.orders.util.OrderUtilityClass;
+import com.gogi.proj.orders.vo.AdminOrderRecordVO;
 import com.gogi.proj.orders.vo.IrregularOrderVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
@@ -154,20 +159,23 @@ public class OrdersController {
 		
 		String fileName = "";
 		
-		try {
+		if(sedsVO.getSsFk() != 14) {
 			
-			fileName = fileUploadUtil.fileupload(request, FileuploadUtil.ORDER_EXCEL);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.info("upload error! checking fileExtension or excel file");
-			logger.info(e.getMessage());
-			msg = "파일 업로드 실패. 로그를 확인해주세요.";
-			
-			model.addAttribute("msg", msg);
-			model.addAttribute("url",url);
-			
-			return "common/message";
+			try {
+				
+				fileName = fileUploadUtil.fileupload(request, FileuploadUtil.ORDER_EXCEL);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.info("upload error! checking fileExtension or excel file");
+				logger.info(e.getMessage());
+				msg = "파일 업로드 실패. 로그를 확인해주세요.";
+				
+				model.addAttribute("msg", msg);
+				model.addAttribute("url",url);
+				
+				return "common/message";
+			}
 		}
 
 		List<OrdersVO> orderList= null;
@@ -183,6 +191,11 @@ public class OrdersController {
 			if(sedsVO.getSsFk() == 3) {				
 				orderList = readOrderExcel.readOrderExcelDataToXLS(fileName, sedsVO.getSsFk(), sendingDeadlineFlag);
 				
+			}else if(sedsVO.getSsFk() == 14) {
+				Godomall gm = new Godomall();
+
+				orderList = gm.getGodomallOrders(sedsVO.getSsFk());
+
 			}else {
 				orderList = readOrderExcel.readOrderExcelData(fileName, sedsVO.getSsFk(), sedsData, sendingDeadlineFlag);
 				
@@ -347,7 +360,7 @@ public class OrdersController {
 			osVO.setDateType("or_regdate");
 		}
 		
-		if(osVO.getSearchKeyword() != null && osVO.getSearchType().equals("orderNames")) {
+		if(osVO.getSearchKeyword() != null && ( osVO.getSearchType().equals("orderNames") || osVO.getSearchType().equals("orderNum"))) {
 			String [] searchList = osVO.getSearchKeyword().split(",");
 			List<String> searchLists = new ArrayList<String>();
 			for(int i =0; i<searchList.length; i++) {
@@ -423,7 +436,7 @@ public class OrdersController {
 			osVO.setDateType("or_regdate");
 		}
 		
-		if(osVO.getSearchKeyword() != null && osVO.getSearchType().equals("orderNames")) {
+		if(osVO.getSearchKeyword() != null && ( osVO.getSearchType().equals("orderNames") || osVO.getSearchType().equals("orderNum"))) {
 			String [] searchList = osVO.getSearchKeyword().split(",");
 			List<String> searchLists = new ArrayList<String>();
 			for(int i =0; i<searchList.length; i++) {
@@ -507,9 +520,13 @@ public class OrdersController {
 	 */
 	@RequestMapping(value="/delete/customer_order.do", method=RequestMethod.POST)
 	@ResponseBody
-	public boolean deleteOrders(@ModelAttribute OrderSearchVO osVO ) {
+	public boolean deleteOrders(HttpServletRequest request ,@ModelAttribute OrderSearchVO osVO ) {
 		
-		boolean result = ordersService.deleteOrders(osVO.getOrSerialSpecialNumberList());
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		boolean result = ordersService.deleteOrders(osVO.getOrSerialSpecialNumberList(), request.getRemoteAddr(), adminVo.getUsername());
 		
 		return result;
 	}
@@ -846,9 +863,15 @@ public class OrdersController {
 	 * @메소드설명 : 새 주문서 작성
 	 */
 	@RequestMapping(value="/create/order.do", method=RequestMethod.GET)
-	public String createNewOrderGet(Model model) {
+	public String createNewOrderGet(@ModelAttribute OrdersVO orVO, Model model) {
 		
 		List<StoreSectionVO> ssList =configService.selectStoreSectionList();
+		
+		if(orVO.getOrSerialSpecialNumber() != null) {
+			OrdersVO addressInfo = ordersService.selectBuyerAddrInfo(orVO);
+			model.addAttribute("addressInfo", addressInfo);
+			
+		}
 		
 		model.addAttribute("ssList", ssList);
 		
@@ -856,7 +879,7 @@ public class OrdersController {
 	}
 	
 	@RequestMapping(value="/create/order.do", method=RequestMethod.POST)
-	public String createNewOrderPost(@ModelAttribute OrdersVO orVOParam, Model model, @RequestParam int smsSendFlag) {
+	public String createNewOrderPost(@ModelAttribute OrdersVO orVOParam, Model model, @RequestParam int smsSendFlag, @RequestParam boolean orDepositFlag) {
 		String msg = "주문서 등록 완료";
 		boolean closing = true;
 		boolean reload = true;
@@ -890,6 +913,7 @@ public class OrdersController {
 					orVO.setOrProduct(orVOParam.getOrProductList().get(i));
 					orVO.setOrProductOption(orVOParam.getOrProductOptionList().get(i));
 					orVO.setOrTotalPrice(orVOParam.getOrTotalPriceList().get(i));
+					orVO.setOrDepositFlag(orDepositFlag);
 					orList.add(orVO);
 					
 					successResult++;
@@ -1227,6 +1251,7 @@ public class OrdersController {
 		
 		OrdersVO originalOrVO = ordersService.selectOrdersByPk(orVO.getOrPk());
 
+		ordersService.deleteExcelGiftOrderByOrFk(originalOrVO);
 		
 		int [] result = ordersService.updateExcelDivOrders(originalOrVO, fileName);
 
@@ -1259,7 +1284,7 @@ public class OrdersController {
 	@RequestMapping(value="/cancled_order_check.do", method=RequestMethod.GET)
 	public String cancledOrdersCheckGet(Model model) {
 		//판매처 값 가져오기
-		List<StoreSectionVO> storeList = configService.selectStoreSectionList();
+		List<StoreSectionVO> storeList = configService.storeListOrderInTwoMonth();
 
 		model.addAttribute("storeList", storeList);
 		model.addAttribute("order_process", PROCESS_CANCLED_ORDER_CHECK);
@@ -1284,36 +1309,60 @@ public class OrdersController {
 		
 		String msg = "";
 		String url = "/cancled_order_check.do";
-
 		String fileName = "";
 		
-		try {
+		boolean cancleCheckFlag = true;
+		
+		if(ssVO.getSsPk() != 14) {
 			
-			fileName = fileUploadUtil.fileupload(request, FileuploadUtil.ORDER_EXCEL);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.info("upload error! checking fileExtension or excel file");
-			logger.info(e.getMessage());
-			msg = "파일 업로드 실패. 로그를 확인해주세요.";
-			
-			model.addAttribute("msg", msg);
-			model.addAttribute("url",url);
-			
-			return "common/message";
+			try {
+				
+				fileName = fileUploadUtil.fileupload(request, FileuploadUtil.ORDER_EXCEL);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.info("upload error! checking fileExtension or excel file");
+				logger.info(e.getMessage());
+				msg = "파일 업로드 실패. 로그를 확인해주세요.";
+				
+				model.addAttribute("msg", msg);
+				model.addAttribute("url",url);
+				
+				return "common/message";
+			}
 		}
+		
+		
 		
 		StoreCancleExcelDataSortingVO scedsVO = sedsService.selectStoreCancleExcelDataSorting(ssVO);
 		
-		List<OrdersVO> orList = readOrderExcel.cancledExcelFile(fileName, scedsVO);
-
-		List<OrdersVO> cancledOrderList = sedsService.cancledOrderSearch(orList);
+		OrdersVOList orVO = new OrdersVOList();
+		orVO.setSsName(ssVO.getSsPk()+"");
 		
-		List<StoreSectionVO> storeList = configService.selectStoreSectionList();
+		List<OrdersVO> cancledOrderList = null;
+		if(ssVO.getSsPk() != 14) {
+			List<OrdersVO> orList = readOrderExcel.cancledExcelFile(fileName, scedsVO);
+			orVO.setOrVoList(orList);
+			cancledOrderList = sedsService.cancledOrderSearch(orVO);
+			
+		}else {
+			Godomall gm = new Godomall();
+			OrdersVOList orList = gm.getGodomallCancledOrders(ssVO.getSsPk());
+			
+			if(orList.getOrVoList().size() != 0) {				
+				cancledOrderList = sedsService.cancledOrderSearch(orList);
+			}
+		}
+		
+
+		
+		
+		List<StoreSectionVO> storeList = configService.storeListOrderInTwoMonth();
 
 		model.addAttribute("storeList", storeList);
 		model.addAttribute("order_process", PROCESS_CANCLED_ORDER_CHECK);
 		model.addAttribute("cancledOrderList", cancledOrderList);
+		model.addAttribute("cancleCheckFlag", cancleCheckFlag);
 		
 		return "orders/cancled_order_check";
 	}
@@ -1660,5 +1709,145 @@ public class OrdersController {
 		
 		return "common/message";
 
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : checkDeposit
+	 * @date : 2021. 2. 9.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 입금 확인처리하기
+	 */
+	@RequestMapping(value="/check_deposit.do", method=RequestMethod.GET)
+	@ResponseBody
+	public int checkDeposit(@ModelAttribute OrdersVO orVO) {
+		return ordersService.checkDepositOrder(orVO);
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : pickUpServiceGet
+	 * @date : 2021. 2. 15.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 퀵서비스, 방문수령으로 변경하는 페이지
+	 */
+	@RequestMapping(value="/pick_up_service.do", method=RequestMethod.GET)
+	public String pickUpServiceGet(@ModelAttribute OrdersVO orVO, Model model ) {
+		
+		model.addAttribute("orVO", orVO);
+		
+		return "orders/config/pick_up_service";
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : pickUpServicePost
+	 * @date : 2021. 2. 15.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 퀵서비스, 방문수령으로 변경
+	 */
+	@RequestMapping(value="/pick_up_service.do", method=RequestMethod.POST)
+	public String pickUpServicePost(@ModelAttribute OrdersVO orVO, Model model) {
+		String msg = "";
+		String url = "/";
+		boolean closing = true;
+		
+		int result = ordersService.receiverPickUp(orVO);
+		
+		if(result > 0) {
+			msg = "수령 상태 변경 완료";
+			
+		}else {
+			msg = "수령 상태 변경 실패, 다시 한 번 확인해주세요";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		model.addAttribute("closing", closing);
+		
+		return "common/message";
+		
+	}
+	
+	/**
+	 * 
+	 * @MethodName : insertAdminOrderRecord
+	 * @date : 2021. 3. 8.
+	 * @author : Jeon KiChan
+	 * @param aorVO 
+	 * @return
+	 * @메소드설명 : 주문서 특이사항 혹은 메모 기록하기 (cs 내역)
+	 */
+	@RequestMapping(value="/order_record.do", method=RequestMethod.POST)
+	@ResponseBody
+	public int insertAdminOrderRecord(@ModelAttribute AdminOrderRecordVO aorVO) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		aorVO.setAorAdminId(adminVo.getUsername());
+		aorVO.setAorAdminName(adminVo.getAdminname());
+		
+		int result = ordersService.insertAdminOrderRecord(aorVO);
+		
+		return result;
+		
+	}
+	
+	/**
+	 * 
+	 * @MethodName : searchAdminOrderRecordListAjax
+	 * @date : 2021. 3. 8.
+	 * @author : Jeon KiChan
+	 * @param orVO - orSerialSpecialNumber
+	 * @return
+	 * @메소드설명 : 주문서 특이사항 혹은 메모 기록 가져오기 (cs 내역) - cs 검색에서 사용하는 ajax 형태
+	 */
+	@RequestMapping(value="/order_record_ajax.do", method=RequestMethod.GET)
+	@ResponseBody
+	public List<AdminOrderRecordVO> searchAdminOrderRecordListAjax(@ModelAttribute OrdersVO orVO){
+		
+		return ordersService.searchAdminOrderRecordBySerialSpecialNumber(orVO);
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : searchAdminOrderRecordList
+	 * @date : 2021. 3. 8.
+	 * @author : Jeon KiChan
+	 * @param orVO - orSerialSpecialNumber
+	 * @return
+	 * @메소드설명 : 주문서 특이사항 혹은 메모 기록 가져오기 (cs 내역) - 송장 부여에서 바로 확인할 수 있도록 목록 부여
+	 */
+	@RequestMapping(value="/order_record.do")
+	public String searchAdminOrderRecordList(@ModelAttribute OrdersVO orVO, Model model){
+		
+		List<AdminOrderRecordVO> aorList = ordersService.searchAdminOrderRecordBySerialSpecialNumber(orVO);
+		
+		if(aorList == null || aorList.size() == 0) {
+			String msg = "cs 내역이 존재하지 않습니다";
+			boolean closing = true;
+			
+			model.addAttribute("msg", msg);
+			model.addAttribute("closing", closing);
+			
+			return "common/message";
+			
+		}
+		
+		model.addAttribute("aorList", aorList);
+		
+		return "orders/cs/admin_order_record";
 	}
 }

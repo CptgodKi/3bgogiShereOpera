@@ -2,7 +2,6 @@ package com.gogi.proj.security.filter;
 
 import java.io.IOException;
 
-import javax.el.PropertyNotFoundException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,12 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.util.UrlPathHelper;
-
-import com.gogi.proj.security.AdminVO;
 
 public class ForAjaxAdminSessionFilter implements Filter{
 

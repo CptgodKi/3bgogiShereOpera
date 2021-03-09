@@ -53,7 +53,8 @@
 	            	<table class="table table-hover">
                     	<thead>
                         	<tr>
-                            	<th scope="col" width="80%" style="text-align: center;"> 제외 키워드 </th>
+                            	<th scope="col" width="40%" style="text-align: center;"> 제외 키워드 </th>
+                            	<th scope="col" width="40%" style="text-align: center;"> 제외 사유 </th>
                                 <th scope="col" width="20%" style="text-align: center;"> 삭제 </th>
                             </tr>
                         </thead>
@@ -67,6 +68,7 @@
 	                        	<c:forEach var="keyWord" items="${eakList }">
 	                        		<tr>
 		                            	<th scope="row">${keyWord.eakWord }</th>
+		                            	<th scope="row">${keyWord.eakReason }</th>
 		                                <td>
 		                                	<button class="btn btn-block btn-danger btn-xs" name="deleteAddrKeyword" value="${keyWord.eakPk }"> 삭제 </button>
 		                                </td>
@@ -82,7 +84,9 @@
 	            	<form class="form-group" action="<c:url value='/order/config/except_address_keyword.do'/>" method="POST">
 	            		<input type="hidden" name="eakFlag" value="1">
                     	<div class="input-group">
-	                        <input type="text" class="form-control" name="eakWord">
+	                        <input type="text" class="form-control" name="eakWord" placeholder="지역명">
+	                        <input type="text" class="form-control" name="eakReason" placeholder="제외 사유">
+	                        
 	                        <div class="input-group-append">
 	                        	<button type="submit" class="btn btn-primary"> 추가 </button>
 	                        </div>

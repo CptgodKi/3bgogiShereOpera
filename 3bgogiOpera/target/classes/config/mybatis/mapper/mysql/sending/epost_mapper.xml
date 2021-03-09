@@ -124,6 +124,7 @@
 		<result property="orDeliveryInvoiceNumber" column="or_delivery_invoice_number" javaType="String"/>
 		<result property="orShippingAddress" column="or_shipping_address" javaType="String"/>
 		<result property="orShippingAddressDetail" column="or_shipping_address_detail" javaType="String"/>
+		<result property="orDelivEnter" column="or_deliv_enters" javaType="String"/>
 		
 		<collection property="orVoList" ofType="OrdersVO">
 			<id property="orPk" column="or_pk" javaType="int"/>
@@ -254,7 +255,9 @@
 		<result property="arrCnpoNm" column="arr_cnpo_nm" javaType="String"/>
 		<result property="delivPoNm" column="deliv_po_nm" javaType="String"/>
 		<result property="delivAreaCd" column="deliv_area_cd" javaType="String"/>
-		
+		<result property="orRecType" column="or_rec_type" javaType="int"/>
+		<result property="orRecMemo" column="or_rec_memo" javaType="String"/>
+		<result property="orRecStoragePlace" column="or_rec_storage_place" javaType="String"/>
 		<!-- <collection property="orProductList" column="or_pk" ofType="String" javaType="java.util.List"/>	 -->	
 			
 			<collection property="productOptionList" ofType="ProductOptionVO">
@@ -269,6 +272,7 @@
 				<result property="anotherOptionQty" column="another_option_qty" javaType="int"/>
 				<result property="productName" column="product_name" javaType="String"/>
 				<result property="productFlag" column="product_flag" javaType="boolean"/>
+				<result property="prodSorting" column="eos_deliv_seq" javaType="int"/>
 			</collection>
 	</resultMap>
 	
@@ -402,13 +406,16 @@
 		SELECT
 			output.or_serial_special_number,
 			SUM(output.serial_count) AS total_count,
-			output.total_flag
+			output.total_flag,
+			output.deposit_flag
 		FROM
 		(
 			SELECT
 				od.or_serial_special_number,
 				COUNT(od.or_serial_special_number) AS serial_count,
-				SUM(od.or_inv_flag) AS total_flag
+				SUM(od.or_inv_flag) AS total_flag,
+				SUM(od.or_deposit_flag) AS deposit_flag,
+				SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT od.or_user_column4 separator ','), ',', 1) AS or_deliv_enters
 			FROM
 				orders od
 				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
@@ -423,8 +430,10 @@
 				</if>
 				<trim prefix="WHERE" prefixOverrides="AND |OR ">
 					od.or_delivery_invoice_number IS NULL
+					AND od.or_refunds = 0
 					<if test="edtFk != 0">
 						AND edt.edt_pk = #{edtFk}
+						AND od.or_rec_type = 0
 					</if>
 					<![CDATA[
 						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
@@ -496,7 +505,9 @@
 				od.or_serial_special_number
 			<if test="edtFk != 0">
 				HAVING
-					od.or_serial_special_number NOT IN (
+					or_deliv_enters IS NOT NULL 
+					AND or_deliv_enters != ''
+					AND od.or_serial_special_number NOT IN (
 						SELECT
 							deliv_out.or_serial_special_number
 						FROM
@@ -531,6 +542,7 @@
 			output.or_serial_special_number
 		HAVING
 			total_count = output.total_flag
+			AND total_count = output.deposit_flag
 	) out_or
 
 </select>
@@ -569,7 +581,8 @@
                 op.option_name,
                 op.option_cost_flag,
                 SUM(od.or_amount * om.om_option_amount) AS cf_fk,
-                GROUP_CONCAT(od.or_user_column4 separator ',') AS or_deliv_enter
+                SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT od.or_user_column4 separator ','), ',', 1) AS or_deliv_enters
+                
 			FROM
 				orders od
 				INNER JOIN store_section ss ON od.ss_fk = ss.ss_pk
@@ -585,6 +598,7 @@
 				]]>
 				AND od.or_excel_div_flag = 0
 				AND od.or_cancled_flag = 0
+				AND od.or_refunds = 0
 			GROUP BY
 				od.or_serial_special_number,
 				od.or_pk,
@@ -617,7 +631,9 @@
 				SELECT
 					od.or_serial_special_number,
 					COUNT(od.or_serial_special_number) AS serial_count,
-					SUM(od.or_inv_flag) AS total_flag 
+					SUM(od.or_inv_flag) AS total_flag,
+					SUM(od.or_deposit_flag) AS total_deposit,
+					SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT od.or_user_column4 separator ','), ',', 1) AS or_deliv_enters
 				FROM
 					orders od
 					<if test="edtFk != 0">
@@ -626,11 +642,13 @@
 					</if>
 				<trim prefix="WHERE" prefixOverrides="AND |OR ">
 					od.or_delivery_invoice_number IS NULL
+					AND od.or_refunds = 0
 					<![CDATA[
 						AND od.or_sending_deadline >= #{dateStart} AND od.or_sending_deadline <= #{dateEnd}
 					]]>	
 					<if test="edtFk != 0">
 						AND edt.edt_pk = #{edtFk}
+						AND od.or_rec_type = 0
 					</if>
 					<if test="ssPk != 0">
 						AND od.ss_fk = #{ssPk}
@@ -698,11 +716,17 @@
 				</trim>
 				GROUP BY
 					od.or_serial_special_number
+				<if test="edtFk != 0">
+				HAVING
+					or_deliv_enters IS NOT NULL 
+					AND or_deliv_enters != ''
+				</if>
 				ORDER BY 
 					od.or_serial_special_number ASC
 				) output
 			WHERE
 				output.serial_count = output.total_flag
+				AND output.serial_count = output.total_deposit
 			GROUP BY
 				output.or_serial_special_number
 			<if test="edtFk != 0">
@@ -742,6 +766,7 @@
 		WHERE
 			datas.or_serial_special_number = SELECTER.or_serial_special_number
 		ORDER BY
+			datas.or_deliv_enters DESC,
 			datas.product_name DESC,
 			datas.option_name DESC
 	</select>
@@ -825,6 +850,11 @@
 	
 	<select id="deliveryPrintTarget" resultMap="renewalDeliveryInfoResultMap" parameterType="OrderSearchVO">
 			SELECT
+				IF(
+					INNE.product_name LIKE '%등뼈%',
+                    -1,
+                    INNE.eos_deliv_seq
+                ) as eos_deliv_seq,
 				INNE.or_pk,
                 INNE.or_serial_special_number,
                 INNE.ss_name,
@@ -836,6 +866,9 @@
                 INNE.or_shipping_address_detail,
                 INNE.or_receiver_contract_number1,
 		        INNE.or_receiver_contract_number2,
+		        INNE.or_rec_type,
+                INNE.or_rec_memo,
+                INNE.or_rec_storage_place,
                 GROUP_CONCAT(DISTINCT INNE.or_delivery_message separator ',') AS or_delivery_message,
                 INNE.product_name,
                 INNE.option_name,
@@ -867,6 +900,9 @@
 		            od.or_product_fk,
 		            od.or_order_number,
                     GROUP_CONCAT(od.or_delivery_message separator ',') AS or_delivery_message,
+                    od.or_rec_type,
+                    od.or_rec_memo,
+                    od.or_rec_storage_place,
 		            pm.pm_pk,
 					pro.product_pk,
                     pro.product_name,
@@ -876,7 +912,8 @@
 					om.om_store_option_name,
 					(od.or_amount * om.om_option_amount) as totalQuantity,
 					op.option_pk,
-                    op.option_name
+                    op.option_name,
+                    eos.eos_deliv_seq
 				FROM
 					orders od
 					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
@@ -884,10 +921,12 @@
 					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
 					INNER JOIN options op ON om.option_fk = op.option_pk
 					INNER JOIN products pro ON pro.product_pk = op.product_fk
+					INNER JOIN excel_order_seq eos ON op.eo_fk = eos.eos_pk
 				WHERE 
 					od.regi_no IS NULL
 					AND od.or_excel_div_flag = 0
 					AND od.or_cancled_flag = 0
+					AND od.or_refunds = 0
 					AND od.or_serial_special_number = #{searchKeyword}
 				GROUP BY
 					od.or_pk,
@@ -911,6 +950,9 @@
 					od.or_discount_price,
 		            od.or_product_fk,
 		            od.or_order_number,
+		            od.or_rec_type,
+                    od.or_rec_memo,
+                    od.or_rec_storage_place,
 		            pm.pm_pk,
 		            om.om_pk,
 					pro.product_pk,
@@ -919,11 +961,11 @@
 					om.om_store_option_name,
 					om.om_option_amount,
 					op.option_pk,
-		            op.option_name
-				ORDER BY
-					od.or_pk
+		            op.option_name,
+		            eos.eos_deliv_seq
 			) INNE
 		GROUP BY
+			eos_deliv_seq,
 			INNE.or_pk,
 			INNE.or_serial_special_number,
 			INNE.ss_name,
@@ -935,12 +977,16 @@
 			INNE.or_shipping_address_detail,
 			INNE.or_receiver_contract_number1,
 		    INNE.or_receiver_contract_number2,
+		    INNE.or_rec_type,
+            INNE.or_rec_memo,
+            INNE.or_rec_storage_place,
 			INNE.product_name,
             INNE.option_pk,
             INNE.om_pk,
 			INNE.option_name
 		ORDER BY
-			INNE.product_name DESC,
+			eos_deliv_seq ASC,
+            INNE.product_name DESC,
 			INNE.option_name DESC
 	</select>
 	
@@ -970,9 +1016,32 @@
 			</foreach>
 	</update>
 	
+	<update id="gtranReceiverPickUp" parameterType="OrdersVO">
+		UPDATE
+			orders
+		SET
+			or_delivery_invoice_number = #{orDeliveryInvoiceNumber},
+			regi_no = #{orDeliveryInvoiceNumber},
+			or_delivery_company = #{orDeliveryCompany},
+			or_invoice_num_date = #{orInvoiceNumDate},
+			or_deliv_count = #{orDelivCount},
+			edt_fk = 0
+		WHERE
+			or_pk IN 
+			<foreach item="item" collection="productOptionList" open="(" separator="," close=")">
+				#{item.anotherOptionPk}
+			</foreach>
+		
+	</update>
+	
 	
 	<select id="deliveryInvoiceNumberReprinting" resultMap="renewalDeliveryInfoResultMap" parameterType="OrderSearchVO">
 			SELECT
+				IF(
+					INNE.product_name LIKE '%등뼈%',
+                    -1,
+                    INNE.eos_deliv_seq
+                ) as eos_deliv_seq,
 				INNE.or_pk,
                 INNE.or_serial_special_number,
                 INNE.ss_name,
@@ -999,6 +1068,9 @@
                 INNE.product_name,
                 INNE.option_name,
                 INNE.option_pk,
+                INNE.or_rec_type,
+                INNE.or_rec_memo,
+                INNE.or_rec_storage_place,
                 SUM(INNE.totalQuantity) AS another_option_qty
 			FROM(
                 
@@ -1037,7 +1109,9 @@
                     od.arr_cnpo_nm,
                     od.deliv_po_nm,
                     od.deliv_area_cd,
-                    
+                    od.or_rec_type,
+                    od.or_rec_memo,
+                    od.or_rec_storage_place,
 		            pm.pm_pk,
 					pro.product_pk,
                     pro.product_name,
@@ -1047,7 +1121,8 @@
 					om.om_store_option_name,
 					(od.or_amount * om.om_option_amount) as totalQuantity,
 					op.option_pk,
-                    op.option_name
+                    op.option_name,
+                    eos.eos_deliv_seq
 				FROM
 					orders od
 					INNER JOIN store_section ss ON ss.ss_pk = od.ss_fk
@@ -1055,11 +1130,13 @@
 					INNER JOIN option_matching om ON om.pm_fk = pm.pm_pk AND od.or_product_option = om.om_store_option_name
 					INNER JOIN options op ON om.option_fk = op.option_pk
 					INNER JOIN products pro ON pro.product_pk = op.product_fk
+					INNER JOIN excel_order_seq eos ON op.eo_fk = eos.eos_pk
 				WHERE 
 					od.regi_no IS NOT NULL
 					AND od.or_serial_special_number = #{searchKeyword}
 					AND od.or_cancled_flag = 0
 					AND od.or_excel_div_flag = 0
+					AND od.or_refunds = 0
 				GROUP BY
 					od.or_pk,
 					od.or_serial_special_number,
@@ -1094,6 +1171,9 @@
                     od.arr_cnpo_nm,
                     od.deliv_po_nm,
                     od.deliv_area_cd,
+                    od.or_rec_type,
+                    od.or_rec_memo,
+                    od.or_rec_storage_place,
 		            pm.pm_pk,
 		            om.om_pk,
 					pro.product_pk,
@@ -1102,11 +1182,11 @@
 					om.om_store_option_name,
 					om.om_option_amount,
 					op.option_pk,
-		            op.option_name
-				ORDER BY
-					od.or_pk
+		            op.option_name,
+		            eos.eos_deliv_seq
 			) INNE
 		GROUP BY
+			eos_deliv_seq,
 			INNE.or_pk,
 			INNE.or_serial_special_number,
 			INNE.ss_name,
@@ -1129,11 +1209,15 @@
             INNE.arr_cnpo_nm,
             INNE.deliv_po_nm,
             INNE.deliv_area_cd,
+            INNE.or_rec_type,
+            INNE.or_rec_memo,
+            INNE.or_rec_storage_place,
 			INNE.product_name,
             INNE.option_pk,
 			INNE.option_name
 		ORDER BY
-			INNE.product_name DESC,
+			eos_deliv_seq ASC,
+            INNE.product_name DESC,
 			INNE.option_name DESC
 	</select>
 	
@@ -1224,6 +1308,7 @@
                     od.regi_no IS NULL
 					AND od.or_excel_div_flag = 0
 					AND od.or_cancled_flag = 0
+					AND od.or_refunds = 0
 					AND od.or_serial_special_number = #{searchKeyword}
 				GROUP BY
 					od.or_pk,
@@ -1277,6 +1362,7 @@
 			INNE.option_pk
 		ORDER BY
 			INNE.or_serial_special_number ASC,
+            or_deliv_enter DESC,
             INNE.product_name DESC
 	</select>
 	

@@ -10,6 +10,7 @@ import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.config.vo.StoreCancleExcelDataSortingVO;
 import com.gogi.proj.orders.config.vo.StoreExcelDataSortingVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.orders.vo.OrdersVOList;
 import com.gogi.proj.stock.model.StockService;
 
 @Service
@@ -46,9 +47,9 @@ public class StoreExcelDataSortingServiceImpl implements StoreExcelDataSortingSe
 	}
 
 	@Override
-	public List<OrdersVO> cancledOrderSearch(List<OrdersVO> orList) {
+	public List<OrdersVO> cancledOrderSearch(OrdersVOList orVO) {
 		// TODO Auto-generated method stub
-		return sedsDao.cancledOrderSearch(orList);
+		return sedsDao.cancledOrderSearch(orVO);
 	}
 
 	@Override

@@ -675,6 +675,8 @@
                                         <div class="card">
                                             <h5 class="card-header"> 접속권한 </h5>
                                             <div class="card-body">
+                                            
+                                            	<sec:authorize access="hasRole('ROLE_MASTER')">
                                             	<div class="form-group row">
 		                                            <label class="col-sm-3 col-form-label text-sm-right"> 권한 변경 및 삭제</label>
 		                                            <div class="col-sm-6">
@@ -706,11 +708,21 @@
 		                                                        	</c:forEach>
 		                                                        class="custom-control-input admin_auth"><span class="custom-control-label">개발</span>
 		                                                    </label>
+		                                                    <label class="custom-control custom-checkbox">
+		                                                        <input type="checkbox" value="ROLE_MASTER" 
+		                                                        	<c:forEach var="adRolelist" items="${adRoleList }">
+		                                                        		<c:if test="${adRolelist.role ==  'ROLE_MASTER'}">
+		                                                        			checked="checked" data-role-pk="${adRolelist.adminRolePk }"
+		                                                        		</c:if>
+		                                                        	</c:forEach>
+		                                                        class="custom-control-input admin_auth"><span class="custom-control-label">최고관리자</span>
+		                                                    </label>
 															
 		                                                    <div id="error-container2"></div>
 		                                                </div>
 		                                            </div>
 		                                        </div>
+		                                        </sec:authorize>
 								            </div>
                                         </div>
                                         <div class="card">
@@ -821,6 +833,7 @@
     			
     			
     		 });
+			
 			
     	});
     </script>

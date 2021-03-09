@@ -41,19 +41,20 @@ public class FreebieVO {
 	private List<FreebieCheckVO> fbCheckList;	//사은품 증정 여부 체크 리스트
 	private List<String> ssArrayList;
 	private List<String> fbAnotherCheckWordList;
+	private List<String> fbAnotherCheckWordList2;
 	
 	public FreebieVO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	public FreebieVO(int fbPk, int optionFk, String ssList, String fbName, int fbType, String fbMinDate,
 			String fbMaxDate, int fbMinPrice, int fbMaxPrice, int fbMinTotalQty, int fbMaxTotalQty,
 			boolean fbTotalQtyFlag, boolean fbAnotherCheckFlag, int fbAnotherCheckList, String fbAnotherCheckWord,
 			int fbAnotherCheckType, boolean fbAnotherCheckFlag2, int fbAnotherCheckList2, String fbAnotherCheckWord2,
 			int fbAnotherCheckType2, int fbAddType, int fbAddQty, int fbAddMultiQty, Date fbUpdate, Timestamp fbRegdate,
 			String optionName, int productPk, String productName, List<FreebieCheckVO> fbCheckList,
-			List<String> ssArrayList, List<String> fbAnotherCheckWordList) {
+			List<String> ssArrayList, List<String> fbAnotherCheckWordList, List<String> fbAnotherCheckWordList2) {
 		super();
 		this.fbPk = fbPk;
 		this.optionFk = optionFk;
@@ -86,6 +87,15 @@ public class FreebieVO {
 		this.fbCheckList = fbCheckList;
 		this.ssArrayList = ssArrayList;
 		this.fbAnotherCheckWordList = fbAnotherCheckWordList;
+		this.fbAnotherCheckWordList2 = fbAnotherCheckWordList2;
+	}
+
+	public List<String> getFbAnotherCheckWordList2() {
+		return fbAnotherCheckWordList2;
+	}
+
+	public void setFbAnotherCheckWordList2(List<String> fbAnotherCheckWordList2) {
+		this.fbAnotherCheckWordList2 = fbAnotherCheckWordList2;
 	}
 
 	public int getFbPk() {
@@ -349,7 +359,7 @@ public class FreebieVO {
 				+ ", fbAddMultiQty=" + fbAddMultiQty + ", fbUpdate=" + fbUpdate + ", fbRegdate=" + fbRegdate
 				+ ", optionName=" + optionName + ", productPk=" + productPk + ", productName=" + productName
 				+ ", fbCheckList=" + fbCheckList + ", ssArrayList=" + ssArrayList + ", fbAnotherCheckWordList="
-				+ fbAnotherCheckWordList + "]";
+				+ fbAnotherCheckWordList + ", fbAnotherCheckWordList2=" + fbAnotherCheckWordList2 + "]";
 	}
 
 }

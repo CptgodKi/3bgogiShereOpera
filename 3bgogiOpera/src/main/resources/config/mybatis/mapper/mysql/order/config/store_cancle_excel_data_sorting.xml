@@ -47,12 +47,12 @@
 			orders
 		WHERE
 			<![CDATA[
-			or_regdate >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -30 DAY), '%Y-%m-%d')
+				or_regdate >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -50 DAY), '%Y-%m-%d')
 			]]>
 			AND or_cancled_flag = 0
+			AND ss_fk = #{ssName}
 			AND or_product_order_number IN 
-			
-			<foreach collection="list" item="item" open="(" close=")" separator=",">
+			<foreach collection="orVoList" item="item" open="(" close=")" separator=",">
 				#{item.orProductOrderNumber}
 			</foreach>
 	</select>

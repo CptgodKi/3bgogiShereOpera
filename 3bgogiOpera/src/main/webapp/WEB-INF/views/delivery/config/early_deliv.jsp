@@ -144,10 +144,9 @@
                                                 	</c:if>
                                                 >
                                             </div>
-                                            
                                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
                                                 <p class="text-right">
-                                                    <button type="button" class="btn btn-space btn-primary"> 검색 </button>
+                                                    <button type="submit" class="btn btn-space btn-primary"> 검색 </button>
                                                 </p>
                                             </div>
                                         </div>

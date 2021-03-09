@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gogi.proj.freebie.vo.FreebieVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.paging.OrderSearchVO;
 
 public interface FreebieService {
 
@@ -60,4 +61,38 @@ public interface FreebieService {
 	 * @메소드설명 : 사은품 수정
 	 */
 	public int updateFreebieByPk(FreebieVO fbVO);
+	
+	/**
+	 * 
+	 * @MethodName : selectFreebies
+	 * @date : 2021. 1. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 사은품 정책 목록 가져오기
+	 */
+	public List<FreebieVO> selectFreebies(OrderSearchVO osVO);
+	
+	/**
+	 * 
+	 * @MethodName : selectFreebieCount
+	 * @date : 2021. 1. 13.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 사은품 정책 목록 개수 가져오기 (paging 처리 )
+	 */
+	public int selectFreebieCount(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : deleteFreebie
+	 * @date : 2021. 2. 26.
+	 * @author : Jeon KiChan
+	 * @param fbVO
+	 * @return
+	 * @메소드설명 : 사은품 정책 삭제하기
+	 */
+	public int deleteFreebie(FreebieVO fbVO);
 }

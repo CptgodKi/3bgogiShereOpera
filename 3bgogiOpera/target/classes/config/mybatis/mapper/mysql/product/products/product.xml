@@ -22,6 +22,7 @@
 		<collection property="optionVOList"  ofType="OptionsVO">
 			<id property="optionPk" column="option_pk" javaType="int"/>
 			<result property="optionName" column="option_name" javaType="String"/>
+			<result property="optionFlag" column="option_flag" javaType="boolean"/>
 			<result property="optionCost" column="option_cost" javaType="int"/>
 			<result property="optionStock" column="option_stock" javaType="int"/>
 			<result property="optionStockFlag" column="option_stock_flag" javaType="boolean"/>
@@ -36,6 +37,7 @@
 		SET
 			product_name = #{productName},
 			product_flag = #{productFlag},
+			cf_fk		 = #{cfFk},
 			product_remark = #{productRemark},
 			product_memo1 = #{productMemo1},
 			product_memo2 = #{productMemo2},
@@ -67,6 +69,7 @@
 			pro.product_regdate,
 			op.option_name,
 			op.option_pk,
+			op.option_flag,
 			IF(
 			op.option_cost_flag = true,
 			op.option_cost,
@@ -97,16 +100,26 @@
 			pro.product_regdate,
 			op.option_name,
 			op.option_cost_flag,
+			op.option_flag,
 			op.option_pk
 	</select>
 	
 	<select id="selectProductOptionsByCodeAndName" resultMap="productModel" parameterType="ProductsVO">
-		SELECT pro.*, opt.option_pk, opt.option_name, opt.option_stock_flag, opt.option_stock, opt.option_cost_flag, opt.option_regdate
+		SELECT 
+			pro.*, 
+			opt.option_pk, 
+			opt.option_name, 
+			opt.option_stock_flag, 
+			opt.option_stock, 
+			opt.option_cost_flag, 
+			opt.option_regdate
 		FROM
 			products pro 
-		LEFT JOIN options opt 
-		ON pro.product_pk = opt.product_fk
-		WHERE pro.product_name LIKE concat('%',#{productName},'%')
+			LEFT JOIN options opt 
+			ON pro.product_pk = opt.product_fk
+		WHERE 
+			CONCAT(pro.product_name,' ', opt.option_name) LIKE CONCAT('%',#{productName},'%')
+			AND opt.option_flag = 1
 		<if test="cfFk != 0">
 			AND cf_fk = #{cfFk}
 		</if>

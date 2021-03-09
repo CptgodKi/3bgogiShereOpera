@@ -11,11 +11,7 @@
             <!-- ============================================================== -->
         </div>
     </div>
-        <div id="alarmDiv" style="border:1px solid #fff; background:white; position: fixed; left:88%; top:88%; width:200px; height:100px; display: none; z-index: 9999">
-			<div class="page-header">
-				<h2 class="pageheader-title" id="alarmId" style="text-align: center;">알람</h2>
-			</div>
-		</div>
+    
     <!-- ============================================================== -->
     <!-- end main wrapper -->
     <!-- ============================================================== -->
@@ -318,7 +314,8 @@
     <script src="${pageContext.request.contextPath}/resources/libs/js/renewal_project.js"></script>
 	<script type="text/javascript">
 		$(function() {
-
+			fileDropDown();
+			
 			$.datetimepicker.setLocale('kr');
 			
 			//$('#optgroup').multiSelect({ selectableOptgroup: true });
@@ -354,23 +351,218 @@
 					
 				}
 			});
+			
+			$("#chatSendBtn").click(function(){
+				event.stopPropagation();
+				send();
+				
+			});
+			$("#ccSendBtn").click(function(){
+				event.stopPropagation();
+				ccSend();
+				
+			});
+			$("#inputMessage").keydown(function(key) {
+
+				if (key.keyCode == 13) {
+					event.stopPropagation();
+					send();
+				}
+			});
+			$("#ccInputMessage").keydown(function(key) {
+
+				if (key.keyCode == 13) {
+					event.stopPropagation();
+					ccSend();
+				}
+			});
+
 		});
 		
 		window.paceOptions = {
 				target : "#progress-bar",
-				startOnPageLoad : false,
-				ajax : false
+				startOnPageLoad : false
 		};
-			/* $(document).ajaxStart(function() {
+		
+			$(document).ajaxStart(function() {
 				Pace.start();
 			}).ajaxStop(function() {
 				Pace.stop();
-			}); */
+			});
 			
 			$('#orMergeSeleted').multiSelect();
+		
+			$("#openSocket").click();
 			
+			var ws;
+	        var messages=document.getElementById("messageWindow");
+	        
+	        function openSocket(){
+	            if(ws!==undefined && ws.readyState!==WebSocket.CLOSED){
+	                writeResponse("통신 연결 완료");
+	                return;
+	            }
+
+	            //웹소켓 객체 만드는 코드
+	            ws=new WebSocket("ws://192.168.0.66:8081/broadcasting.do");
+	            
+	            ws.onopen=function(event){
+	                if(event.data===undefined) return;
+	                
+	                writeResponse(event.data);
+	            };
+	            
+	            ws.onmessage=function(event){
+	                writeResponse(event.data);
+	            };
+	            
+	            ws.onclose=function(event){
+	                writeResponse("연결이 끊어졌습니다. 새로고침을 해주세요");
+	                
+	            }
+	        }
+	        
+	        function send(){
+	            var text=document.getElementById("inputMessage").value+","+document.getElementById("sender").value;
+	            if(document.getElementById("inputMessage").value == ''){
+	            	
+	            	alert("입력된 내용이 없습니다");
+	            	document.getElementById("inputMessage").focus();
+	            	
+	            	return;
+	            	
+	            	
+	            }
+	            
+	            ws.send("filenameEnded*"+text);
+	            
+	            text="";
+	            document.getElementById("inputMessage").value="";
+	            
+	            messages.scrollTop = messages.scrollHeight;
+	            
+	            
+	        }
+	        
+	        function closeSocket(){
+	            ws.close();
+	        }
+	        function writeResponse(text){
+	            messages.innerHTML+=text+"\n";
+	        }
+
+	        // 분류실
+			$("#openSocket").click();
+			$("#ccOpenSocket").click();
 			
-			
+			var ccWs;
+	        var ccMessages=document.getElementById("ccMessageWindow");
+	        
+	        function ccOpenSocket(){
+	        	
+	            if(ccWs!==undefined && ccWs.readyState!==WebSocket.CLOSED){
+	            	
+	                return;
+	            }
+
+	            //웹소켓 객체 만드는 코드
+	            ccWs=new WebSocket("ws://192.168.0.66:8081/ccsocket.do");
+	            
+	            ccWs.onopen=function(event){
+	                if(event.data===undefined) return;
+	                
+	                ccWriteResponse(event.data);
+	            };
+	            
+	            ccWs.onmessage=function(event){
+	            	ccWriteResponse(event.data);
+	            };
+	            
+	            ccWs.onclose=function(event){
+	            	ccWriteResponse("연결이 끊어졌습니다. 새로고침을 해주세요");
+	                
+	            }
+	        }
+	        
+	        function ccSend(){
+	            var text=document.getElementById("ccInputMessage").value+","+document.getElementById("sender").value;
+	            if(document.getElementById("ccInputMessage").value == ''){
+	            	
+	            	alert("입력된 내용이 없습니다");
+	            	document.getElementById("ccInputMessage").focus();
+	            	
+	            	return;
+	            	
+	            }
+	            
+	            
+	            ccWs.send(text);
+	            text="";
+	            document.getElementById("ccInputMessage").value="";
+	            
+	            ccMessages.scrollTop = ccMessages.scrollHeight;
+
+	        }
+	        function ccWriteResponse(text){
+	        	ccMessages.innerHTML+=text+"\n";
+	        }
+	        
+	        function fileDropDown(){
+	            var dropZone = $("#messageWindow");
+	            dropZone.on('dragleave',function(e){
+	                e.stopPropagation();
+	                e.preventDefault();
+	                $(e.target).css({
+	                	"background-color": "#e9ecef"
+	                });
+	            });
+	            dropZone.on('dragover',function(e){
+	                e.stopPropagation();
+	                e.preventDefault();
+	                $(e.target).css({
+	                	"background-color": "#FFA2A2"
+	                });
+	            });
+	            
+	            
+	            dropZone.on('drop',function(e){
+	                e.preventDefault();
+	                // 드롭다운 영역 css
+	                dropZone.css('background-color','#e9ecef');
+	                
+	                e.dataTransfer = e.originalEvent.dataTransfer; //2
+	                var files = e.target.files || e.dataTransfer.files;
+	             
+	                if (files.length > 1) {
+	                    alert('하나만 올려라.');
+	                    return;
+	                }
+	                
+	                var file = files[0];
+	                ws.binaryType = "arraybuffer";
+	                
+	                
+	                ws.send('filename:'+file.name);
+	                
+	             	var reader = new FileReader();
+	             	var rawData = new ArrayBuffer();
+	             	
+	             	reader.loadend = function(){
+	             		
+	             	}
+	             	
+	             	reader.onload = function(e){
+	             		rawData = e.target.result;
+	             		ws.send(rawData);
+	             		ws.send('end*');
+	             	}
+	             	
+	             	reader.readAsArrayBuffer(file);
+	                
+	                
+	            });
+	        }
+
 	</script>
 </body>
 

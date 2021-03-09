@@ -3,6 +3,7 @@ package com.gogi.proj.orders.model;
 import java.util.List;
 
 import com.gogi.proj.configurations.vo.StoreMergeVO;
+import com.gogi.proj.orders.vo.AdminOrderRecordVO;
 import com.gogi.proj.orders.vo.IrregularOrderVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
@@ -45,7 +46,7 @@ public interface OrdersService {
 	public List<OrdersVO> selectCustomerOrderProductInfoDetail(OrdersVO orVO);
 	
 	//주문서 삭제처리하기
-	public boolean deleteOrders(List<String> orSerialSpecialNumberList);
+	public boolean deleteOrders(List<String> orSerialSpecialNumberList, String ip, String adminId);
 	
 	public boolean devideOrders(int [] orPkList, String ip, String adminId);
 	
@@ -284,4 +285,74 @@ public interface OrdersService {
 	 * @메소드설명 : 송장 생성 차수 가져오기
 	 */
 	public List<OrdersVO> selectCreateInvoiceNum();
+	
+	/**
+	 * 
+	 * @MethodName : selectBuyerAddrInfo
+	 * @date : 2021. 1. 13.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 과거 주문 내역으로 새로운 주문 정보 기입하기
+	 */
+	public OrdersVO selectBuyerAddrInfo(OrdersVO orVO);
+	
+	/**
+	 * 
+	 * @MethodName : checkDepositOrder
+	 * @date : 2021. 2. 9.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 입금 확인 처리하기
+	 */
+	public int checkDepositOrder(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : receiverPickUp
+	 * @date : 2021. 2. 15.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 픽업 처리하기 (퀵서비스, 방문수령)
+	 */
+	public int receiverPickUp(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : deleteExcelGiftOrderByOrFk
+	 * @date : 2021. 2. 22.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 대량주소 중복값 삭제하기
+	 */
+	public int deleteExcelGiftOrderByOrFk(OrdersVO orVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : insertAdminOrderRecord
+	 * @date : 2021. 3. 8.
+	 * @author : Jeon KiChan
+	 * @param aorVO
+	 * @return
+	 * @메소드설명 : 주문서 별로 특이사항 혹은 메모 기록하기 (cs 내역)
+	 */
+	public int insertAdminOrderRecord(AdminOrderRecordVO aorVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : searchAdminOrderRecordBySerialSpecialNumber
+	 * @date : 2021. 3. 8.
+	 * @author : Jeon KiChan
+	 * @param orVO - orSerialSpecialNumber
+	 * @return
+	 * @메소드설명 : 주문서의 특이사항 혹은 메모 기록 가져오기(cs 내역)
+	 */
+	public List<AdminOrderRecordVO> searchAdminOrderRecordBySerialSpecialNumber(OrdersVO orVO);
 }

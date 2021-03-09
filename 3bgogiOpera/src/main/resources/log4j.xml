@@ -12,8 +12,8 @@
 		</layout>
 	</appender>
 	
-	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="c:\\logs\\opera\\debug.log" />
+	<appender name="fileLogger" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="c://logs//debug.log" />
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -26,8 +26,7 @@
 		<level value="info" />
 	</logger>
 	
-	<!-- 3rdparty Loggers -->
-	<logger name="org.springframework.core">
+	<!-- <logger name="org.springframework.core">
 		<level value="info" />
 	</logger>
 	
@@ -43,18 +42,17 @@
 		<level value="info" />
 	</logger>
 
-	<!-- log SQL with timing information, post execution -->
 	<logger name="jdbc.sqltiming" additivity="false">
-		<level value="DEBUG" />
+		<level value="info" />
 		<appender-ref ref="console" />
 	</logger>
  
 	<logger name="com.ibatis">
-		<level value="DEBUG"/>
-	</logger>
+		<level value="info"/>
+	</logger> -->
 	
 	<logger name="java.sql">
-	  <level value="DEBUG"/>
+	  <level value="info"/>
 	</logger>
 	
 	

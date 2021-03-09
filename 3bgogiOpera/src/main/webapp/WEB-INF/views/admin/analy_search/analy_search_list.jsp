@@ -140,10 +140,26 @@
 				                        </div>
                                     	<div class="btn-group">
 				                                <select class="form-control form-control-sm" name="dateType">
-								                    <option value="or_regdate">주문 등록일</option>
-								                    <option value="or_settlement_day">주문 결제일</option>
-								                    <option value="or_sending_day">주문 발송일</option>
-								                    <option value="or_sending_deadline">주문 발송기한</option>
+								                    <option value="or_regdate"
+								                    	<c:if test="${osVO.dateType == 'or_regdate' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 등록일</option>
+								                    <option value="or_settlement_day"
+								                    	<c:if test="${osVO.dateType == 'or_settlement_day' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 결제일</option>
+								                    <option value="or_sending_day"
+								                    	<c:if test="${osVO.dateType == 'or_sending_day' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 발송일</option>
+								                    <option value="or_sending_deadline"
+								                    	<c:if test="${osVO.dateType == 'or_sending_deadline' }">
+								                    		selected="selected"
+								                    	</c:if>
+								                    >주문 발송기한</option>
 							                    </select>
 				                            </div>
 				                            &nbsp;
@@ -245,20 +261,7 @@
                                                 	</c:if>
                                                 ><span class="custom-control-label"> 판매처 옵션명 </span>
                                             </label>
-                                            <label class="custom-control custom-checkbox custom-control-inline">
-                                                <input type="checkbox" name="groupList" value="inne.product_name" class="custom-control-input"
-                                                	<c:if test="${fn:contains(osVO.groupList, 'inne.product_name') }">
-                                                		checked="checked"
-                                                	</c:if>
-                                                ><span class="custom-control-label"> 매칭 상품명 </span>
-                                            </label>
-                                            <label class="custom-control custom-checkbox custom-control-inline">
-                                                <input type="checkbox" name="groupList" value="inne.option_name" class="custom-control-input"
-                                                	<c:if test="${fn:contains(osVO.groupList, 'inne.option_name') }">
-                                                		checked="checked"
-                                                	</c:if>
-                                                ><span class="custom-control-label"> 매칭 옵션명 </span>
-                                            </label>
+                                            
                                             <label class="custom-control custom-checkbox custom-control-inline">
                                                 <input type="checkbox" name="groupList" value="inne.or_order_number" class="custom-control-input"
                                                 	<c:if test="${fn:contains(osVO.groupList, 'inne.or_order_number') }">
@@ -349,12 +352,6 @@
 														<c:if test="${headerList == 'inne.or_product_option' }">
 															<th>판매처 옵션명</th>
 														</c:if>
-														<c:if test="${headerList == 'inne.product_name' }">
-															<th>매칭 상품명</th>
-														</c:if>
-														<c:if test="${headerList == 'inne.option_name' }">
-															<th>매칭 옵션명</th>
-														</c:if>
 														<c:if test="${headerList == 'inne.or_order_number' }">
 															<th>주문번호</th>
 														</c:if>
@@ -401,12 +398,6 @@
 														<c:if test="${headerList == 'inne.or_product_option' }">
 															<th>판매처 옵션명</th>
 														</c:if>
-														<c:if test="${headerList == 'inne.product_name' }">
-															<th>매칭 상품명</th>
-														</c:if>
-														<c:if test="${headerList == 'inne.option_name' }">
-															<th>매칭 옵션명</th>
-														</c:if>
 														<c:if test="${headerList == 'inne.or_order_number' }">
 															<th>주문번호</th>
 														</c:if>
@@ -424,13 +415,22 @@
 											
 											</c:if>
                                     	</thead>
+                                    	
                                         <tbody>
                                         	<c:if test="${!empty analyList }">
                                         		<c:forEach var="map" items="${analyList }" varStatus="status">                                        		
 		                                            <tr>
 		                                            	<c:forEach var="item" items="${map }">
 		                                            		<c:if test="${!empty item.value }">
-		                                            			<th>${item.value }</th>
+		                                            			<c:if test="${item.key == 'or_amount' or item.key == 'or_total_price'}">
+		                                            				<th>
+		                                            					<fmt:formatNumber value="${item.value }" pattern="#,###"/>
+		                                            				</th>
+		                                            			</c:if>
+		                                            			<c:if test="${item.key != 'or_amount' and item.key != 'or_total_price'}">
+		                                            				<th>${item.value }</th>
+		                                            			</c:if>
+		                                            			
 		                                            		</c:if>
 		                                            		<c:if test="${empty item.value }">
 		                                            			<th> - </th>

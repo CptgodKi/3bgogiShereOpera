@@ -67,7 +67,8 @@
 			seds_user_column1 = ${sedsUserColumn1},
 			seds_user_column2 = ${sedsUserColumn2},
 			seds_user_column3 = ${sedsUserColumn3},
-			seds_user_column4 = ${sedsUserColumn4}
+			seds_user_column4 = ${sedsUserColumn4},
+			seds_start_row = ${sedsStartRow}
 		WHERE
 			seds_pk = #{sedsPk}
 	</update>

@@ -8,9 +8,11 @@ import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.gogi.proj.orders.config.vo.ExceptAddressKeywordVO;
+import com.gogi.proj.orders.config.vo.OrdersDeleteVO;
 import com.gogi.proj.orders.config.vo.ReqFilterKeywordVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
+import com.gogi.proj.paging.OrderSearchVO;
 
 @Repository
 public class OrderConfigDAOMybatis extends SqlSessionDaoSupport implements OrderConfigDAO{
@@ -19,6 +21,7 @@ public class OrderConfigDAOMybatis extends SqlSessionDaoSupport implements Order
 	private String exceptAddressKeywordNamespace = "order.config.except_address_keyword";
 	private String reqFilterKeywordNamespace = "order.config.req_filter_keyword";
 	private String orderConfigDivNamespace = "order.config.div";
+	private String orderConfigDelete = "order.config.delete";
 
 	@Override
 	public int insertExceptAddressKeyword(ExceptAddressKeywordVO eakVO) {
@@ -103,6 +106,25 @@ public class OrderConfigDAOMybatis extends SqlSessionDaoSupport implements Order
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(orderConfigDivNamespace+".selectPackingIrreTargetOrderCounting");
 	}
+
+	@Override
+	public int insertDeleteOrders(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(orderConfigDelete+".insertDeleteOrders", orVO);
+	}
+
+	@Override
+	public List<OrdersDeleteVO> selectOrdersDeleteList(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(orderConfigDelete+".selectOrdersDeleteList", osVO);
+	}
+
+	@Override
+	public int selectOrdersDeleteListCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(orderConfigDelete+".selectOrdersDeleteListCounting", osVO);
+	}
+	
 	
 	
 }

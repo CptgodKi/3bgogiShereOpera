@@ -210,8 +210,8 @@
 			    DATE_FORMAT(aa_work_start , '%U') AS `dates`,
 				SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600 AS work_time,
 			    IF( ( SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600) > 15.5,
-			    SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600 * 10310,
-			    SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600 * 8590) AS job_cost
+			    SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600 * 8720,
+			    SUM(IF(aa_work_start IS NOT NULL AND aa_work_end IS NOT NULL,(TIME_TO_SEC(aa_work_end)-TIME_TO_SEC(aa_work_start) - ( aa_break_time * 60 )) , 0)) / 3600 * 8720) AS job_cost
 			FROM 
 				admins ad
 			    

@@ -175,7 +175,8 @@ body {
                                                 <input type="text" name="productMemo6" value="${productsVo.productMemo6 }" class="form-control">
                                             </div>
                                         </div>
-                                        <div class="form-group row">
+                                        
+                                        <%-- <div class="form-group row">
                                         	<div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
 				                                <!-- .card -->
 				                                <div class="card card-figure">
@@ -222,7 +223,7 @@ body {
 				                                </div>
 				                                <!-- /.card -->
 				                            </div>
-				                        </div>   
+				                        </div> --%>   
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 비고 사항 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
@@ -232,12 +233,24 @@ body {
                                         <c:if test="${!empty productsVo.optionVOList }">
                                         	<c:forEach var="optionlist" items="${productsVo.optionVOList }">
 	                                        	<div class="form-group row">
-		                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 옵션 </label>
+	                                        		<c:if test="${optionlist.optionFlag == true }">
+			                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 옵션 </label>
+	                                        		</c:if>
+	                                        		<c:if test="${optionlist.optionFlag == false }">
+	                                        			<label class="col-12 col-sm-3 col-form-label text-sm-right" style="color: red;"> 사용 X </label>
+	                                        		</c:if>
+	                                        		
 		                                            <div class="col-12 col-sm-8 col-lg-6 row">
 			                                            <div class="col-md-8 mb-3">
-			                                            	<input type="text" value="${optionlist.optionName } ( 원가 : <fmt:formatNumber value="${optionlist.optionCost }" pattern="#,###"/> 원)" readonly="readonly" class="form-control">
+			                                            	<c:if test="${optionlist.optionFlag == true }">			                                            	
+				                                            	<input type="text" value="${optionlist.optionName } ( 원가 : <fmt:formatNumber value="${optionlist.optionCost }" pattern="#,###"/> 원)" readonly="readonly" class="form-control">
+			                                            	</c:if>
+			                                            	
+			                                            	<c:if test="${optionlist.optionFlag == false }">
+			                                            		<input type="text" value="${optionlist.optionName } ( 원가 : <fmt:formatNumber value="${optionlist.optionCost }" pattern="#,###"/> 원)" readonly="readonly" class="form-control" style="text-decoration: line-through;">
+			                                            	</c:if>
 			                                            </div>
-			                                             <div class="col-md-4 mb-3">
+			                                             <div class="col-md-4 mb-3" style="display: flex;">
 			                                             	<input type="hidden" value="${optionlist.optionPk }" name="optionPk">
 				                                    		<button type="button" name="readOptionBtn" class="btn btn-space btn-success" value="${optionlist.optionPk }"> 옵션확인</button>
 				                                    		<button type="button" name="deleteOptionBtn" class="btn btn-space btn-danger" value="${optionlist.optionPk }"> 옵션삭제</button>        

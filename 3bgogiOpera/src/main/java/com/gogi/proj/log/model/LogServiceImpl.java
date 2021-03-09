@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gogi.proj.log.util.LogUtil;
 import com.gogi.proj.log.vo.OrderHistoryVO;
+import com.gogi.proj.log.vo.ProdQtyLogVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.paging.OrderSearchVO;
 
 @Service
 public class LogServiceImpl implements LogService{
@@ -69,5 +71,17 @@ public class LogServiceImpl implements LogService{
 	public int insertOrderHistory(OrderHistoryVO ohVO) {
 		// TODO Auto-generated method stub
 		return logDao.insertOrderHistory(ohVO);
+	}
+
+	@Override
+	public List<ProdQtyLogVO> selectProdQtyLog(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return logDao.selectProdQtyLog(osVO);
+	}
+
+	@Override
+	public int selectProdQtyLogCount(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return logDao.selectProdQtyLogCount(osVO);
 	}
 }

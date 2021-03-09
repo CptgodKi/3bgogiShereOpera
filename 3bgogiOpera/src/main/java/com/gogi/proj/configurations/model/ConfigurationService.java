@@ -137,4 +137,15 @@ public interface ConfigurationService {
 	 * @메소드설명 : 문자발송금지 명단 검색 시 대응되는 키워드값 가져오기
 	 */
 	public List<OrdersVO> selectEventMsgProductKeyword(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : storeListOrderInTwoMonth
+	 * @date : 2021. 3. 2.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 2개월 이내에 들어온 주문서의 판매처 정보 가져오기
+	 */
+	public List<StoreSectionVO> storeListOrderInTwoMonth();
 }

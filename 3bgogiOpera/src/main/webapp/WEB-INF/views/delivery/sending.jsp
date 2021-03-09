@@ -21,7 +21,34 @@
 		
 		$("#orDeliveryInvoiceNumber").focus();
 		
+		$("#nonePickingCount").click(function(){
+			location.href='/orders/search/customer_orders.do?dateType=or_sending_deadline&datePeriod=1&&outputPosiv=1&deliveryInvoiceFlag=1&cancledFlag=1&excelFlag=4&reservationType=2&refundFlag=2';
+			
+			
+			
+		});
+		
 	});
+	
+	$.ajaxSetup({
+		
+	    beforeSend: function(xhr) {
+	        xhr.setRequestHeader("AJAX", true);
+	     },
+	     error: function(xhr, status, err) {
+	        if (xhr.status == 401) {
+	            alert("인증에 실패 했습니다. 로그인 페이지로 이동합니다.");
+	            location.href = "/login.do";
+	         } else if (xhr.status == 403) {
+	            alert("세션이 만료가 되었습니다. 로그인 페이지로 이동합니다.");
+	              location.href = "/login.do";
+	         } else if (xhr.status == 500) {
+	             alert(" 500에러 ");
+	             location.href = "/login.do";
+	        }
+	     }
+	});
+	
 </script>
 </head>
 <body>
@@ -103,8 +130,30 @@
 				</div>
 			</div>
 		</div>
+				
+			<div class="row">
+				<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0;">
+					<div class="card">
+						<div class="card-body">
+							<table class="table table-hover">
+								<thead>
+									<tr style="font-size: 10px;">
+										<th width="70%"> 남은 송장 개수 </th>
+										
+										
+										<th width="30%" id="nonePickingCount" style="cursor: pointer;">${nonePickingCount }</th>
+										
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
 	</div>
+	
 	<button type="button" class="btn btn-primary btn-xs" id="reasonBtn" data-toggle="modal" data-target="#reasonModal" style="display:none; "> 모달  </button>
+	
 	<div class="modal fade" id="reasonModal" tabindex="-1" role="dialog" aria-labelledby="#reasonModal" aria-hidden="true">
 			<div class="modal-dialog" role="document" style="max-width: 700px;">
 				<div class="modal-content">
@@ -145,6 +194,86 @@
 				</div>
 			</div>
 		</div>
+		<button type="button" id="ccOpenSocket" onclick="ccOpenSocket();" style="display: none;">Open</button>
+		
+	<button type="button" class="btn btn-primary btn-xs" id="alertBtn" data-toggle="modal" data-target="#alertModal" style="display:none; "> 알람  </button>
+	<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="#alertModal" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="max-width: 700px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title"> 운영팀 알림 </h3>
+						<a href="#" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</a>
+					</div>
+					<div class="modal-body" >
+						<p id="alertTextDiv"></hp>
+					</div>
+					 <div class="modal-footer">
+						<a href="#" class="btn btn-secondary" data-dismiss="modal"> 닫기 </a>
+					</div>
+				</div>
+			</div>
+		</div>
 </body> 
-<script src="${pageContext.request.contextPath}/resources/libs/js/renewal_sending_manage.js"></script>
+<script type="text/javascript">
+	
+	$("#ccOpenSocket").click();
+	
+	var message = new Audio();
+	message.src = "/resources/libs/sending_sound/message.wav";
+	
+	var ccWs;
+	
+	$.ajax({
+		type       : 'GET',
+		url        : '/delivery/non_picking_count.do',
+		success    : function(data){		
+			$("#nonePickingCount").text(data);
+			
+		}
+		
+	});
+	
+	function ccOpenSocket(){
+		
+	    if(ccWs!==undefined && ccWs.readyState!==WebSocket.CLOSED){
+	        return;
+	    }
+	
+	    //웹소켓 객체 만드는 코드
+	    ccWs=new WebSocket("ws://192.168.0.66:8081/ccsocket.do");
+	    
+	    
+	    
+	    ccWs.onopen=function(event){
+	        if(event.data===undefined) return;
+	
+	    };
+	    
+	    ccWs.onmessage=function(event){
+	    	ccWriteResponse(event.data);
+	    };
+	    
+	    ccWs.onclose=function(event){
+	
+	    }
+	    
+	}
+	
+	function ccWriteResponse(text){
+		if($("#alertModal").hasClass("show")){
+			$("#alertTextDiv").append("<h4>"+text+"</h4");
+		
+		}else{
+			message.play();
+			$("#alertBtn").click();
+			$("#alertTextDiv").html("<h4>"+text+"</h4");
+			
+		}
+		
+	}
+
+</script>
+<script src="${pageContext.request.contextPath}/resources/libs/js/renewal_sending_manage.js?v=<%=System.currentTimeMillis() %>"></script>
 </html>

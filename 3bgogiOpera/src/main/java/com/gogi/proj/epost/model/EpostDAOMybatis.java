@@ -98,4 +98,10 @@ public class EpostDAOMybatis extends SqlSessionDaoSupport implements EpostDAO{
 		// TODO Auto-generated method stub
 		return getSqlSession().update(epostNameSpace+".deleteDelivInfoByPk", osVO);
 	}
+
+	@Override
+	public int gtranReceiverPickUp(OrdersVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(epostNameSpace+".gtranReceiverPickUp", osVO);
+	}
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.gogi.proj.freebie.vo.FreebieCheckVO;
 import com.gogi.proj.freebie.vo.FreebieVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.paging.OrderSearchVO;
 
 @Repository
 public class FreebieDAOMybatis extends SqlSessionDaoSupport implements FreebieDAO{
@@ -54,6 +55,24 @@ public class FreebieDAOMybatis extends SqlSessionDaoSupport implements FreebieDA
 	public int selectFreebieDupliCheck(FreebieCheckVO fcVO) {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectOne(namespace+".selectFreebieDupliCheck", fcVO);
+	}
+
+	@Override
+	public List<FreebieVO> selectFreebies(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".selectFreebies", osVO);
+	}
+
+	@Override
+	public int selectFreebieCount(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(namespace+".selectFreebieCount", osVO);
+	}
+
+	@Override
+	public int deleteFreebie(FreebieVO fbVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().delete(namespace+".deleteFreebie", fbVO);
 	}
 	
 }

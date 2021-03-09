@@ -92,16 +92,13 @@
 									                <c:if test="${!empty invoiceNum }">
 									                	<option disabled>송장 차수 </option>
 									                	<c:forEach var="invoiceNumList" items="${invoiceNum }">
-															<option value="${invoiceNumList.orInvoiceNumDate }"
-															
+															<option 
+																value="${invoiceNumList.orInvoiceNumDate }"
 																<c:if test="${!empty osVO.createInvoiceNumList }">
-																
 																	<c:forEach var="invoiceNums" items="${osVO.createInvoiceNumList }">				
-																													
 																		<c:if test="${invoiceNumList.orInvoiceNumDate  == invoiceNums }">
-																			selected="selected"
+																			selected='selected'
 																		</c:if>
-																		
 																	</c:forEach>
 																</c:if>
 															>송장 ${invoiceCountNum} 차 ${invoiceNumList.orInvoiceNumDate }</option>

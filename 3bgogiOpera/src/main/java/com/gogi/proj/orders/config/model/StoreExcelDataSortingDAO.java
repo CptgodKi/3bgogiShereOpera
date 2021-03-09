@@ -6,6 +6,7 @@ import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.orders.config.vo.StoreCancleExcelDataSortingVO;
 import com.gogi.proj.orders.config.vo.StoreExcelDataSortingVO;
 import com.gogi.proj.orders.vo.OrdersVO;
+import com.gogi.proj.orders.vo.OrdersVOList;
 
 public interface StoreExcelDataSortingDAO {
 
@@ -61,7 +62,7 @@ public interface StoreExcelDataSortingDAO {
 	 * @return
 	 * @메소드설명 : 취소 요청된 주문서 리스트 가져오기
 	 */
-	public List<OrdersVO> cancledOrderSearch(List<OrdersVO> orList);
+	public List<OrdersVO> cancledOrderSearch(OrdersVOList orVO);
 	
 	
 	/**

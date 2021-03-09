@@ -21,6 +21,7 @@ import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.freebie.model.FreebieService;
 import com.gogi.proj.freebie.vo.FreebieVO;
 import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.util.PageUtility;
 
 @Controller
 @RequestMapping("/config/freebie")
@@ -115,9 +116,24 @@ public class FreebieController {
 	@RequestMapping(value="/list.do", method=RequestMethod.GET)
 	public String freebieListGet(@ModelAttribute OrderSearchVO osVO, Model model) {
 		
-		List<FreebieVO> fbList = fbService.selectFreebieList();
+		int totalRecord = fbService.selectFreebieCount(osVO);
+		
+		osVO.setTotalRecord(totalRecord);
+		osVO.setBlockSize(15);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(PageUtility.RECORD_COUNT_PER_PAGE);
+			
+		}
+		
+		List<FreebieVO> fbList = fbService.selectFreebies(osVO);
 		
 		model.addAttribute("fbList", fbList);
+		model.addAttribute("osVO", osVO);
 		
 		return "configuration/freebie/list";
 	}
@@ -231,5 +247,36 @@ public class FreebieController {
 		model.addAttribute("url", url);
 		
 		return "common/message";
+	}
+	
+	/**
+	 * 
+	 * @MethodName : deleteFreebie
+	 * @date : 2021. 2. 26.
+	 * @author : Jeon KiChan
+	 * @param fbVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 사은품 정책 삭제하기
+	 */
+	@RequestMapping(value="/delete.do", method=RequestMethod.GET)
+	public String deleteFreebie(@ModelAttribute FreebieVO fbVO, Model model) {
+		
+		String msg = "";
+		String url = "/config/freebie/list.do";
+		
+		int result = fbService.deleteFreebie(fbVO);
+		
+		if(result > 0) {
+			msg = "사은품 삭제 완료";
+		}else {
+			msg = "사은품 삭제 실패";
+		}
+		
+		model.addAttribute("msg", msg);
+		model.addAttribute("url", url);
+		
+		return "common/message";
+		
 	}
 }

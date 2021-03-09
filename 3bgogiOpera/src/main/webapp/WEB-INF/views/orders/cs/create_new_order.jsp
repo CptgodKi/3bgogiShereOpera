@@ -92,9 +92,9 @@
     		});
     		
     		$("#insertNewOrderForm").submit(function(){
-    			var productExist = $("#createOrderProductList").children().length;
-    			var addressNum = $("#orShippingAddressNumber").val();
-    			
+    			productExist = $("#createOrderProductList").children().length;
+    			addressNum = $("#orShippingAddressNumber").val();
+    			deliveryPrice = $("#orDeliveryPrice").val();
     			if(productExist == 0){
     				alert("상품을 추가해주세요");
 	    			event.preventDefault();
@@ -104,6 +104,10 @@
     				alert("우편번호가 없습니다. 주소 검색을 해주세요 ");
 	    			event.preventDefault();
 	    			return false;
+	    			
+    			}if(deliveryPrice == ''){
+    				$("#orDeliveryPrice").val("0");
+    				
     			}
     			
     			
@@ -111,6 +115,21 @@
     		
     		$(document).on("click", ".deleteCreateOrderProduct", function(){
     			$(this).parent().parent().remove();
+    			
+    			totalPrice = 0;
+    			
+    			$(".orderTotalPrice").each(function(){
+    				totalPrice += Number($(this).val());
+    				
+    			});
+    			
+    			if(totalPrice == 0){
+    				$("#orderTotalPrice").text("");
+    				
+    			}else{    				
+	    			$("#orderTotalPrice").text(comma(totalPrice));
+    			}
+    			
     		});
     	});
     	
@@ -153,27 +172,21 @@
 								<input type="hidden" name="orPaymentType" value="계좌이체">
 								<input type="hidden" name="orInflowRoute" value="전화">
 								<input type="hidden" name="smsSendFlag" id="smsSendFlag" value="0">
+								<input type="hidden" name="orDepositFlag" id="orDepositFlag" value="0">
 								<input type="hidden" id="productCounting" value="0">
 								<div class="row">
-									<div class="col-md-4 mb-1">
-										<div class="form-group row">
-                                            <label for="orSendingDeadline" class="col-12 col-sm-3 col-form-label text-sm-right" style="font-size: 12px;">발송일</label> 
-                                            <div class="col-12 col-sm-8 col-lg-6">
-                                                <input type="text" class="form-control form-control-sm" id="orSendingDeadline" name="orSendingDeadline" placeholder="" required="">
-                                            </div>
-                                        </div>
+									<div class="col-md-3 mb-1">
+										<label for="orSendingDeadline" class="text-muted"> 발송일</label> 
+										<input type="text" class="form-control form-control-sm" id="orSendingDeadline" name="orSendingDeadline">
+										
 									</div>
-									<div class="col-md-5 mb-1">
-										<div class="form-group row">
-                                            <label for="ssFk" class="col-12 col-sm-3 col-form-label text-sm-right" style="font-size: 12px;">판매처</label> 
-                                            <div class="col-12 col-sm-8 col-lg-6">
-                                                <select class="form-control form-control-sm" name="ssFk" id="ssFk">
-												    <c:forEach var="sslist" items="${ssList }">						                    	
-														<option value="${sslist.ssPk }"> ${sslist.ssName }</option>
-												    </c:forEach>
-										        </select>
-                                            </div>
-                                        </div>
+									<div class="col-md-3 mb-1">
+										<label for="ssFk" class="text-muted"> 판매처 </label> 
+										<select class="form-control form-control-sm" name="ssFk" id="ssFk">
+											<c:forEach var="sslist" items="${ssList }">						                    	
+												<option value="${sslist.ssPk }"> ${sslist.ssName }</option>
+											</c:forEach>
+										</select>
 									</div>
 									<div class="col-md-3 mb-1">
 										<label for="smsSend">문자 발송</label> 
@@ -185,17 +198,17 @@
 								<div class="row">
 									<div class="col-md-3 mb-1">
 										<label for="orBuyerName" class="text-muted"> 주문자 명</label> 
-										<input type="text" class="form-control form-control-sm" id="orBuyerName" name="orBuyerName" placeholder="" value="" required="">
+										<input type="text" class="form-control form-control-sm" id="orBuyerName" name="orBuyerName" placeholder="" value="${addressInfo.orBuyerName }" required="">
+										
 									</div>
-									
 									<div class="col-md-3 mb-1">
 										<label for="orBuyerContractNumber1">주문자 핸드폰</label> 
-										<input type="text" class="form-control form-control-sm phone-inputmask " id="orBuyerContractNumber1" name="orBuyerContractNumber1" placeholder="">
+										<input type="text" class="form-control form-control-sm phone-inputmask " id="orBuyerContractNumber1" name="orBuyerContractNumber1" value="${addressInfo.orBuyerContractNumber1 }" placeholder="">
 									</div>
 									
 									<div class="col-md-3 mb-1"> 
 										<label for="orBuyerContractNumber2">주문자 연락처</label> 
-										<input type="text" class="form-control form-control-sm" id="orBuyerContractNumber2" name="orBuyerContractNumber2" placeholder="">
+										<input type="text" class="form-control form-control-sm" id="orBuyerContractNumber2" name="orBuyerContractNumber2" value="${addressInfo.orBuyerContractNumber2 }" placeholder="" >
 									</div>
 									<div class="col-md-3 mb-1">
 										<label for="orBuyerContractNumber1">수취인 동일</label> 
@@ -208,26 +221,24 @@
 								<div class="row">
 									<div class="col-md-4 mb-1">
 										<label for="orReceiverName"> 수취인명</label> 
-										<input type="text" class="form-control form-control-sm" id="orReceiverName" name="orReceiverName" placeholder="" value="" required="">
+										<input type="text" class="form-control form-control-sm" id="orReceiverName" name="orReceiverName" placeholder="" value="${addressInfo.orReceiverName }" required="">
 									</div>
 									
 									<div class="col-md-4 mb-1">
 										<label for="orReceiverContractNumber1">수취인 핸드폰</label> 
-										<input type="text" class="form-control form-control-sm phone-inputmask " name="orReceiverContractNumber1" id="orReceiverContractNumber1" placeholder="">
+										<input type="text" class="form-control form-control-sm phone-inputmask " name="orReceiverContractNumber1" id="orReceiverContractNumber1" value="${addressInfo.orReceiverContractNumber1 }" placeholder="">
 									</div>
 									
 									<div class="col-md-4 mb-1"> 
 										<label for="orReceiverContractNumber2">수취인 연락처</label> 
-										<input type="text" class="form-control form-control-sm" id="orReceiverContractNumber2" name="orReceiverContractNumber2" placeholder="">
+										<input type="text" class="form-control form-control-sm" id="orReceiverContractNumber2" name="orReceiverContractNumber2" value="${addressInfo.orReceiverContractNumber2 }" placeholder="">
 									</div>
 								</div>
-								
-								
 								<div class="row mb-2">
 									<div class="col-md-4">									
 										<label for="orShippingAddressNumber"> 우편번호 </label>
 										<div class="input-group mb-1" >
-		                                    <input type="text" class="form-control form-control-sm" id="orShippingAddressNumber" name="orShippingAddressNumber" readonly="readonly" required>
+		                                    <input type="text" class="form-control form-control-sm" id="orShippingAddressNumber" name="orShippingAddressNumber" value="${addressInfo.orShippingAddressNumber }" readonly="readonly" required>
 		                                    <div class="input-group-append">
 		                                    	<button type="button" class="btn btn-primary btn-sm" id="searchAddressBtn"> 검색 </button>
 		                                    </div>
@@ -235,14 +246,13 @@
 									</div>
 									<div class="col-md-8">
 										<label for="orShippingAddress"> 주소 </label> 
-										<input type="text" class="form-control form-control-sm" id="orShippingAddress" name="orShippingAddress" placeholder="" required>
+										<input type="text" class="form-control form-control-sm" id="orShippingAddress" name="orShippingAddress" value="${addressInfo.orShippingAddress }" placeholder="" required>
 									</div>
 								</div>
-								
 								<div class="row mb-2">
 									<div class="col-md-12">
 										<label for="orShippingAddressDetail"> 상세 주소 </label> 
-										<input type="text" class="form-control form-control-sm" id="orShippingAddressDetail" name="orShippingAddressDetail" placeholder="">
+										<input type="text" class="form-control form-control-sm" id="orShippingAddressDetail" name="orShippingAddressDetail" value="${addressInfo.orShippingAddressDetail }"  placeholder="">
 									</div>
 								</div>
 								

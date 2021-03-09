@@ -127,5 +127,11 @@ public class ConfigurationDAOMybatis extends SqlSessionDaoSupport implements Con
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(eventMsg+".selectEventMsgProductKeyword", osVO);
 	}
+
+	@Override
+	public List<StoreSectionVO> storeListOrderInTwoMonth() {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(namespace+".storeListOrderInTwoMonth");
+	}
 	
 }

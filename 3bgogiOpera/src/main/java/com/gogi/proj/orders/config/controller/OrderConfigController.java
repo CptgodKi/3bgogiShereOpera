@@ -1,5 +1,8 @@
 package com.gogi.proj.orders.config.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,9 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gogi.proj.orders.config.model.OrderConfigService;
 import com.gogi.proj.orders.config.vo.ExceptAddressKeywordVO;
+import com.gogi.proj.orders.config.vo.OrdersDeleteVO;
 import com.gogi.proj.orders.config.vo.ReqFilterKeywordVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
+import com.gogi.proj.paging.OrderSearchVO;
+import com.gogi.proj.util.PageUtility;
 
 @Controller
 @RequestMapping(value="/order/config")
@@ -128,19 +134,19 @@ public class OrderConfigController {
 		
 		int exceptAddResult = orderConfigService.searchEceptAddrAndUpdateCheckFlag(exceptAddrList);
 
-		List<ExceptAddressKeywordVO> eakList = orderConfigService.selectExceptAddressKeyword();
 		List<OrdersVO> orList = null;
 		
-		if(eakList.size() == 0) {
+		if(exceptAddrList.size() == 0) {
 			//제외 키워드 목록이 없기 때문에 넘어감
 			
 		}else {
 			//제외 키워드 목록이 있을 경우 조회하여 가져옴
-			orList = orderConfigService.exceptAddrTargetOrder(eakList);
+			orList = orderConfigService.exceptAddrTargetOrder(exceptAddrList);
 				
 		}
 		
 		model.addAttribute("orList", orList);
+		model.addAttribute("eakList", exceptAddrList);
 		
 		return "orders/config/except_addr/except_address_keyword";
 	}
@@ -311,5 +317,54 @@ public class OrderConfigController {
 		
 		return "orders/config/packing/irre_order_list";
 		
+	}
+	
+	
+	/**
+	 * 
+	 * @MethodName : orderDeleteList
+	 * @date : 2021. 3. 4.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @param model
+	 * @return
+	 * @메소드설명 : 주문서 삭제 목록 가져오기
+	 */
+	@RequestMapping(value="/delete_order_list.do", method=RequestMethod.GET)
+	public String orderDeleteList(@ModelAttribute OrderSearchVO osVO, Model model) {
+
+		
+		if(osVO.getDateStart() == null) {
+			
+			Calendar cal = Calendar.getInstance();
+			Date today = cal.getTime();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			osVO.setDateStart(sdf.format(today));
+			osVO.setDateEnd(sdf.format(today));
+			
+		}
+		
+		int totalRecord = orderConfigService.selectOrdersDeleteListCounting(osVO);
+		
+		osVO.setTotalRecord(totalRecord);
+		osVO.setBlockSize(7);
+		
+		if(totalRecord <=osVO.getRecordCountPerPage()) {
+			osVO.setCurrentPage(1);
+		}
+		
+		if(osVO.getRecordCountPerPage() == 0) {			
+			osVO.setRecordCountPerPage(30);
+			
+		}
+		
+		List<OrdersDeleteVO> orderDeleteList = orderConfigService.selectOrdersDeleteList(osVO);
+		
+		model.addAttribute("orderDeleteList", orderDeleteList);
+		model.addAttribute("osVO", osVO);
+		
+		return "logs/delete_order_list";
 	}
 }

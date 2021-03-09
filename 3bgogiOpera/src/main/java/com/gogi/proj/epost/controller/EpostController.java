@@ -8,6 +8,8 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -369,6 +371,19 @@ public class EpostController {
 			}
 		}
 		
+		for( OrdersVO or : orList) {
+			int temp = 0;
+			if(or.getProductOptionList().get(0).getProdSorting() == 1 && or.getProductOptionList().size() > 1) {				
+				for( int i = 1; i < or.getProductOptionList().size(); i++) {
+					if( or.getProductOptionList().get(i).getProdSorting() == 0 ) {
+						or.getProductOptionList().get(0).setProdSorting(1);
+						break;
+					}
+				}
+			}
+		}
+		
+		Collections.sort(orList);
 		
 		model.addAttribute("orList",orList);
 		model.addAttribute("errorOr",errorOr);
@@ -388,13 +403,33 @@ public class EpostController {
 	 * @메소드설명 : 등록된 송장 재출력하기
 	 */
 	@RequestMapping(value="/reprinting_deliv_invoice.do", method=RequestMethod.POST)
-	public String reprintingDelivInvoice(@ModelAttribute OrderSearchVO osVO, Model model) {
+	public String reprintingDelivInvoice(HttpServletRequest request, @ModelAttribute OrderSearchVO osVO, Model model) {
 		List<OrdersVO> orList = new ArrayList<>();
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
 		
 		for(int i = 0; i < osVO.getOrSerialSpecialNumberList().size(); i++) {
 			osVO.setSearchKeyword(osVO.getOrSerialSpecialNumberList().get(i));
-			orList.add(epostService.deliveryInvoiceNumberReprinting(osVO));
+			orList.add(epostService.deliveryInvoiceNumberReprinting(osVO, request.getRemoteAddr(), adminVo.getUsername() ));
 		}
+		
+		
+		for( OrdersVO or : orList) {
+			int temp = 0;
+			if(or.getProductOptionList().get(0).getProdSorting() == 1 && or.getProductOptionList().size() > 1) {				
+				for( int i = 1; i < or.getProductOptionList().size(); i++) {
+					if( or.getProductOptionList().get(i).getProdSorting() == 0 ) {
+						or.getProductOptionList().get(0).setProdSorting(1);
+						break;
+					}
+				}
+			}
+		}
+
+		
+		Collections.sort(orList);
 		
 		model.addAttribute("orList",orList);
 		
@@ -477,9 +512,13 @@ public class EpostController {
 	 */
 	@RequestMapping(value="/epost/delete.do", method=RequestMethod.POST, produces="application/text; charset=utf8")
 	@ResponseBody
-	public String epostDelivDelete(@RequestParam List<String> orSerialSpecialNumberList) throws Exception {
+	public String epostDelivDelete(@RequestParam List<String> orSerialSpecialNumberList,HttpServletRequest request) throws Exception {
 		
-		return epostService.deleteEpostDelivData(orSerialSpecialNumberList, EPOST_DELIV_DELETE);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		AdminVO adminVo = (AdminVO)auth.getPrincipal();
+		
+		return epostService.deleteEpostDelivData(orSerialSpecialNumberList, EPOST_DELIV_DELETE, request.getRemoteAddr(), adminVo.getUsername());
 		
 	}
 

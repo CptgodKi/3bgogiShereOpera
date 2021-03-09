@@ -57,6 +57,16 @@
     			
     			window.open("/orders/config/self_devide_order.do?orPk="+orPk+"&closing="+0, "주문서 나누기" , "width=800px, height=620px, top=50px, left=50px, scrollbars=no");
     		});
+    		
+    		
+    		// cs 내역 확인하기
+			$(".adminOrderRecord").click(function(){
+    			
+    			window.open("/orders/order_record.do?orSerialSpecialNumber="+$(this).val(), "cs 내역 확인" , "width=800px, height=620px, top=50px, left=50px, scrollbars=no");
+    			
+    		});
+    		
+    		
 
     		$('#showExSearchBar').click(function(){
     			
@@ -72,8 +82,26 @@
     		$("#sendingDelivButton").click(function(){
     			var orSize = $("input[name=orSerialSpecialNumberList]:checked").length;
     			
+    			if(orSize == 0){
+    				alert("부여할 수 있는 송장이 존재하지 않습니다");
+    				return false;
+    			}
+    			
     			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){
     					
+					doubleSubmitCheck();
+        			
+        			if(doubleSubmitFlag == false){
+        				
+        				return false;
+        			}
+        			
+        			$("#sendingDelivButton").removeClass("btn btn-danger");
+        			
+            		$("#sendingDelivButton").text("");
+            		
+        			$("#sendingDelivButton").addClass("dashboard-spinner spinner-xs");
+        			
 	    			var orSerialSpecialNumberList = new Array(orSize);
 	    				
 					window.open('', 'viewer', 'width=1000, height=700');
@@ -97,6 +125,7 @@
 	    			$("#excelDownloadIframe").append(delivForm);
 	    			
 	    			delivForm.submit();
+	    			
 	    			$("#excelDownloadIframe").html("");
     			}
     			
@@ -107,8 +136,26 @@
     		$("#freshSolutionExcelDelivButton").click(function(){
     			var orSize = $("input[name=orSerialSpecialNumberList]:checked").length;
     			
+    			if(orSize == 0){
+    				alert("부여할 수 있는 송장이 존재하지 않습니다");
+    				return false;
+    			}
+    			
     			if(confirm(orSize+" 개의 주문서에 송장을 부여하시겠습니까?")){
     				
+    				doubleSubmitCheck();
+        			
+        			if(doubleSubmitFlag == false){
+        				
+        				return false;
+        			}
+        			
+        			$("#freshSolutionExcelDelivButton").removeClass("btn btn-warning");
+        			
+            		$("#freshSolutionExcelDelivButton").text("");
+            		
+        			$("#freshSolutionExcelDelivButton").addClass("dashboard-spinner spinner-xs");
+        			
     				if($("select[name=edtFk]").val() == '3'){
     					alert("임시 송장을 부여합니다");
     					
@@ -207,7 +254,7 @@
     			}
     			
     			if(orSize > 0){ 
-    				if(confirm("주문서를 다운로드 하시겠습니까?")){
+    				if(confirm(orSize+" 개의 주문서를 다운로드 하시겠습니까?")){
     	    			
     	    			var numListInput = document.createElement("input");
     	    			numListInput.name="orSerialSpecialNumberList";
@@ -287,6 +334,17 @@
 			$("#epostPageForm").submit();
 		}
 		
+    	var doubleSubmitFlag = false;
+
+    	function doubleSubmitCheck(){
+    	    if(doubleSubmitFlag){
+    	        return doubleSubmitFlag;
+    	    }else{
+    	        doubleSubmitFlag = true;
+    	        return false;
+    	    }
+    	}
+    	
     </script>
     <style type="text/css">
     	.selectClass{
@@ -312,8 +370,7 @@
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link"> 주문서 </a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link"> 주문 입력 </a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link"> 주문 매칭 </a></li>
-                                        
+                                        <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link"> 송장 부여 </a></li>
                                     </ol>
                                 </nav>
                             </div>
@@ -330,9 +387,9 @@
 									<h4> 주문서 진행 단계 </h4>
 									<a href="<c:url value='/orders/order_page.do'/>" class="btn btn-success"> 주문서 입력</a>
 									<a href="<c:url value='/order/config/search_except_addr_order.do'/>" class="btn btn-success"> 특수 지역 체크  </a>
-									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value="/order/matching/products_matching.do"/>" class="btn btn-success"> 상품 매칭 </a> 
 									<a href="<c:url value="/order/matching/option_matching.do"/>" class="btn btn-success"> 옵션 매칭 </a>
+									<a href="<c:url value='/config/freebie/apply.do'/>" class="btn btn-success"> 사은품 부여  </a>    
 									<a href="<c:url value='/orders/delivery_msg_check.do'/>" class="btn btn-success"> 요구사항 체크 </a>
 									<a href="<c:url value='/stock/stk_check.do'/>" class="btn btn-success"> 재고 할당 </a> 
 									<a href="<c:url value='/orders/cancled_order_check.do'/>" class="btn btn-success"> 취소 주문  </a>
@@ -435,18 +492,18 @@
 													> 표시하지 않음 </option>
 												</select>
 				                            </div>
+				                            
 				                            <div class="btn-group">
 				                            	<select class="form-control" name="edtFk">
-				                            		<option value="0">배송 타입 전체 </option>
+				                            		<option value="0"> 우체국 송장 부여</option>
 				                            		<option value="3"
 				                            			<c:if test="${OrderSearchVO.edtFk == 3 }">
 															selected="selected"
 														</c:if>
-				                            		>새벽배송(프레쉬솔루션)</option>
+				                            		>새벽배송(프레쉬솔루션) 송장 부여</option>
 				                            		<%-- <c:forEach var="edtlist" items="${edtList }">
 				                            			<option value="${edtlist.edtPk }"> ${edtlist.edtType }</option>
 				                            		</c:forEach> --%>
-				                            		
 				                            	</select>
 				                            </div>
 				                            <div class="btn-group">
@@ -485,7 +542,8 @@
                                         <div class="form-group col-sm-12 pl-0">
                                         	<p class="text-right">
 												<button type="button" class="btn btn-primary" id="orderIO">  주문서 출력  </button>
-												<button type="button" class="btn btn-primary" id="labelIO">  라벨지 출력  </button>
+												<!-- <button type="button" class="btn btn-primary" id="labelIO">  라벨지 출력  </button> -->
+												
 												<c:if test="${OrderSearchVO.edtFk == 0 }">
 													<button class="btn btn-danger" id="sendingDelivButton"> 우체국택배 송장 부여 </button>
 												</c:if>
@@ -493,6 +551,7 @@
 												<c:if test="${OrderSearchVO.edtFk == 3 }">
 													<button class="btn btn-warning" id="freshSolutionExcelDelivButton"> 프레시솔루션 송장 엑셀 생성 </button>
 												</c:if>
+												
                                         	</p>											
                                         </div>
                                     </div>
@@ -504,10 +563,13 @@
                     	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
                                 <h5 class="card-header"> 미부여송장 목록 ( <fmt:formatNumber value="${OrderSearchVO.totalRecord }" pattern="#,###" /> 개) </h5>
+                                	<c:if test="${OrderSearchVO.edtFk != 3 }">
+                                		<h4 class="card-header" style="color: red; font-weight: bold; "> 새벽배송을 할 경우 우체국 송장 부여를 '새벽배송'으로 바꿔 우선적으로 출력해주세요</h4>
+                                	</c:if>
+                                	
                                 	<c:if test="${OrderSearchVO.edtFk == 3 }">
                                 		<h3 class="card-header" style="color: red; font-weight: bold; "> 송장 엑셀 파일 다운로드 후 남는 목록은 배송 불가 지역입니다</h3>
                                 	</c:if>
-                                	
                                 <div class="card-body">
                                     <table class="table table-bordered">
                                         <thead>
@@ -527,7 +589,7 @@
                                         </thead>
                                         <tbody class="dataTable">
                                         	<c:if test="${packingIrreOrderCounting != 0 }">
-                                        		<td colspan="7" style="background-color: #FFA2A2; text-align: center;"><a href="<c:url value='/order/config/packing_irre_order_list.do'/>" target="_blank" style="color:white;"> 묶음 배송이 가능한 주문서가 있습니다 </a></td>
+                                        		<td colspan="8" style="background-color: #FFA2A2; text-align: center;"><a href="<c:url value='/order/config/packing_irre_order_list.do'/>" target="_blank" style="color:white;"> 묶음 배송이 가능한 주문서가 있습니다 </a></td>
                                         	</c:if>
                                         	<c:set var="tableCountings" value="1"/>
                                         	<c:set var="numCounting" value="${OrderSearchVO.firstRecordIndex + 1 }"/>
@@ -554,18 +616,19 @@
 			                                        		<td rowspan="${rowSpans }" style="width:260px; text-align: center;" data-table-info="${tableCountings }">
 								                            	<p style="margin-bottom: 5px;">${orlist.orBuyerName } / ${orlist.orBuyerContractNumber1 }<br>
 								                                ${orlist.orReceiverName } / ${orlist.orReceiverContractNumber1 }</p>
+								                                <button class="btn btn-outline-primary btn-xs adminOrderRecord" value="${orlist.orSerialSpecialNumber }">cs내역</button>
 								                                <button class="btn btn-outline-success btn-xs devideOrderButton" value="${orlist.orSerialSpecialNumber }">주문서 분리</button>
 								                            </td>
 								                            <td rowspan="${rowSpans }" style="width:300px; text-align: center;" data-table-info="${tableCountings }">
 								                            	<p style="margin-bottom: 5px;">${orlist.orShippingAddress } ${orlist.orShippingAddressDetail }</p>
 								                            	<button class="btn btn-outline-success btn-xs editCustomerInfoBtn" value="${orlist.orSerialSpecialNumber }">주소 변경</button>
 								                            </td>
+								                            <td rowspan="${rowSpans }" style="width:300px; text-align: center;" data-table-info="${tableCountings }">
+								                            	${orlist.orDelivEnter }
+								                            </td>
 			                                        	</c:if>
 			                                        	<c:if test="${!empty stocklist.productMatchingVOList }">	                                        			
 			                                        		<c:forEach var="pmlist" items="${stocklist.productMatchingVOList }"> 
-			                                        				<td  style="width:150px; text-align: center;" data-table-info="${tableCountings }">
-													                 	${stocklist.orDelivEnter }
-													                 </td>
 													                 
 					                                        		<td style="border: 1px solid lightgray; width:430px;" class="productInfo" data-table-product-info="${tableCountings }">
 																		<span style="font-size: 12px;"> ${stocklist.orProduct }</span><br>
@@ -611,7 +674,7 @@
 	                                        	</c:forEach>
 	                                        	
 	                                        	<tr>
-	                                        		<td colspan="7">  
+	                                        		<td colspan="8">  
 	                                        			<button class="btn btn-success btn-block" type="button" onclick="goTop()">맨 위로 올라가기</button>
 	                                        		</td>
 	                                        	</tr>

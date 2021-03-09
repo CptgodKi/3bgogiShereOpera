@@ -3,9 +3,11 @@ package com.gogi.proj.orders.config.model;
 import java.util.List;
 
 import com.gogi.proj.orders.config.vo.ExceptAddressKeywordVO;
+import com.gogi.proj.orders.config.vo.OrdersDeleteVO;
 import com.gogi.proj.orders.config.vo.ReqFilterKeywordVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
+import com.gogi.proj.paging.OrderSearchVO;
 
 public interface OrderConfigDAO {
 
@@ -173,5 +175,40 @@ public interface OrderConfigDAO {
 	 * @메소드설명 : 묶음정리가 끝난 상품 주문서 중 합쳐도 무관한 주문서 목록 개수 검색
 	 */
 	public int selectPackingIrreTargetOrderCounting();
+	
+	
+	/**
+	 * 
+	 * @MethodName : insertDeleteOrders
+	 * @date : 2021. 2. 16.
+	 * @author : Jeon KiChan
+	 * @param orVO
+	 * @return
+	 * @메소드설명 : 주문서 삭제 후 파기정보 남기기
+	 */
+	public int insertDeleteOrders(OrdersVO orVO);
+	
+	/**
+	 * 
+	 * @MethodName : selectOrdersDeleteList
+	 * @date : 2021. 3. 4.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 주문서 삭제 내역 가져오기
+	 */
+	public List<OrdersDeleteVO> selectOrdersDeleteList(OrderSearchVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : selectOrdersDeleteListCounting
+	 * @date : 2021. 3. 4.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 주문서 삭제 내역에 필요한 페이징 개수
+	 */
+	public int selectOrdersDeleteListCounting(OrderSearchVO osVO);
 	
 }

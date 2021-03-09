@@ -19,7 +19,7 @@ public interface EpostService {
 	
 	public int grantRegiNoByOrPk(RegDataVO regVO, RegDataVO rdVO, boolean updateType);
 	
-	public String deleteEpostDelivData(List<String> orSerialSpecialNumberList, String epostUrl) throws Exception;
+	public String deleteEpostDelivData(List<String> orSerialSpecialNumberList, String epostUrl,  String ip, String adminId) throws Exception;
 	
 	public List<OrdersVO> selectDontGrantDelivOrderListInMonth(OrderSearchVO osVO);
 	
@@ -47,7 +47,7 @@ public interface EpostService {
 	 * @return
 	 * @메소드설명 : 송장 재출력
 	 */
-	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO);
+	public OrdersVO deliveryInvoiceNumberReprinting(OrderSearchVO osVO, String ip, String adminId);
 	
 	
 	/**
@@ -99,4 +99,5 @@ public interface EpostService {
 	
 	
 	public File freshSolutionInfo(OrderSearchVO osVO);
+	
 }

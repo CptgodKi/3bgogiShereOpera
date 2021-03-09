@@ -12,6 +12,17 @@ jQuery(document).ready(function($) {
 	    return [year, month, day].join('-');
 	}
 	
+	
+	$.ajax({
+		type       : 'GET',
+		url        : '/delivery/non_picking_count.do',
+		success    : function(data){		
+			$("#nonePickingCount").text(data);
+			
+		}
+		
+	});
+	
 	$("#sendingReqReason").click(function(){
 
 		var sendingReqForm = document.createElement("form");
@@ -78,15 +89,6 @@ jQuery(document).ready(function($) {
 	$("#barcodeInit").click(function(){
 		location.reload();
 	});
-	
-	function makeDelay(s){
-		var timer = 0;
-		
-		return function(callback){
-			clearTimeout(timer);
-			time = setTimeout(callback, s);
-		};
-	};
 	
 	var oneMore = new Audio();
 	var chekingProduct = new Audio();
@@ -165,14 +167,8 @@ jQuery(document).ready(function($) {
 							
 							
 			    		}else{			    			
-			    			if(data[0].orSendingDay != null){
-			    				afterSending.play();
-			    				completeProduct = 0;
-			    				$("#orDeliveryInvoiceNumber").val("");
-			    				$("#orDeliveryInvoiceNumber").focus();
-			    			}else{
+			    			if(data[0].orSendingDay == null){
 			    				
-			    				startSending.play();
 			    				sendingProductListWrite(data);
 			    				$("#invoiceValue").val(orDeliveryInvoiceNumber);
 			    				totalLength = $("td[data-cancled='N']").length;
@@ -183,11 +179,24 @@ jQuery(document).ready(function($) {
 			    					$("#sendingTargetOrder").html("");
 									$("#finishedOrder").html("");
 									alert("해당 송장은 주문 취소되었습니다");
+									
+			    				}else{
+			    					startSending.play();
+			    					
 			    				}
 			    				
 			    				completeProduct = 0;
 			    				$("#orDeliveryInvoiceNumber").val("");
 			    				$("#orDeliveryInvoiceNumber").focus();
+			    				
+			    				
+			    			}else{
+			    				
+			    				afterSending.play();
+			    				completeProduct = 0;
+			    				$("#orDeliveryInvoiceNumber").val("");
+			    				$("#orDeliveryInvoiceNumber").focus();
+			    				
 
 			    			}
 			    		}
@@ -199,22 +208,21 @@ jQuery(document).ready(function($) {
 			});
 		}else{
 			numberCounting = 1;
-			var forSearch = 0;
-			var searchCounting = 0;
-			var noneProdCounting = 0;
+			forSearch = 0;
+			searchCounting = 0;
+			noneProdCounting = 0;
 
 			$("#sendingProductList td[name=productLists]").each(function(idx){
 
 				numberCounting+=1;
 				
 				//var barcodeNum = $(this).data("barcodenum");
-				var barcodeNum = $(this).attr("data-barcodenum");
-				var barcodeNum2 = $(this).attr("data-barcodenum2");
+				barcodeNum = $(this).attr("data-barcodenum");
+				barcodeNum2 = $(this).attr("data-barcodenum2");
 				if(!barcodeNum || !barcodeNum2){
 					
 				}else{		
 					if( (barcodeNum == orDeliveryInvoiceNumber || barcodeNum2 == orDeliveryInvoiceNumber) && $(this).data("cancled") != "Y"){
-						console.log(" 바코드 같음 1  => ");
 						
 						if( $(this).data("finished") == "N" &&  ( $(this).data("barcodenum") || $(this).data("barcodenum2")) != "N"){
 
@@ -236,6 +244,8 @@ jQuery(document).ready(function($) {
 								
 								completeProduct+=1;
 								productOneFinished.play();
+								if(oneMore.currentTime > 0) oneMore.currentTime = 0;
+								if(productOneFinished.currentTime > 0) productOneFinished.currentTime = 0;
 								
 								$(this).attr("data-barcodenum","N");
 								$(this).attr("data-barcodenum2","N");
@@ -250,6 +260,8 @@ jQuery(document).ready(function($) {
 								
 								if(totalLength == completeProduct){
 									finished.play();
+									if(oneMore.currentTime > 0) oneMore.currentTime = 0;
+									if(finished.currentTime > 0) finished.currentTime = 0;
 									
 									$("#sendingProductList").html("");
 									$("#invoiceValue").val("");
@@ -263,6 +275,16 @@ jQuery(document).ready(function($) {
 									    data	   : params,
 									    success    : function(data){
 									    	
+									    	$.ajax({
+									    		type       : 'GET',
+									    		url        : '/delivery/non_picking_count.do',
+									    		success    : function(data){		
+									    			$("#nonePickingCount").text(data);
+									    			
+									    		}
+									    		
+									    	});
+									    	
 									    }
 									});
 									
@@ -273,6 +295,8 @@ jQuery(document).ready(function($) {
 								
 							}else{
 								oneMore.play();
+								if(oneMore.currentTime > 0) oneMore.currentTime = 0;
+								
 								// return false;
 							}
 							
@@ -313,7 +337,7 @@ jQuery(document).ready(function($) {
 	}));
 	
 	function sendingProductListWrite(data){
-		var productList = ""; 
+		productList = ""; 
 		
 		$.each(data, function(){
 			productList

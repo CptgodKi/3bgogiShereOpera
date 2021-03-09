@@ -10,9 +10,10 @@
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title> 3Bgogi Renewal Home Page - 로그인</title>
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
-    <link href="${pageContext.request.contextPath}/resources/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/fonts/circular-std/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/libs/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/fonts/fontawesome/css/fontawesome-all.css">
     <style>
@@ -31,12 +32,12 @@
     }
     </style>
 </head>
-
 <body>
     <!-- ============================================================== -->
     <!-- login page  -->
     <!-- ============================================================== -->
     <div class="splash-container">
+    
         <div class="card ">
             <div class="card-header text-center"><img class="logo-img" src="${pageContext.request.contextPath}/resources/images/icon/3bgogi_logo.png" alt="logo"></div>
             <div class="card-body">
@@ -62,6 +63,7 @@
             </div>
         </div>
     </div>
+  
   
     <!-- ============================================================== -->
     <!-- end login page  -->

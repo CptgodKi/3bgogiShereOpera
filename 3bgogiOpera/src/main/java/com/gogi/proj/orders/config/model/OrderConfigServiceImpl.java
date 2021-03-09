@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gogi.proj.orders.config.vo.ExceptAddressKeywordVO;
+import com.gogi.proj.orders.config.vo.OrdersDeleteVO;
 import com.gogi.proj.orders.config.vo.ReqFilterKeywordVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
+import com.gogi.proj.paging.OrderSearchVO;
 
 @Service
 public class OrderConfigServiceImpl implements OrderConfigService{
@@ -101,6 +103,18 @@ public class OrderConfigServiceImpl implements OrderConfigService{
 	public int selectPackingIrreTargetOrderCounting() {
 		// TODO Auto-generated method stub
 		return orderConfigDao.selectPackingIrreTargetOrderCounting();
+	}
+
+	@Override
+	public List<OrdersDeleteVO> selectOrdersDeleteList(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return orderConfigDao.selectOrdersDeleteList(osVO);
+	}
+
+	@Override
+	public int selectOrdersDeleteListCounting(OrderSearchVO osVO) {
+		// TODO Auto-generated method stub
+		return orderConfigDao.selectOrdersDeleteListCounting(osVO);
 	}
 	
 	

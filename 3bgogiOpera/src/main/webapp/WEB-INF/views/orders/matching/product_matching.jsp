@@ -73,6 +73,9 @@ body {
 			<input type="hidden" value="${ordersVO.orProduct }" name="orProductName">
 			<input type="hidden" value="${editFlag }" name="editFlag">
 			<input type="hidden" value="${pmVO.pmPk }" name="pmPk">
+			<div class="col-lg-12">
+				<h3>판매처 상품명 : ${ordersVO.orProduct }</h3>
+			</div>
 			<div class="col-lg-3">
 				<select class="form-control" name=cfFk>
 					<option value="0">전체 선택</option>
@@ -105,7 +108,7 @@ body {
 					</c:if>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="productSearchList">
 					</div>
-					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="display: none;">
+					<!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="display: none;">
 						<nav aria-label="Page navigation" style="text-align: center;">
 							<ul class="pagination" style="display: -webkit-inline-box;">
 								<li class="page-item"><a class="page-link" href="#">Previous</a></li>
@@ -115,7 +118,7 @@ body {
 								<li class="page-item"><a class="page-link" href="#">Next</a></li>
 							</ul>
 						</nav>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>

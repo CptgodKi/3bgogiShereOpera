@@ -326,44 +326,47 @@
 										<trim prefix="WHERE" prefixOverrides="AND |OR ">
 											<if test="datePeriod == 0">
 												<![CDATA[
-													AND ${dateType} > DATE_FORMAT(NOW(), '%Y-%m-%d')
-													AND  ${dateType} <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+													AND ${dateType} >= DATE_FORMAT(NOW(), '%Y-%m-%d')
+													AND  ${dateType} < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
 												]]>
 											</if>
 											<if test="datePeriod == 1">
 												<![CDATA[
-													AND ${dateType} >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'),INTERVAL -7 DAY)
+													AND ${dateType} >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -7 DAY), '%Y-%m-%d')
+													AND  ${dateType} < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
 												]]>
 											</if>
 											<if test="datePeriod == 2">
 												<![CDATA[
-													AND ${dateType} > #{dateStart} 
-													AND ${dateType} <= DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
+													AND ${dateType} >= #{dateStart} 
+													AND ${dateType} < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 												]]>
 											</if>
-											<if test="searchType == 'buyerName'">
-												AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'receiverName'">
-												AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'buyerNum'">
-												AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'receiverNum'">
-												AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'orderNum'">
-												AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'orderProductNum'">
-												AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
-											</if>
-											<if test="searchType == 'storeProduct'">
-												AND or_product LIKE CONCAT('%',#{searchKeyword},'%') 
-											</if>
-											<if test="searchType == 'matchingProduct'">
-												AND pre_pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+											<if test="searchKeyword != null and !searchKeyword.equals('')">
+												<if test="searchType == 'buyerName'">
+													AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'receiverName'">
+													AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'buyerNum'">
+													AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'receiverNum'">
+													AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'orderNum'">
+													AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'orderProductNum'">
+													AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
+												<if test="searchType == 'storeProduct'">
+													AND or_product LIKE CONCAT('%',#{searchKeyword},'%') 
+												</if>
+												<if test="searchType == 'matchingProduct'">
+													AND pre_pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+												</if>
 											</if>
 											<if test="matchingFlag == 0">					
 												AND om.om_pk IS NULL
@@ -424,44 +427,47 @@
 					<trim prefix="WHERE" prefixOverrides="AND |OR ">
 						<if test="datePeriod == 0">
 							<![CDATA[
-								AND ${dateType} > DATE_FORMAT(NOW(), '%Y-%m-%d')
-								AND  ${dateType} <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+								AND ${dateType} >= DATE_FORMAT(NOW(), '%Y-%m-%d')
+								AND  ${dateType} < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
 							]]>
 						</if>
 						<if test="datePeriod == 1">
 							<![CDATA[
-								AND ${dateType} >= DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d'),INTERVAL -7 DAY)
+								AND ${dateType} >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -7 DAY), '%Y-%m-%d')
+								AND  ${dateType} < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
 							]]>
 						</if>
 						<if test="datePeriod == 2">
 							<![CDATA[
-								AND ${dateType} > #{dateStart} 
-								AND ${dateType} <= DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
+								AND ${dateType} >= #{dateStart} 
+								AND ${dateType} < DATE_FORMAT(DATE_ADD(#{dateEnd}, INTERVAL 1 DAY), '%Y-%m-%d')
 							]]>
 						</if>
-						<if test="searchType == 'buyerName'">
-							AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'receiverName'">
-							AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'buyerNum'">
-							AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'receiverNum'">
-							AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'orderNum'">
-							AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'orderProductNum'">
-							AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
-						</if>
-						<if test="searchType == 'storeProduct'">
-							AND or_product LIKE CONCAT('%',#{searchKeyword},'%') 
-						</if>
-						<if test="searchType == 'matchingProduct'">
-							AND pre_pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+						<if test="searchKeyword != null and !searchKeyword.equals('')">						
+							<if test="searchType == 'buyerName'">
+								AND or_buyer_name LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'receiverName'">
+								AND or_receiver_name LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'buyerNum'">
+								AND or_buyer_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'receiverNum'">
+								AND or_receiver_contract_number1 LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'orderNum'">
+								AND or_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'orderProductNum'">
+								AND or_product_order_number LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
+							<if test="searchType == 'storeProduct'">
+								AND or_product LIKE CONCAT('%',#{searchKeyword},'%') 
+							</if>
+							<if test="searchType == 'matchingProduct'">
+								AND pre_pro.product_name LIKE CONCAT('%',#{searchKeyword},'%')
+							</if>
 						</if>
 						<if test="matchingFlag == 0">					
 							AND om.om_pk IS NULL

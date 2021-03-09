@@ -231,6 +231,7 @@
 				od.ss_fk,
 				od.or_product_option,
 				od.or_amount,
+				od.or_settlement_day,
 	            pm.pm_pk,
 				pro.product_pk AS product_fk,
 				om.om_pk,
@@ -271,11 +272,13 @@
 	            od.or_cancled_flag = 0
 	            AND od.or_excel_div_flag = 0
                 AND od.or_inv_flag = 0
+                AND od.or_refunds = 0
                 <![CDATA[
 	                AND DATE_FORMAT(od.or_regdate, '%Y-%m-%d') >= #{dateStart}
                 ]]>
 			GROUP BY
 				od.or_pk,
+				od.or_settlement_day,
 				eo.eos_seq,
 				od.ss_fk,
 				od.or_product_option,
@@ -297,6 +300,9 @@
 				cs.cost_name,
 				cs.cost_unique_num,
                 cd.cd_pk
+             ORDER BY
+				od.or_settlement_day ASC
+              
 	</select>
 	
 	<!-- 주문서 재고 할당 완료 -->
@@ -401,7 +407,8 @@
             SUM(not_output_today) AS notOutputToday,
 			SUM(reserv) AS outputReserve,
 	        SUM(output_not_posiv) AS notInv,
-            SUM(special_region) AS specialRegion
+            SUM(special_region) AS specialRegion,
+            SUM(deposit_flag) AS depositFlag
 		FROM
 			(
 			<![CDATA[
@@ -413,7 +420,12 @@
 							INNE.serial_count = INNE.total_flag AND INNE.or_sending_deadline <= #{dateEnd} AND INNE.serial_count != INNE.sending_count
 		                    THEN COUNT(INNE.or_serial_special_number)
 						END AS output_posiv,
-                        
+					/* 입금이 되지 않은 주문건 */
+                    CASE
+						WHEN
+							INNE.deposit_flag = 0
+		                    THEN COUNT(INNE.or_serial_special_number)
+						END AS deposit_flag,
 					/* 발송되지 않은 주문건*/
 					CASE
 						WHEN
@@ -445,6 +457,7 @@
 					or_serial_special_number,
 				    COUNT(or_serial_special_number) AS serial_count,
 					SUM(or_inv_flag) AS total_flag,
+					SUM(or_deposit_flag) AS deposit_flag,
 	                or_sending_deadline,
 					SUM(
 						IF(or_sending_day IS NULL, 0, 1)
@@ -465,6 +478,7 @@
 					]]>
 					AND or_cancled_flag = 0
 					AND or_excel_div_flag = 0
+					AND or_refunds = 0
 				GROUP BY
 					or_serial_special_number,
 	                or_sending_deadline
@@ -474,7 +488,8 @@
 	            INNE.total_flag,
 	            INNE.or_sending_deadline,
                 INNE.sending_count,
-                INNE.special_region
+                INNE.special_region,
+                INNE.deposit_flag
 			) output
 	</select>
 	
@@ -496,6 +511,7 @@
 				    AND or_sending_day IS NULL
 				    AND or_delivery_invoice_number IS NULL
 				    AND or_excel_div_flag = 0
+				    AND or_refunds = 0
 				]]>
 			GROUP BY
 				or_serial_special_number
@@ -521,6 +537,7 @@
 				    AND or_sending_deadline > DATE_FORMAT( NOW() , '%Y-%m-%d')
 				    AND or_delivery_invoice_number IS NULL
 				    AND or_excel_div_flag = 0
+				    AND or_refunds = 0
 			    ]]>
 			GROUP BY
 				or_serial_special_number
@@ -546,6 +563,7 @@
 				AND or_cancled_flag = 0
 				AND or_excel_div_flag = 0
 				AND or_delivery_invoice_number IS NULL
+				AND or_refunds = 0
 			GROUP BY
 				or_serial_special_number
 			)INNE
@@ -601,8 +619,11 @@
 							FROM 
 								orders
 							<trim prefix="WHERE" prefixOverrides="AND |OR ">
-								or_regdate > #{dateStart}
+								<![CDATA[
+									or_regdate > #{dateStart}
+								]]>
 								AND or_excel_div_flag = 0
+								AND or_refunds = 0
 								<if test="searchType == 'outputPosiv'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
@@ -611,6 +632,7 @@
 									    AND or_output_flag = 0
 									    AND or_sending_deadline >= #{dateStart}
 									    AND or_sending_day IS NULL
+									    AND or_deposit_flag = 1
 									]]>
 								</if>
 								<if test="searchType == 'outputPosivNotRelease'">
@@ -619,27 +641,40 @@
 									    AND or_inv_flag = 1
 									    AND or_output_date IS NOT NULL
 									    AND or_sending_deadline <=  DATE_FORMAT( NOW() , '%Y-%m-%d')
+									    AND or_deposit_flag = 1
 									]]>
 								</if>
 								<if test="searchType == 'outputReserve'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
 									    AND or_sending_deadline > DATE_FORMAT( NOW() , '%Y-%m-%d')
+									    AND or_deposit_flag = 1
 								    ]]>
 								</if>
 								<if test="searchType == 'notInv'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
 									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
+									    AND or_deposit_flag = 1
 									]]>
-								</if><if test="searchType == 'specialRegion'">
+								</if>
+								<if test="searchType == 'specialRegion'">
 									<![CDATA[
 									    AND or_cancled_flag = 0
 									    AND or_special_region_flag = 1
 									    AND or_special_region_check_flag = 0
 									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
+									    AND or_deposit_flag = 1
 									]]>
 								</if>
+								<if test="searchType == 'depositOrder'">
+									<![CDATA[
+									    AND or_cancled_flag = 0
+									    AND or_deposit_flag = 0
+									    AND or_sending_deadline <= DATE_FORMAT( NOW() , '%Y-%m-%d')
+									]]>
+								</if>
+								
 							</trim>
 							GROUP BY
 								or_serial_special_number
@@ -679,140 +714,93 @@
 	</select>
 	
 	<select id="selectProductLabel" parameterType="OrderSearchVO" resultType="PrintDataSetVO">
-				SELECT
-            sum(OUTPUT.cio_qty) AS qty,
-            CONCAT(OUTPUT.product_name, ' [ ', OUTPUT.option_name,' ]') AS product,
-           	OUTPUT.ocm_each  AS weight,
-            OUTPUT.ci_country_of_origin AS country_of_origin,
-            CONCAT('100% ', OUTPUT.cc_code_type, ' ', OUTPUT.cd_name) AS raw_meterials,
-            DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 5 DAY), '%Y.%m.%d') AS sell_by_date,
-            '-2℃ ~ 10℃이하' AS storage_method,
+		SELECT
+			INNE.qty,
+            INNE.product,
+            SUM(INNE.weight) AS weight,
+            INNE.country_of_origin,
+            CONCAT('100% ',GROUP_CONCAT(DISTINCT INNE.raw_meterials)) AS raw_meterials,
+            INNE.sell_by_date,
+            INNE.storage_method,
+            
             CASE
 				WHEN 
-					OUTPUT.ci_marbling_level != '' OR OUTPUT.ci_marbling_level != ' '
+					INNE.marbling_level != '' OR INNE.marbling_level != ' '
 				THEN
-					CONCAT( OUTPUT.ci_level,'(',OUTPUT.ci_marbling_level ,')')
+					CONCAT( INNE.levels,'(',INNE.marbling_level ,')')
 				ELSE
-					OUTPUT.ci_level
+					INNE.levels
 				END
              AS levels,
-            OUTPUT.ci_items_manuf_num AS items_manuf_num,
-			OUTPUT.ci_abattoir AS abattoir,
-            OUTPUT.ci_animal_prod_trace_num AS animal_prod_trace_num,
-            OUTPUT.option_barcode_number1 AS barcode_num,
-			OUTPUT.eos_seq AS or_user_column3,
-            OUTPUT.ci_pk
-	    FROM
-	    (
-	        SELECT
-				od.or_pk,
-				eo.eos_seq,
-				od.ss_fk,
-				od.or_product_option,
-				od.or_amount,
-	            pm.pm_pk,
-				pro.product_pk,
-				pro.cf_fk,
-				pro.product_name,
-				pro.product_flag,
-				om.om_pk,
-				om.om_store_option_name,
-				om.om_option_amount,
-				op.option_pk,
-	            op.option_name,
-	            op.option_barcode_number1,
-	            ocm.ocm_gram,
-				ocm.ocm_production_divide,
-				ocm.ocm_each,
-				cs.cost_name,
-				cs.cost_unique_num,
-                ci.ci_abattoir,
-                ci.ci_country_of_origin,
-                ci.ci_level,
-                ci.ci_items_manuf_num,
-                ci.ci_animal_prod_trace_num,
-                cio.cio_qty,
-                ci.ci_pk,
-                cd.cd_name,
-                cc.cc_code_type,
-                ci.ci_marbling_level
-			FROM
+            INNE.items_manuf_num,
+            INNE.abattoir,
+            INNE.animal_prod_trace_num,
+            INNE.barcode_num
+		FROM
+        (
+            SELECT  
+				CONCAT(pro.product_name, ' [ ', op.option_name,' ]') AS product, 
+			    GROUP_CONCAT(DISTINCT op.option_barcode_number1) AS barcode_num, 
+			    ocm.ocm_each AS weight, 
+                ocm.ocm_pk,
+                eo.eos_seq,
+			    GROUP_CONCAT(DISTINCT ci.ci_abattoir) AS abattoir, 
+			    GROUP_CONCAT(DISTINCT ci.ci_country_of_origin) AS country_of_origin, 
+			    DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 5 DAY), '%Y.%m.%d') AS sell_by_date, 
+			    '-2℃ ~ 10℃이하' AS storage_method, 
+			    GROUP_CONCAT(DISTINCT ci.ci_level) AS levels, 
+				GROUP_CONCAT(DISTINCT ci.ci_items_manuf_num) AS items_manuf_num, 
+			    GROUP_CONCAT(DISTINCT ci.ci_animal_prod_trace_num) AS animal_prod_trace_num, 
+				GROUP_CONCAT(DISTINCT cc.cc_code_type, ' ', cd.cd_name) AS raw_meterials, 
+			    GROUP_CONCAT(DISTINCT ci.ci_marbling_level ) AS marbling_level,
+                SUM(od.or_amount * om.om_option_amount) AS qty
+			FROM 
 				orders od
-                INNER JOIN cost_io_order cio ON od.or_pk = cio.or_fk
-                INNER JOIN cost_io ci ON cio.ci_fk = ci.ci_pk
+                INNER JOIN product_matching pm ON pm.pm_pk = od.pm_fk
+                INNER JOIN option_matching om ON pm.pm_pk = om.pm_fk AND om.om_store_option_name = od.or_product_option 
                 
-                INNER JOIN cost_detail cd ON cd.cd_pk = ci.cd_fk
-                INNER JOIN cost_code cc ON cd.cc_fk = cc.cc_pk
-                INNER JOIN costs cs ON cs.cd_fk = cd.cd_pk
-                INNER JOIN options_costs_matching ocm ON cs.cost_pk = ocm.cost_fk
-                
-                
-                INNER JOIN options op ON ocm.option_fk = op.option_pk
+			    INNER JOIN options op ON op.option_pk = om.option_fk
                 INNER JOIN products pro ON pro.product_pk = op.product_fk
+                
+                
+			    INNER JOIN options_costs_matching ocm ON op.option_pk = ocm.option_fk 
+			    INNER JOIN costs cost ON ocm.cost_fk = cost.cost_pk 
+			    INNER JOIN cost_detail cd ON cd.cd_pk = cost.cd_fk 
+			    INNER JOIN cost_code cc ON cc.cc_pk = cd.cc_fk 
+			    INNER JOIN cost_io ci ON cd.cd_pk = ci.cd_fk
                 INNER JOIN excel_order_seq eo ON op.eo_fk = eo.eos_pk
-                
-                INNER JOIN option_matching om ON op.option_pk = om.option_fk AND od.or_product_option = om.om_store_option_name
-				INNER JOIN product_matching pm ON om.pm_fk = pm.pm_pk AND od.pm_fk = pm.pm_pk
-                
-				 
-                
-			WHERE 
-                od.or_excel_div_flag = 0
+			WHERE
+				ci.ci_output_flag = 1
+				AND od.or_excel_div_flag = 0
+				AND od.or_deposit_flag = 1
                 AND od.or_serial_special_number	IN 
                 <foreach collection="orSerialSpecialNumberList" item="specialNumber" index="index" separator="," open="(" close=")">
 	                    #{specialNumber}
 	            </foreach>
                 AND op.eo_fk IN (1,3)
                 AND od.or_cancled_flag = 0
-			GROUP BY
-				od.or_pk,
-				eo.eos_seq,
-				od.ss_fk,
-				od.or_product_option,
-				od.or_amount,
-	            pm.pm_pk,
-	            om.om_pk,
-				pro.product_pk,
-				pro.cf_fk,
-				pro.product_name,
-				pro.product_flag,
-				om.om_store_option_name,
-				om.om_option_amount,
-				op.option_pk,
-	            op.option_name,
-	            op.option_barcode_number1,
-	            ocm.ocm_gram,
-				ocm.ocm_production_divide,
-				ocm.ocm_each,
-				cs.cost_name,
-				cs.cost_unique_num,
-                ci.ci_abattoir,
-                ci.ci_country_of_origin,
-                ci.ci_level,
-                ci.ci_items_manuf_num,
-                ci.ci_animal_prod_trace_num,
-                cio.cio_qty,
-                ci.ci_pk,
-                cd.cd_name,
-                cc.cc_code_type,
-                ci.ci_marbling_level
-			) OUTPUT
-        GROUP BY
-        	OUTPUT.eos_seq,
-			OUTPUT.product_name,
-			OUTPUT.option_name,
-            OUTPUT.option_barcode_number1,
-            OUTPUT.ocm_each,
-            OUTPUT.ci_abattoir,
-			OUTPUT.ci_country_of_origin,
-			OUTPUT.ci_level,
-			OUTPUT.ci_items_manuf_num,
-            OUTPUT.ci_animal_prod_trace_num,
-            OUTPUT.ci_pk
-		HAVING
-			qty IS NOT NULL
+                AND od.or_refunds = 0
+			group by
+				product,
+                ocm.ocm_each,
+                ocm.ocm_pk,
+                eo.eos_seq
+			) INNE
+		GROUP BY
+			INNE.qty,
+			INNE.product,
+            INNE.abattoir,
+            INNE.country_of_origin,
+            INNE.sell_by_date,
+            INNE.storage_method,
+            INNE.items_manuf_num,
+            INNE.animal_prod_trace_num,
+            INNE.barcode_num,
+            INNE.levels,
+            INNE.marbling_level,
+            INNE.eos_seq
 		ORDER BY
-			OUTPUT.eos_seq
+			INNE.eos_seq
 	</select>
 	
 	<!-- 원육 입출고 삭제시키기 -->

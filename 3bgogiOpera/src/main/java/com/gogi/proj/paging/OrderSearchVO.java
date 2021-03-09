@@ -41,9 +41,11 @@ public class OrderSearchVO {
 	private int specialReq;					//특별 요청 사항 여부
 	private int delivMsgFlag;				//배송메세지여부
 	private int totalQtyAlarm;				//송장 뽑을 때 총 합계 따로 표시 개수
-	
+	private int excelFlag;
 	private String groupList;
 	private String totalList;
+	private int excelOrFk;
+	private int depositFlag;				// 입금 여부
 	
 	private List<BlockSendingListVO> bslList;
 	private List<String> createInvoiceNumList;
@@ -56,7 +58,7 @@ public class OrderSearchVO {
 	private int matchingFlag; //매칭 여부
 	
 	private int edtFk; //배송타입 설정
-	
+	private int receiveType; //상품 수령 방식 설정
 	
 	//원육 출고 관리 
 	private int ccPk;
@@ -76,6 +78,38 @@ public class OrderSearchVO {
 	private String exSerachKeyword; //제외 검색어
 	private List<String> exSearchKeywordList; //제외 검색어 리스트값
 	
+	public int getReceiveType() {
+		return receiveType;
+	}
+
+	public void setReceiveType(int receiveType) {
+		this.receiveType = receiveType;
+	}
+
+	public int getDepositFlag() {
+		return depositFlag;
+	}
+
+	public void setDepositFlag(int depositFlag) {
+		this.depositFlag = depositFlag;
+	}
+
+	public int getExcelOrFk() {
+		return excelOrFk;
+	}
+
+	public void setExcelOrFk(int excelOrFk) {
+		this.excelOrFk = excelOrFk;
+	}
+
+	public int getExcelFlag() {
+		return excelFlag;
+	}
+
+	public void setExcelFlag(int excelFlag) {
+		this.excelFlag = excelFlag;
+	}
+
 	public int getEdtFk() {
 		return edtFk;
 	}

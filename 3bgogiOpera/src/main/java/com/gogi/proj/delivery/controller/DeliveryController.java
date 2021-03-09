@@ -59,6 +59,7 @@ import com.gogi.proj.configurations.vo.StoreSectionVO;
 import com.gogi.proj.delivery.model.DeliveryService;
 import com.gogi.proj.delivery.vo.SendingRequestVO;
 import com.gogi.proj.excel.CellsStyle;
+import com.gogi.proj.orders.autocomplete.Godomall;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.paging.OrderSearchVO;
 import com.gogi.proj.security.AdminVO;
@@ -203,6 +204,27 @@ public class DeliveryController{
 
 		deliService.storeSendingFinished(osVO);
 		
+		return "redirect: /delivery/store_order_sending.do";
+	}
+	
+	/**
+	 * 
+	 * @MethodName : godomallAutoSending
+	 * @date : 2021. 1. 12.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 고도몰 자동 발송처리하기
+	 */
+	@RequestMapping(value="/godomall_sending.do", method=RequestMethod.GET)
+	public String godomallAutoSending(@ModelAttribute StoreSectionVO ssVO) {
+		Godomall gm = new Godomall();
+		
+		List<OrdersVO> orList = deliService.godomallAutoSendingTarget(ssVO);
+		
+		String result = gm.godomallAutoSend(orList);
+		
+		logger.info(result);
 		return "redirect: /delivery/store_order_sending.do";
 	}
 	
@@ -407,7 +429,7 @@ public class DeliveryController{
 		srVO.setSrAdminId(adminVo.getUsername());
 		srVO.setSrAdminName(adminVo.getAdminname());
 		
-		int result = deliService.insertSendingRequest(srVO);
+		int result = deliService.insertSendingRequest(srVO, request.getRemoteAddr());
 		
 		if(result > 0) {
 			
@@ -418,5 +440,21 @@ public class DeliveryController{
 		}
 		
 	}
-
+	
+	
+	/**
+	 * 
+	 * @MethodName : nonPickingCount
+	 * @date : 2021. 2. 23.
+	 * @author : Jeon KiChan
+	 * @return
+	 * @메소드설명 : 분류되지 않은 송장 개수
+	 */
+	@RequestMapping(value="/non_picking_count.do", method=RequestMethod.GET)
+	@ResponseBody
+	public int nonPickingCount() {
+		
+		return deliService.nonPickingCount();
+		
+	}
 }

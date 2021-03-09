@@ -25,11 +25,32 @@
 <script
 	src="${pageContext.request.contextPath}/resources/vendor/bootstrap/js/bootstrap.bundle.js"></script>
 <script type="text/javascript">
-	jQuery.ajaxSettings.traditional = true;
+jQuery.ajaxSettings.traditional = true;
 
-	$(function(){
+var doubleSubmitFlag = false;
 
+function doubleSubmitCheck(){
+    if(doubleSubmitFlag){
+        return doubleSubmitFlag;
+    }else{
+        doubleSubmitFlag = true;
+        return false;
+    }
+}
+
+$(function(){
+	$("#orderGiftSubmit").submit(function(){
+		
+		doubleSubmitCheck();
+		
+		if(doubleSubmitFlag == false){
+			
+			
+			return false;
+		}
 	});
+	
+});
     </script>
 <style>
 html, body {
@@ -74,12 +95,11 @@ body {
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="card">
                                 <h5 class="card-header"> 선물세트 엑셀로 나누기 </h5>
                                 <div class="card-body">
-                                    <form id="form" method="POST" action="<c:url value='/orders/devide/gift.do'/>" enctype="multipart/form-data">
+                                    <form id="orderGiftSubmit" method="POST" action="<c:url value='/orders/devide/gift.do'/>" enctype="multipart/form-data">
                                     	<input type="hidden" name="orPk" value="${osVO.orPk }" id="orPk">
                                     	
                                         <div class="input-group mb-3">

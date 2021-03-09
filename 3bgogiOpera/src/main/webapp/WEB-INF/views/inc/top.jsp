@@ -11,29 +11,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link href="${pageContext.request.contextPath}/resources/libs/css/theme.css" rel="stylesheet" media="all">
-    <link href="${pageContext.request.contextPath}/resources/libs/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet"  media="all">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap/css/bootstrap.min.css">
-    <link href="${pageContext.request.contextPath}/resources/vendor/fonts/circular-std/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/libs/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/fonts/fontawesome/css/fontawesome-all.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/charts/chartist-bundle/chartist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/charts/morris-bundle/morris.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/charts/c3charts/c3.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/fonts/flag-icon-css/flag-icon.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/multi-select/css/multi-select.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap-colorpicker/%40claviska/jquery-minicolors/jquery.minicolors.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/css/bootstrap-select.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/vendor/datepicker/jquery.datetimepicker.css" />
+    <link href="${resourcePath}/resources/libs/css/theme.css" rel="stylesheet" media="all">
+    <link href="${resourcePath}/resources/libs/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet"  media="all">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/bootstrap/css/bootstrap.min.css">
+    <link href="${resourcePath}/resources/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="${resourcePath}/resources/libs/css/style.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/charts/chartist-bundle/chartist.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/charts/morris-bundle/morris.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/charts/c3charts/c3.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/fonts/flag-icon-css/flag-icon.min.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/multi-select/css/multi-select.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/bootstrap-colorpicker/%40claviska/jquery-minicolors/jquery.minicolors.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/bootstrap-select/css/bootstrap-select.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/vendor/datepicker/jquery.datetimepicker.css" />
     
     <!-- Optional JavaScript -->
-    <script src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="${resourcePath}/resources/vendor/jquery/jquery-3.3.1.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Stylish" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/renewal_page.css">
+    <link rel="stylesheet" href="${resourcePath}/resources/css/renewal_page.css">
     
-    <script src="${pageContext.request.contextPath}/resources/vendor/pace-master/pace.min.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/libs/js/common_util.js"></script>
+    <script src="${resourcePath}/resources/vendor/pace-master/pace.min.js"></script>
+    <script src="${resourcePath}/resources/libs/js/common_util.js"></script>
     <link rel=”stylesheet” type=”text/css” href=”//cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css”>
     <title> 3Bgogi Renewal Home Page</title>
     <style type="text/css">
@@ -92,7 +92,7 @@ $.ajaxSetup({
         }
      }
 });
-	function openProjectWhenSetupPage(){
+	/* function openProjectWhenSetupPage(){
 		$.ajax({
 			url:"<c:url value='/project/project_alarm.do'/>",
 			method:"POST",
@@ -107,15 +107,14 @@ $.ajaxSetup({
 				
 			}
 		});
-	}
-	
+	} */
 	
 	$.ajax({
 		url:"<c:url value='/project/project_alarm.do'/>",
 		method:"POST",
 		success:function(data){
 			projectTopRewrite(data);
-			openProjectWhenSetupPage();
+			/* openProjectWhenSetupPage(); */
 		}
 	});
 	
@@ -140,7 +139,7 @@ function projectTopRewrite(data){
                     
                     if(this.proThumbnailImage != null){
                     	
-                    	projectList+='<img src="${pageContext.request.contextPath}/resources/images/project_image/'+this.proThumbnailImage+'" class="user-avatar-md rounded-circle">';
+                    	projectList+='<img src="${resourcePath}/resources/images/project_image/'+this.proThumbnailImage+'" class="user-avatar-md rounded-circle">';
                     }
                     
                     projectList+='</div>'
@@ -201,9 +200,71 @@ function projectTopRewrite(data){
                     <span class="navbar-toggler-icon fas fa-angle-down"></span>
                 </button>
                 <div class="collapse navbar-collapse " id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto navbar-right-top">
+                    <ul class="navbar-nav ml-auto navbar-right-top" style="display: -webkit-box; float: right;">
                         <li class="nav-item">
                         </li>
+                        <sec:authorize access="hasRole('ROLE_MASTER')">
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons" href="#" id="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-cart-plus"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="card" style="margin-bottom:0;">
+                                    	<div class="card-header">
+                                    		<h5 style="margin: 0;text-align: center;">분류실 메세지 보내기</h5>
+                                    		
+                                    	</div>
+										<div class="card-body">
+											<textarea class="form-control" id="ccMessageWindow" rows="7" cols="50" readonly="readonly"></textarea>
+									        <div class="input-group">
+						                    	<input id="ccInputMessage" type="text" class="form-control" placeholder="">
+						                    	
+						                        <div class="input-group-append">
+						                        	<button type="button" id="ccOpenSocket" onclick="ccOpenSocket();" style="display: none;">Open</button>
+						        					<!-- <button type="button" onclick="send();">Send</button> -->
+						                        	<button type="button" id="ccSendBtn" class="btn btn-primary btn-xs"> 전송 </button>
+						                        </div>
+						                    </div>
+										</div>
+									</div>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons" href="#" id="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-piggy-bank"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="card" style="margin-bottom:0;">
+                                    	<div class="card-header">
+                                    		<h5 style="margin: 0;text-align: center;">2층 메세지 보내기</h5>
+                                    		
+                                    		
+                                    			<p style="margin: 0;text-align: center;"> 라벨지 프로그램을 관리자 모드로 변경할 경우 관리자모드, 일반적인 경우로 돌리려면 일반모드 라고 작성하면 됨 </p>
+                                    			
+                                    		
+                                    	</div>
+										<div class="card-body">
+											<textarea class="form-control" id="messageWindow" rows="7" cols="50" readonly="readonly"></textarea>
+									        <div class="input-group">
+									        	<sec:authentication var="principal" property="principal" />
+									        	
+									        	<input type="hidden" id="sender" value="${principal.username }[${principal.adminname }]" >
+						                    	<input id="inputMessage" type="text" class="form-control" placeholder="">
+						                    	
+						                        <div class="input-group-append">
+						                        	<button type="button" id="openSocket" onclick="openSocket();" style="display: none;">Open</button>
+						        					<!-- <button type="button" onclick="send();">Send</button> -->
+						        					
+						        					
+						                        	<button type="button" id="chatSendBtn" class="btn btn-primary btn-xs"> 전송 </button>
+						                        </div>
+						                    </div>
+										</div>
+									</div>
+                                </li>
+                            </ul>
+                        </li>
+                        </sec:authorize>
                         <li class="nav-item dropdown notification">
                             <a class="nav-link nav-icons" href="#" id="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fa-comments"></i> <span class="indicator" id="sendSeqAlarm"></span></a>
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
@@ -236,7 +297,7 @@ function projectTopRewrite(data){
                             </ul>
                         </li>
                         <li class="nav-item dropdown nav-user">
-                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="${pageContext.request.contextPath}/resources/images/3bgogi_icon.png" alt="" class="user-avatar-md rounded-circle"></a>
+                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="${resourcePath}/resources/images/3bgogi_icon.png" alt="" class="user-avatar-md rounded-circle"></a>
                             <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
                                 <div class="nav-user-info">
                                     <h5 class="mb-0 text-white nav-user-name">

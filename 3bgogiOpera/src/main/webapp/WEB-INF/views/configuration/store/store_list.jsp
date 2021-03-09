@@ -45,7 +45,7 @@
     			}
     			
     			$("#ssName").val(v_ssName);
-    			$("#ssssStoreNickname").val(v_ssStoreNickname);
+    			$("#ssStoreNickname").val(v_ssStoreNickname);
     			$("#ssStoreId").val(v_ssStoreId);
     			$("#ssStorePassword").val(v_ssStorePassword);
     			$("#ssAuthKey").val(v_ssAuthKey);

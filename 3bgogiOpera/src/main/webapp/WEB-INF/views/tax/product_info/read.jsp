@@ -25,6 +25,12 @@
 				
     		});
     		
+    		$("#piCost, #piTax").focusout(function(){
+    			piCost = $("#piCost").val();
+    			piTax = $("#piTax").val();
+    			
+    			$("#piTotalCost").val( (Number(piCost) + Number(piTax)) );
+    		});
     		
     		/* $("button[name=fileDownload]").click(function(){
 				var piFilePath = $(this).data("file-path");
@@ -128,17 +134,24 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
+                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 공급가 </label>
+                                            <div class="col-12 col-sm-8 col-lg-6">
+                                                <input type="text" id="piCost" name="piCost" class="form-control" value="${piVO.piCost }">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 세액 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
-                                                <input type="text" name="piTax" class="form-control" value="${piVO.piTax }">
+                                                <input type="text" id="piTax" name="piTax" class="form-control" value="${piVO.piTax }">
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 합계 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">
-                                                <input type="text" name="piTotalCost" class="form-control" value="${piVO.piTotalCost }">
+                                                <input type="text" id="piTotalCost" name="piTotalCost" class="form-control" value="${piVO.piTotalCost }">
                                             </div>
                                         </div>
+                                        
                                         <div class="form-group row">
                                             <label class="col-12 col-sm-3 col-form-label text-sm-right"> 미수금 </label>
                                             <div class="col-12 col-sm-8 col-lg-6">

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.gogi.proj.configurations.vo.StoreMergeVO;
 import com.gogi.proj.configurations.vo.StoreSectionVO;
+import com.gogi.proj.orders.vo.AdminOrderRecordVO;
 import com.gogi.proj.orders.vo.IrregularOrderVO;
 import com.gogi.proj.orders.vo.OrdersVO;
 import com.gogi.proj.orders.vo.OrdersVOList;
@@ -23,6 +24,7 @@ public class OrdersDAOMybatis extends SqlSessionDaoSupport implements OrdersDAO{
 	private String irregularNameSpace = "order.irregular";
 	private String orderCsNameSpace = "order.cs";
 	private String searchNameSpace = "order.search_customer_order_info";
+	private String adminOrderRecordNameSpace = "order.order_record";
 
 	@Override
 	public int insertOrderData(OrdersVO ordersVO) {
@@ -359,5 +361,41 @@ public class OrdersDAOMybatis extends SqlSessionDaoSupport implements OrdersDAO{
 	public List<OrdersVO> selectCreateInvoiceNum() {
 		// TODO Auto-generated method stub
 		return getSqlSession().selectList(orderCsNameSpace+".selectCreateInvoiceNum");
+	}
+
+	@Override
+	public OrdersVO selectBuyerAddrInfo(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne(orderCsNameSpace+".selectBuyerAddrInfo", orVO);
+	}
+
+	@Override
+	public int checkDepositOrder(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(orderCsNameSpace+".checkDepositOrder", orVO);
+	}
+
+	@Override
+	public int receiverPickUp(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(orderCsNameSpace+".receiverPickUp", orVO);
+	}
+
+	@Override
+	public int deleteExcelGiftOrderByOrFk(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().delete(orderExcelNameSpace+".deleteExcelGiftOrderByOrFk", orVO);
+	}
+
+	@Override
+	public int insertAdminOrderRecord(AdminOrderRecordVO aorVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert(adminOrderRecordNameSpace+".insertAdminOrderRecord", aorVO);
+	}
+
+	@Override
+	public List<AdminOrderRecordVO> searchAdminOrderRecordBySerialSpecialNumber(OrdersVO orVO) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectList(adminOrderRecordNameSpace+".searchAdminOrderRecordBySerialSpecialNumber", orVO);
 	}
 }

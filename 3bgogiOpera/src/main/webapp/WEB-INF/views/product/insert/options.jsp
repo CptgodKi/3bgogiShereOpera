@@ -30,6 +30,7 @@
 <script src="${pageContext.request.contextPath}/resources/vendor/bootstrap-select/js/bootstrap-select.js"></script>
 <script src="${pageContext.request.contextPath}/resources/vendor/slimscroll/jquery.slimscroll.js"></script>
 <script src="${pageContext.request.contextPath}/resources/vendor/multi-select/js/jquery.multi-select.js"></script>
+<script src="${pageContext.request.contextPath}/resources/libs/js/common_util.js"></script>
 
 <script type="text/javascript">
 
@@ -116,7 +117,7 @@
 				                         +'</div>'
 				                         +'<div class="col-md-1 mb-1 deleteConnenctDiv">'
 				                             +'<label for="zip"></label>'
-				                             +'<button type="button" class="btn btn-space btn-warning" name="deleteConnenctButton"> 원가삭제 </button>'
+				                             +'<button type="button" class="btn btn-space btn-warning" name="deleteConnenctButton"> 원재료삭제 </button>'
 				                         +'</div>'
 				                    +'</div>'
 				                +'</div>';

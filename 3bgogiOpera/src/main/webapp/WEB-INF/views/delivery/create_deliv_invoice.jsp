@@ -52,40 +52,104 @@
 		<c:if test="${empty orList }">
 			<button id="closeBtn" class="btn btn-success btn-block" style="font-size:30px;">송장이 없습니다 누르면 창이 닫힙니다</button>
 		</c:if>
+		
 		<c:if test="${!empty orList }">
 			<c:forEach var="orlist" items="${orList }">		
 				<div id="html_deliv_test" style="position: absolute; width:1090px; height:429px; top:${topValue}px;" >
-					<h3 class='deliv-styles deliv-po-nm-point'>접수국 : ${fn:replace(orlist.regiPoNm, '우체국', '') }</h3>
-					<h3 class='deliv-styles deliv-reserv-date'>${toDay } </h3>
-					
-					<h3 class='deliv-styles deliv-buyer-name'>주문인 : ${orlist.orBuyerName }</h3>
-					<h3 class='deliv-styles deliv-ss-name'>주문처 : ${orlist.ssName } </h3>
-					<h3 class='deliv-styles deliv-order-number'>고유번호  : ${orlist.orSerialSpecialNumber } </h3>
-	
-					<h3 class='deliv-styles deliv-box-weight'>중량 : 초소</h3>
-					<h3 class='deliv-style deliv-sending-price'>요금 : 계약요금</h3>
+				
+					<c:if test="${orlist.orRecType > 0 and orlist.orRecType < 3 }">
+						<h3 class='deliv-styles deliv-dont-deliv-msg-top' style="top:17px; left:700px; font-size:12px;"> 수령인 : ${orlist.orReceiverName }, </h3>
+						<h3 class='deliv-styles deliv-dont-deliv-msg-top' style="top:35px; left:700px; font-size:12px;"> 수령시간 : ${orlist.orRecMemo }, 보관장소 :  ${orlist.orRecStoragePlace }</h3>
+						<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:170px; left:670px; font-size:90px;transform: rotate(-45deg); opacity: 0.4;"> 보 관 증 </h1>
 						
-					<div class='deliv-styles deliv-zip-barcode barcodes' data-barcodes="${orlist.orShippingAddressNumber }"></div>
+						<c:if test="${orlist.orRecType == 1 }">
+							<h3 class='deliv-styles deliv-dont-deliv-msg-top' style="top:20px; font-size:20px;">**** 퀵서비스 **** 퀵서비스 **** 퀵서비스 **** 퀵서비스 ****</h3>
+							<h3 class='deliv-styles deliv-order-number' style="top: 130px; font-size:130px; opacity: 0.4;"> 퀵서비스 </h3>
+							
+						</c:if>
+						<c:if test="${orlist.orRecType == 2 }">
+							<h3 class='deliv-styles deliv-dont-deliv-msg-top' style="top:20px; font-size:20px;">**** 방문수령 **** 방문수령 **** 방문수령 **** 방문수령 ****</h3>
+							<h3 class='deliv-styles deliv-order-number' style="top: 130px; font-size:130px; opacity: 0.4;"> 방문수령 </h3>
+							
+						</c:if>
+
+						<h3 class='deliv-styles deliv-reserv-date'>${toDay } </h3>
+						
+						<h3 class='deliv-styles deliv-buyer-name'>주문인 : ${orlist.orBuyerName }</h3>
+						
+						<h3 class='deliv-styles deliv-order-number' style="top: 90px; left:80px; font-size:20px;"> 수령 시간 </h3>
+						
+						<h3 class='deliv-styles deliv-box-weight'> ${orlist.orRecMemo } </h3>
+						
+						<div class='deliv-styles deliv-pickup-place' style="top:140px; left:80px; font-size:20px;"> 보관 장소</div>
+						
+						<div class='deliv-styles deliv-pickup-place' style="top:175px;">${orlist.orRecStoragePlace } </div>
+
+
+						<h3 class='deliv-styles deliv-message-title'> 배송메세지 :</h3>
+
+						<h3 class='deliv-styles deliv-message'> ${orlist.orDeliveryMessage } </h3>
+						
+					</c:if>
 					
-					<h3 class='deliv-styles deliv-message-title'>(${delivCounting }/${totalDeliv }) 배송메세지 :</h3>
 					
-					
-					<h3 class='deliv-styles deliv-message'> ${orlist.orDeliveryMessage } </h3>
-					
-					
-					<h3 class='deliv-styles arr-cnpo-before'>${fn:substring(orlist.delivAreaCd, 0, 2) }</h3>
-					<h3 class='deliv-styles arr-cnpo-nm'>${orlist.arrCnpoNm }</h3>
-					<h3 class='deliv-styles arr-cnpo-nm-after'>${fn:substring(orlist.delivAreaCd, 2, 5) }</h3>
-					<h3 class='deliv-styles deliv-po-nm'>${orlist.delivPoNm }</h3>
-					<h3 class='deliv-styles deliv-po-nm-before'>${fn:substring(orlist.delivAreaCd, 5, 7) }</h3>
-					<h3 class='deliv-styles deliv-po-nm-after'>${fn:substring(orlist.delivAreaCd, 7, 9) }</h3>
-					
+					<c:if test="${orlist.orRecType == 0 or orlist.orRecType == 3 }">
+						<c:if test="${orlist.orRecType == 0 }">						
+							<c:if test="${orlist.productOptionList[0].prodSorting == -2 or orlist.productOptionList[0].prodSorting == -3 or orlist.productOptionList[0].prodSorting == -4  }">
+								<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:170px; left:670px; font-size:80px;transform: rotate(-45deg); opacity: 0.4;">선물세트</h1>
+							</c:if>	
+						</c:if>
+						
+						<c:if test="${orlist.orRecType == 3 }">						
+							<c:if test="${orlist.productOptionList[0].prodSorting == -2 or orlist.productOptionList[0].prodSorting == -3 or orlist.productOptionList[0].prodSorting == -4  }">
+								<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:80px; left:670px; font-size:80px; opacity: 0.4;">선물세트</h1>
+								<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:200px; left:670px; font-size:80px; opacity: 0.4;">제주익일</h1>
+								
+								
+							</c:if>	
+							<c:if test="${orlist.productOptionList[0].prodSorting == -2 and orlist.productOptionList[0].prodSorting == -3 and orlist.productOptionList[0].prodSorting == -4  }">
+								<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:200px; left:670px; font-size:80px; opacity: 0.4;">제주익일</h1>
+								
+								
+							</c:if>
+						</c:if>		
+												
+						<h3 class='deliv-styles deliv-po-nm-point'>접수국 : ${fn:replace(orlist.regiPoNm, '우체국', '') }</h3>
+						<h3 class='deliv-styles deliv-reserv-date'>${toDay } </h3>
+						
+						<h3 class='deliv-styles deliv-buyer-name'>주문인 : ${orlist.orBuyerName }</h3>
+						<h3 class='deliv-styles deliv-ss-name'>주문처 : ${orlist.ssName } </h3>
+						<h3 class='deliv-styles deliv-order-number'>고유번호  : ${orlist.orSerialSpecialNumber } </h3>
+		
+						<h3 class='deliv-styles deliv-box-weight'>중량 : 초소</h3>
+						<h3 class='deliv-style deliv-sending-price'>요금 : 계약요금</h3>
+							
+						<div class='deliv-styles deliv-zip-barcode barcodes' data-barcodes="${orlist.orShippingAddressNumber }"></div>
+						
+						<h3 class='deliv-styles deliv-message-title'>(${delivCounting }/${totalDeliv }) 배송메세지 :</h3>
+						
+						
+						<h3 class='deliv-styles deliv-message'> ${orlist.orDeliveryMessage } </h3>
+						
+						
+						<h3 class='deliv-styles arr-cnpo-before'>${fn:substring(orlist.delivAreaCd, 0, 2) }</h3>
+						<h3 class='deliv-styles arr-cnpo-nm'>${orlist.arrCnpoNm }</h3>
+						<h3 class='deliv-styles arr-cnpo-nm-after'>${fn:substring(orlist.delivAreaCd, 2, 5) }</h3>
+						<h3 class='deliv-styles deliv-po-nm'>${orlist.delivPoNm }</h3>
+						<h3 class='deliv-styles deliv-po-nm-before'>${fn:substring(orlist.delivAreaCd, 5, 7) }</h3>
+						<h3 class='deliv-styles deliv-po-nm-after'>${fn:substring(orlist.delivAreaCd, 7, 9) }</h3>
+					</c:if>
 					
 					<h3 class='deliv-styles deliv-sender-addr'>인천광역시 계양구 효서로 388 (작전동) 3층 삼형제고기</h3>
-					
 					<h3 class='deliv-styles deliv-sender-zip-num'> 21126 </h3>
 					
-					<h3 class='deliv-styles deliv-sender'>  
+					<h3 class='deliv-styles deliv-sender'
+						<c:if test="${!empty orlist.orBuyerAnotherName and fn:length(orlist.orBuyerAnotherName) > 10 }">
+							style="font-size : 13px;"
+							
+						</c:if>
+						
+					>  
 						<c:if test="${empty orlist.orBuyerAnotherName }">
 							삼형제고기
 						</c:if>
@@ -112,14 +176,13 @@
 					<fmt:parseNumber var="divQty" integerOnly="true" value="${ ( fn:length(orlist.productOptionList) + ( fn:length(orlist.productOptionList)%1 ) %1) /8 }"/>
 					<c:set var="divMod" value="${( fn:length(orlist.productOptionList) + ( fn:length(orlist.productOptionList)%1 ) %1) % 8 }"/>
 					
-					
 					<c:set var="qty" value="0"/>
 					<c:set var="prodTop" value="80"/>
 					<c:if test="${divQty == 0 && divMod > 0}">
 						<c:forEach var="i" begin="0" step="1" end="${fn:length(orlist.productOptionList) - 1 }">				
 							<h3 class="deliv-styles product-qty" style='top:${prodTop}px;'>${orlist.productOptionList[i].anotherOptionQty }</h3>
 							<h3 class="deliv-styles product-name" style='top:${prodTop-12}px; '>
-								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ]
+								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ]  <c:if test="${!empty orlist.productOptionList[i].optionMemo1 }">* 특별 요청 : ${orlist.productOptionList[i].optionMemo1 }</c:if>
 							</h3>
 							
 							<c:set var="qty" value="${qty + products.anotherOptionQty  }"/>
@@ -130,7 +193,7 @@
 						<c:forEach var="i" begin="0" step="1" end="${8 - 1  }">				
 							<h3 class="deliv-styles product-qty" style='top:${prodTop}px;'>${orlist.productOptionList[i].anotherOptionQty }</h3>
 							<h3 class="deliv-styles product-name" style='top:${prodTop-12}px;'>
-								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ]
+								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ] <c:if test="${!empty orlist.productOptionList[i].optionMemo1 }">* 특별 요청 : ${orlist.productOptionList[i].optionMemo1 }</c:if>
 							</h3>
 							
 							<c:set var="qty" value="${qty + products.anotherOptionQty  }"/>
@@ -141,7 +204,7 @@
 						<c:forEach var="i" begin="0" step="1" end="${8 - 1 }">				
 							<h3 class="deliv-styles product-qty" style='top:${prodTop}px;'>${orlist.productOptionList[i].anotherOptionQty }</h3>
 							<h3 class="deliv-styles product-name" style='top:${prodTop-12}px;'>
-								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ]
+								${orlist.productOptionList[i].productName } [ ${orlist.productOptionList[i].optionName } ]  <c:if test="${!empty orlist.productOptionList[i].optionMemo1 }">* 특별 요청 : ${orlist.productOptionList[i].optionMemo1 }</c:if>
 							</h3>
 							
 							<c:set var="qty" value="${qty + products.anotherOptionQty  }"/>
@@ -155,7 +218,6 @@
 					<h3 class='deliv-styles qty-title'>수량</h3>
 				</div>
 				
-				
 				<c:if test="${(divQty > 1) || (divQty == 1 && divMod > 0)}">
 				
 					<c:set var="topValue" value="${topValue + 432 }"/>
@@ -165,13 +227,17 @@
 						 	<h3 class='deliv-styles deliv-dont-deliv-msg-top'>**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지****</h3>
 						 	<h3 class='deliv-styles deliv-dont-deliv-msg-bottom'>**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지**** 발송 금지****</h3>
 						 	<h3 class='deliv-styles receiver'> ${orlist.orReceiverName } 의 나머지 상품 </h3>
+						 	<c:if test="${orlist.productOptionList[0].prodSorting == -2 or orlist.productOptionList[0].prodSorting == -3 or orlist.productOptionList[0].prodSorting == -4  }">
+								<h1 class='deliv-styles deliv-dont-deliv-msg-top' style="top:170px; left:670px; font-size:80px;transform: rotate(-45deg); opacity: 0.4;">선물세트</h1>
+							</c:if>	
+							
 						 		<c:set var="prodTop" value="80"/>
 						 		
 						 		<c:if test="${(i + 1) == (divQty)}">
 						 			<c:forEach var="j" begin="${(i + 1) *8 }" step="1" end="${(((i + 1) * 8) + divMod - 1) }">
 										<h3 class="deliv-styles product-qty" style='top:${prodTop}px;'>${orlist.productOptionList[j].anotherOptionQty }</h3>
 										<h3 class="deliv-styles product-name" style='top:${prodTop-12}px;'>
-											${orlist.productOptionList[j].productName } [ ${orlist.productOptionList[j].optionName } ]
+											${orlist.productOptionList[j].productName } [ ${orlist.productOptionList[j].optionName } ] <c:if test="${!empty orlist.productOptionList[i].optionMemo1 }">* 특별 요청 : ${orlist.productOptionList[i].optionMemo1 }</c:if>
 											
 										</h3>
 										
@@ -183,8 +249,7 @@
 						 			<c:forEach var="j" begin="${(i + 1)*8 }" step="1" end="${(((i + 1) * 8) + 8 ) - 1 }">
 										<h3 class="deliv-styles product-qty" style='top:${prodTop}px;'>${orlist.productOptionList[j].anotherOptionQty }</h3>
 										<h3 class="deliv-styles product-name" style='top:${prodTop-12}px;'>
-											${orlist.productOptionList[j].productName } [ ${orlist.productOptionList[j].optionName } ]
-											
+											${orlist.productOptionList[j].productName } [ ${orlist.productOptionList[j].optionName } ] <c:if test="${!empty orlist.productOptionList[i].optionMemo1 }">* 특별 요청 : ${orlist.productOptionList[i].optionMemo1 }</c:if>
 										</h3>
 										<c:set var="prodTop" value="${prodTop + 40 }"/>	
 									</c:forEach>

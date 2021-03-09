@@ -62,6 +62,21 @@
     			}
     		});
     		
+    		$("input[name=fbAnotherCheckFlag2]").change(function(){
+    			var fbAnotherCheckFlag2 = $(this).val();
+    			
+    			if(fbAnotherCheckFlag2 == 0){
+    				$("#fbAnotherCheckList2").prop("disabled","disabled");
+    				$("#fbAnotherCheckWord2").prop("readonly","readonly");
+    				$("#fbAnotherCheckType2").prop("disabled","disabled");
+    				
+    			}else{
+    				$("#fbAnotherCheckList2").prop("disabled","");
+    				$("#fbAnotherCheckWord2").prop("readonly","");
+    				$("#fbAnotherCheckType2").prop("disabled","");
+    			}
+    		});
+    		
     		$("#freebieInsertForm").submit(function(){
     			var fbMinPrice = number($("#fbMinPrice").val());
     			var fbMaxPrice = number($("#fbMaxPrice").val());
@@ -203,6 +218,9 @@
 		                                            <label class="custom-control custom-radio custom-control-inline">
 	                                                	<input type="radio" value="2" name="fbType" class="custom-control-input"><span class="custom-control-label"> 수령자 번호 기준 </span>
 		                                            </label>
+		                                            <label class="custom-control custom-radio custom-control-inline">
+	                                                	<input type="radio" value="3" name="fbType" class="custom-control-input"><span class="custom-control-label"> 구매자 번호 기준 </span>
+		                                            </label>
 	                                            </div>
 	                                        </div>
 	                                    </div>
@@ -317,7 +335,7 @@
 	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 문자열 포함 조건 </label>
 	                                            <div class="col-6 col-sm-4 col-lg-2">
 	                                                <label class="custom-control custom-radio custom-control-inline">
-	                                                	<input type="radio" name=fbAnotherCheckFlag checked class="custom-control-input" value="0"><span class="custom-control-label"> 미사용 </span>
+	                                                	<input type="radio" name="fbAnotherCheckFlag" checked class="custom-control-input" value="0"><span class="custom-control-label"> 미사용 </span>
 		                                            </label>
 		                                            <label class="custom-control custom-radio custom-control-inline">
 		                                                <input type="radio" name="fbAnotherCheckFlag" class="custom-control-input" value="1"><span class="custom-control-label"> 사용 </span>
@@ -348,6 +366,44 @@
 	                                                </select>
 	                                            </div>
 	                                        </div>
+	                                        
+	                                        
+	                                        <div class="form-group row">
+	                                            <label class="col-12 col-sm-3 col-form-label text-sm-right"> 문자열 포함 조건 2 </label>
+	                                            <div class="col-6 col-sm-4 col-lg-2">
+	                                                <label class="custom-control custom-radio custom-control-inline">
+	                                                	<input type="radio" name="fbAnotherCheckFlag2" checked class="custom-control-input" value="0"><span class="custom-control-label"> 미사용 </span>
+		                                            </label>
+		                                            <label class="custom-control custom-radio custom-control-inline">
+		                                                <input type="radio" name="fbAnotherCheckFlag2" class="custom-control-input" value="1"><span class="custom-control-label"> 사용 </span>
+		                                            </label>
+	                                            </div>
+	                                            <div class="col-3 col-sm-2 col-lg-2">
+	                                                <select class="form-control" id="fbAnotherCheckList2" name="fbAnotherCheckList2" disabled="disabled">
+	                                                	<option value="0">판매처 상품명</option>
+	                                                	<option value="1">판매처 옵션명</option>
+	                                                	<option value="2">판매처 상품코드</option>
+	                                                	<option value="3">매칭 상품명</option>
+	                                                	<option value="4">매칭 옵션명</option>
+	                                                	<option value="5">주소</option>
+	                                                	<option value="6">사용자정의1</option>
+	                                                	<option value="7">사용자정의2</option>
+	                                                	<option value="8">사용자정의3</option>
+	                                                </select>
+	                                            </div>
+	                                            <div class="col-3 col-sm-2 col-lg-2">
+	                                                <input type="text" placeholder="문자열" id="fbAnotherCheckWord2" name="fbAnotherCheckWord2" class="form-control" readonly="readonly">
+	                                            </div>
+	                                             <div class="col-3 col-sm-2 col-lg-2">
+	                                                <select class="form-control" id="fbAnotherCheckType2" name="fbAnotherCheckType2" disabled="disabled">
+	                                                	<option value="0">포함 되지 않음</option>
+	                                                	<option value="1">포함 됨</option>
+	                                                	<option value="2">같음</option>
+	                                                	<option value="3">같지 않음</option>
+	                                                </select>
+	                                            </div>
+	                                        </div>
+	                                        
 	                                    </div>
 	                                </div>
 	                            </div>

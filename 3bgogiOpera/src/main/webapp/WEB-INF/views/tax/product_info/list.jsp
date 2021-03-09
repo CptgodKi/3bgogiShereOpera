@@ -278,9 +278,10 @@
 		                                        				<fmt:formatNumber value="${pilist.piTax }" pattern="#,###"/>
 		                                        				<c:set var="totalTax" value="${totalTax + pilist.piTax}"></c:set>
 		                                        			</td>
+		                                        			
 		                                        			<td>
 		                                        				<fmt:formatNumber value="${pilist.piTotalCost }" pattern="#,###"/>
-		                                        				<c:set var="totalPrice" value="${totalPrice + pilist.piTotalCost}"></c:set>
+		                                        				<c:set var="totalPrice" value="${ totalPrice + pilist.piTotalCost }"></c:set>
 		                                        			</td>
 		                                        			
 		                                        			<td>
@@ -309,6 +310,7 @@
 		                                        			<td>${pilist.piInputDate }</td>
 		                                        		</tr>
 		                                        	</c:forEach>
+		                                        	
 	                                        		<tr>
 	                                        			<td colspan="3"> 총 합</td>
 		                                                <td >
@@ -320,7 +322,6 @@
 		                                                <td >
 		                                                	<fmt:formatNumber value="${totalTax }" pattern="#,###" />
 		                                                </td>
-		                                                
 		                                                <td >
 		                                                	<fmt:formatNumber value="${totalPrice }" pattern="#,###" />
 		                                                </td>

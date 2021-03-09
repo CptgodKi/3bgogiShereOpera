@@ -117,4 +117,16 @@ public interface EpostDAO {
 	 * @메소드설명 : orPk로 송장 삭제
 	 */
 	public int deleteDelivInfoByPk(OrdersVO osVO);
+	
+	
+	/**
+	 * 
+	 * @MethodName : gtranReceiverPickUp
+	 * @date : 2021. 2. 15.
+	 * @author : Jeon KiChan
+	 * @param osVO
+	 * @return
+	 * @메소드설명 : 방문수령 처리하기
+	 */
+	public int gtranReceiverPickUp(OrdersVO osVO); 
 }
